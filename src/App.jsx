@@ -158,25 +158,56 @@ export default function App() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [selectedExp, setSelectedExp] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
+  
+  // States cho phần Connect
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+
   const containerRef = useRef(null);
+  const formRef = useRef(null);
   const expRefs = useRef([]);
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
-  // --- QUẢN LÝ TITLE & DESCRIPTION TẠI ĐÂY ---
-  useEffect(() => {
-    // Thay đổi tiêu đề trang (hiển thị trên tab trình duyệt)
-    document.title = "Anh.TranViet | Creative Marketing Strategy & Growth";
+  const handleFormSubmit = async () => {
+    if (isSent || isSubmitting) return;
 
-    // Cập nhật thẻ meta description (cho SEO và khi chia sẻ link)
+    // Kiểm tra tính hợp lệ của form (các trường có required)
+    if (formRef.current && !formRef.current.checkValidity()) {
+        formRef.current.reportValidity();
+        return;
+    }
+    
+    setIsSubmitting(true);
+    
+    // Giả lập thời gian gửi để hiển thị hiệu ứng Loading
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setIsSubmitting(false);
+    setIsSent(true);
+    
+    // Thực hiện submit form thật sau khi xử lý hiệu ứng
+    const realSubmit = document.getElementById("real-submit");
+    if (realSubmit) realSubmit.click();
+  };
+
+  useEffect(() => {
+    document.title = "Anh Trần Việt | Creative Marketing Strategy & Growth";
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) {
       metaDesc = document.createElement('meta');
       metaDesc.name = "description";
       document.head.appendChild(metaDesc);
     }
-    metaDesc.content = "Portfolio của Trần Việt Anh - Creative Marketing Strategy & Growth SME.";
+    metaDesc.content = "Portfolio của Anh Trần Việt - Chuyên gia chiến lược Marketing, Chuyển đổi số và Tăng trưởng cho SME.";
+    let linkFavicon = document.querySelector("link[rel~='icon']");
+    if (!linkFavicon) {
+      linkFavicon = document.createElement('link');
+      linkFavicon.rel = 'icon';
+      document.head.appendChild(linkFavicon);
+    }
+    linkFavicon.href = "https://i.ibb.co/qYVpRnX8/Logo-A.png";
   }, []);
 
   useEffect(() => {
@@ -195,19 +226,13 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Sửa lỗi cuộn đến section
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
       setIsMenuOpen(false);
-      const navHeight = 0; // Điều chỉnh nếu có fixed header chiếm diện tích
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+      const offsetPosition = elementPosition + window.pageYOffset;
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
     }
   };
 
@@ -480,7 +505,6 @@ export default function App() {
           className="flex items-center gap-3 cursor-pointer group" 
           onClick={() => scrollToSection('home')}
         >
-          {/* Logo Container with magnetic-like hover effect */}
           <div className="relative w-8 h-8 md:w-10 md:h-10 overflow-hidden flex items-center justify-center">
             <img 
               src="https://i.ibb.co/qYVpRnX8/Logo-A.png" 
@@ -687,7 +711,7 @@ export default function App() {
       </div>
 
       {/* SERVICES SECTION */}
-      <section className="py-24 md:py-40 px-6 max-w-7xl mx-auto relative z-10">
+      <section id="services" className="py-24 md:py-40 px-6 max-w-7xl mx-auto relative z-10">
         <SectionTitle title="Expertise" subtitle="Services" />
         
         <div className="hidden md:grid grid-cols-2 gap-px bg-white/10 border border-white/10 rounded-[3rem] overflow-hidden">
@@ -798,7 +822,7 @@ export default function App() {
       </section>
 
       {/* CONNECT SECTION */}
-      <section id="connect" className="relative min-h-screen bg-[#030303] pt-32 md:pt-40 pb-20 px-6 md:px-8 flex flex-col justify-between overflow-hidden z-10">
+      <section id="connect" className="relative min-h-[80vh] bg-[#030303] pt-32 md:pt-40 pb-20 px-6 md:px-8 overflow-hidden z-10">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-pink-600/10 blur-[150px] rounded-full" />
         <div className="relative z-10 max-w-7xl mx-auto w-full">
           <SectionTitle title="Connect" subtitle="Contact" />
@@ -807,7 +831,7 @@ export default function App() {
               <motion.h3 className="text-6xl md:text-[12rem] font-black uppercase leading-[0.8] mb-12 tracking-tighter" whileHover={{ skewX: -5 }}>
                 Let's <br /> Talk <span className="text-pink-500">.</span>
               </motion.h3>
-              <form action="https://formsubmit.co/4nhtran@gmail.com" method="POST" className="space-y-6 w-full max-w-xl">
+              <form ref={formRef} action="https://formsubmit.co/4nhtran@gmail.com" method="POST" className="space-y-6 w-full max-w-xl">
                 <input type="hidden" name="_captcha" value="false" />
                 <input type="text" name="Name" placeholder="Người liên hệ" required className="w-full bg-transparent border-b border-gray-600 focus:border-pink-500 outline-none py-3 text-white transition" />
                 <input type="text" name="Brand" placeholder="Tên thương hiệu" required className="w-full bg-transparent border-b border-gray-600 focus:border-pink-500 outline-none py-3 text-white transition" />
@@ -816,32 +840,62 @@ export default function App() {
                 <button type="submit" className="hidden" id="real-submit" />
               </form>
             </div>
+            
             <div className="flex flex-col gap-12 items-start lg:items-end w-full">
-              <MagneticElement distance={0.5}>
-                <div className="relative group cursor-pointer" onClick={() => document.getElementById("real-submit").click()}>
-                  <div className="w-40 h-40 md:w-64 md:h-64 rounded-full border border-pink-500/30 flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-500">
-                    <div className="w-full h-full bg-pink-500 rounded-full flex items-center justify-center text-black overflow-hidden relative">
+              <div className="relative">
+                {/* Thông báo thành công */}
+                <AnimatePresence>
+                  {isSent && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute -top-16 left-1/2 -translate-x-1/2 bg-white text-black px-4 py-2 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center gap-2 whitespace-nowrap z-20 shadow-lg"
+                    >
+                      <CheckCircle2 size={14} className="text-green-500" /> Message Sent
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <MagneticElement distance={isSent ? 0 : 0.5}>
+                  <div 
+                    className={`w-40 h-40 md:w-64 md:h-64 rounded-full border border-pink-500/30 flex items-center justify-center p-2 transition-all duration-500 ${isSent ? 'opacity-50 pointer-events-none' : 'group cursor-pointer hover:scale-105'}`}
+                    onClick={handleFormSubmit}
+                  >
+                    <div className={`w-full h-full rounded-full flex items-center justify-center text-black overflow-hidden relative transition-colors duration-500 ${isSent ? 'bg-white' : 'bg-pink-500'}`}>
                       <div className="relative z-10 flex flex-col items-center gap-2">
-                        <Send className="w-6 h-6 md:w-8 md:h-8" />
-                        <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">Send Hi</span>
+                        {isSubmitting ? (
+                          <div className="animate-spin w-6 h-6 border-2 border-black border-t-transparent rounded-full" />
+                        ) : isSent ? (
+                          <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8" />
+                        ) : (
+                          <Send className="w-6 h-6 md:w-8 md:h-8" />
+                        )}
+                        <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">
+                          {isSubmitting ? 'Sending' : isSent ? 'Sent' : 'Send Hi'}
+                        </span>
                       </div>
-                      <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                      {!isSent && !isSubmitting && (
+                        <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                      )}
                     </div>
                   </div>
-                </div>
-              </MagneticElement>
+                </MagneticElement>
+              </div>
             </div>
           </div>
         </div>
-        <div className="relative z-10 w-full max-w-7xl mx-auto border-t border-white/10 mt-24 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
-          <div className="flex gap-8 md:gap-12">
-            <a href="https://zalo.me/84919999781" target="_blank" rel="noreferrer">Zalo</a>
-            <a href="https://www.facebook.com/4nhtran/" target="_blank" rel="noreferrer">Facebook</a>
-          </div>
-          <p>© 2026 ANH.TRANVIET.</p>
-        </div>
       </section>
 
+      {/* FOOTER SECTION */}
+      <footer className="bg-[#030303] pb-20 px-6 md:px-8 z-10">
+        <div className="relative z-10 w-full max-w-7xl mx-auto border-t border-white/10 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
+          <div className="flex gap-8 md:gap-12">
+            <a href="https://zalo.me/84919999781" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Zalo</a>
+            <a href="https://www.facebook.com/4nhtran/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Facebook</a>
+          </div>
+          <p>© {new Date().getFullYear()} ANH.TRANVIET.</p>
+        </div>
+      </footer>
     </div>
   );
 }
