@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* Thiết lập màu nền tối mặc định cho toàn bộ trang web */
+:root {
+  background-color: #050505;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  color: white;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tối ưu hóa thanh cuộn (Scrollbar) cho giao diện hiện đại */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+/* Ngăn chặn việc chọn văn bản làm hỏng trải nghiệm người dùng trên các nút nhấn */
+button {
+  user-select: none;
+}
