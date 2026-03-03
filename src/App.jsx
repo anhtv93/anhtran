@@ -110,7 +110,7 @@ const ScrambleText = ({ text, trigger }) => {
   );
 };
 
-const SectionTitle = ({ title, subtitle }) => {
+const SectionTitle = ({ title, subtitle, dark = false }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, margin: "-10% 0px -10% 0px" });
 
@@ -119,7 +119,7 @@ const SectionTitle = ({ title, subtitle }) => {
       <motion.span
         initial={{ opacity: 0, x: -20 }}
         animate={isInView ? { opacity: 1, x: 0 } : {}}
-        className="text-purple-500 font-mono text-sm tracking-tighter uppercase mb-2 block"
+        className={`${dark ? 'text-pink-600' : 'text-purple-500'} font-mono text-sm tracking-tighter uppercase mb-2 block`}
       >
         / <ScrambleText text={subtitle} trigger={isInView} />
       </motion.span>
@@ -128,7 +128,7 @@ const SectionTitle = ({ title, subtitle }) => {
           initial={{ y: "100%" }}
           animate={isInView ? { y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
-          className="text-5xl md:text-8xl font-black uppercase leading-none"
+          className={`text-5xl md:text-8xl font-black uppercase leading-none ${dark ? 'text-black' : 'text-white'}`}
         >
           <ScrambleText text={title} trigger={isInView} />
         </motion.h2>
@@ -288,10 +288,13 @@ export default function App() {
   const [selectedExp, setSelectedExp] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false); // State để quản lý việc mở khóa scroll
+  const [isUnlocked, setIsUnlocked] = useState(false); 
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
+
+  // Gallery Stack State
+  const [currentProjectIdx, setCurrentProjectIdx] = useState(0);
 
   const containerRef = useRef(null);
   const formRef = useRef(null);
@@ -300,7 +303,6 @@ export default function App() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
-  // Quản lý việc khóa scroll body
   useEffect(() => {
     if (!isUnlocked) {
       document.body.style.overflow = 'hidden';
@@ -365,7 +367,6 @@ export default function App() {
   }, [isUnlocked]);
 
   const scrollToSection = (id) => {
-    // Luôn mở khóa khi điều hướng
     setIsUnlocked(true);
     const element = document.getElementById(id);
     if (element) {
@@ -384,7 +385,7 @@ export default function App() {
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
-    setIsUnlocked(true); // Mở khóa cuộn sau khi loading xong
+    setIsUnlocked(true); 
     setTimeout(() => {
       scrollToSection('services');
     }, 100);
@@ -476,7 +477,7 @@ export default function App() {
     }
   ];
 
-  const projects = [
+const projects = [
     {
       title: "Đại diện thương hiệu",
       category: "Branding",
@@ -648,6 +649,10 @@ export default function App() {
     ::selection { background: white; color: black; }
   `;
 
+  // Gallery Navigation
+  const nextProject = () => setCurrentProjectIdx(prev => (prev + 1) % projects.length);
+  const prevProject = () => setCurrentProjectIdx(prev => (prev - 1 + projects.length) % projects.length);
+
   return (
     <div ref={containerRef} className="bg-[#050505] text-white selection:bg-white selection:text-black overflow-x-hidden min-h-screen">
       <style dangerouslySetInnerHTML={{ __html: globalStyles }} />
@@ -674,7 +679,7 @@ export default function App() {
           </span>
         </motion.div>
         <button onClick={() => setIsMenuOpen(true)} className="flex items-center gap-2 group outline-none">
-          <span className="text-sm font-bold uppercase tracking-widest group-hover:pr-2 transition-all">Menu</span>
+          <span className="text-sm font-bold uppercase tracking-widest group-hover:pr-2 transition-all text-white">Menu</span>
           <div className="w-8 h-[2px] bg-white" />
         </button>
       </nav>
@@ -794,7 +799,7 @@ export default function App() {
                     onClick={() => window.open(selectedProject.link, '_blank')} 
                     className="flex-1 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] bg-white text-black px-8 py-4 rounded-full hover:bg-pink-500 transition-all"
                   >
-                    View Project <ExternalLink size={14} />
+                    View <ExternalLink size={14} />
                   </button>
                   <button 
                     onClick={() => setSelectedProject(null)} 
@@ -820,11 +825,11 @@ export default function App() {
               <span className="text-outline-white text-transparent">Creative</span><br />
               Growth
             </h1>
-            <p className="text-lg md:text-2xl font-light max-w-2xl mx-auto text-gray-400 mb-20"> {/* Tăng khoảng cách từ p xuống button */}
+            <p className="text-lg md:text-2xl font-light max-w-2xl mx-auto text-gray-400 mb-20"> 
               Xây dựng và vận hành hệ thống Marketing chuyển hóa thương hiệu thành doanh thu.
             </p>
             <MagneticButton 
-              className="px-12 py-5 bg-white text-black rounded-full font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-4 mx-auto"
+              className="px-12 py-5 bg-white text-black rounded-full hover:bg-pink-500 font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-4 mx-auto"
               onClick={startJourney}
             >
               Bắt đầu hành trình <ArrowDownRight className="w-6 h-6" />
@@ -832,7 +837,6 @@ export default function App() {
           </motion.div>
         </div>
         
-        {/* Hướng dẫn cuộn đã được chuyển sang phải và thay đổi nội dung */}
         <motion.div 
           animate={{ y: [0, 10, 0] }} 
           transition={{ repeat: Infinity, duration: 2 }} 
@@ -891,38 +895,127 @@ export default function App() {
         </div>
       </section>
 
-      {/* WORKS SECTION */}
+      {/* WORKS SECTION - UPDATED STACKED CARDS */}
       <section id="works" className="py-24 md:py-40 bg-white text-black overflow-hidden relative z-10">
         <div className="px-6 mb-10 md:mb-20 max-w-7xl mx-auto">
-          <SectionTitle title="The Works" subtitle="Gallery" />
+          <SectionTitle title="The Works" subtitle="Gallery" dark={true} />
         </div>
-        <div className="flex overflow-x-auto gap-6 md:gap-10 px-6 scrollbar-hide pb-10">
-          {projects.map((p, i) => (
-            <motion.div 
-              key={i}
-              whileHover={{ scale: 0.98 }}
-              className="flex-shrink-0 w-[85vw] md:w-[45vw] group cursor-pointer"
-              onClick={() => setSelectedProject(p)}
-            >
-              <div className="aspect-[4/5] overflow-hidden rounded-[1.5rem] md:rounded-[2rem] bg-gray-200 mb-6 md:mb-8">
-                <img 
-                  src={p.image} 
-                  alt={p.title} 
-                  className="w-full h-full object-cover transition-all duration-1000 scale-110 group-hover:scale-100" 
-                />
-              </div>
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-2xl md:text-3xl font-black uppercase mb-1 md:mb-2 leading-none">{p.title}</h3>
-                  <p className="text-gray-500 font-medium uppercase text-[10px] md:text-xs tracking-widest">{p.category}</p>
-                </div>
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
-                  <ArrowDownRight className="-rotate-45 w-4 h-4 md:w-5 md:h-5" />
-                </div>
-              </div>
-            </motion.div>
-          ))}
+
+        <div className="relative w-full h-[500px] md:h-[650px] flex items-center justify-center">
+           <div className="relative w-full max-w-[90vw] md:max-w-4xl h-full flex items-center justify-center perspective-1000">
+              <AnimatePresence initial={false}>
+                {projects.map((p, i) => {
+                  const offset = (i - currentProjectIdx + projects.length) % projects.length;
+                  const isActive = offset === 0;
+                  const isPrev = offset === projects.length - 1;
+                  const isNext = offset === 1;
+
+                  // Chỉ hiển thị 3 thẻ: chính giữa, trái, phải
+                  if (offset > 1 && offset < projects.length - 1) return null;
+
+                  let x = 0;
+                  let scale = 1;
+                  let zIndex = 10;
+                  let opacity = 1;
+                  let rotate = 0;
+
+                  if (isNext) {
+                    x = "40%";
+                    scale = 0.85;
+                    zIndex = 5;
+                    opacity = 0.4;
+                    rotate = 5;
+                  } else if (isPrev) {
+                    x = "-40%";
+                    scale = 0.85;
+                    zIndex = 5;
+                    opacity = 0.4;
+                    rotate = -5;
+                  } else if (isActive) {
+                    x = 0;
+                    scale = 1;
+                    zIndex = 20;
+                    opacity = 1;
+                    rotate = 0;
+                  }
+
+                  return (
+                    <motion.div
+                      key={p.title}
+                      initial={false}
+                      animate={{ 
+                        x, 
+                        scale, 
+                        zIndex, 
+                        opacity,
+                        rotate,
+                        filter: isActive ? "blur(0px)" : "blur(2px)"
+                      }}
+                      transition={{ 
+                        type: "spring", 
+                        stiffness: 260, 
+                        damping: 20 
+                      }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      onDragEnd={(e, info) => {
+                        if (info.offset.x < -50) nextProject();
+                        if (info.offset.x > 50) prevProject();
+                      }}
+                      className={`absolute w-[280px] md:w-[450px] aspect-[4/5] md:aspect-[3/4] cursor-grab active:cursor-grabbing`}
+                      style={{ pointerEvents: isActive || isNext || isPrev ? 'auto' : 'none' }}
+                      onClick={() => {
+                        if (isNext) nextProject();
+                        if (isPrev) prevProject();
+                      }}
+                    >
+                      <div className={`relative w-full h-full p-1 transition-all duration-500 rounded-[2rem] md:rounded-[3rem] ${isActive ? 'bg-gradient-to-br from-pink-500 via-purple-500 to-pink-500' : 'bg-transparent'}`}>
+                        <div className={`w-full h-full overflow-hidden bg-gray-100 relative group ${isActive ? 'rounded-[1.8rem] md:rounded-[2.8rem]' : 'rounded-[2rem] md:rounded-[3rem]'}`}>
+                          <img 
+                            src={p.image} 
+                            alt={p.title} 
+                            className="w-full h-full object-cover select-none" 
+                          />
+                          
+                          {/* Overlay cho thẻ Active */}
+                          {isActive && (
+                            <motion.div 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center text-white"
+                            >
+                              <motion.span initial={{ y: 20 }} animate={{ y: 0 }} className="text-[10px] font-bold uppercase tracking-widest text-pink-400 mb-2">{p.category}</motion.span>
+                              <motion.h3 initial={{ y: 20 }} animate={{ y: 0 }} transition={{ delay: 0.1 }} className="text-2xl md:text-3xl font-black uppercase mb-6 leading-tight">{p.title}</motion.h3>
+                              <motion.button 
+                                initial={{ y: 20 }} animate={{ y: 0 }} transition={{ delay: 0.2 }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedProject(p);
+                                }}
+                                className="px-8 py-3 bg-pink-500 text-white rounded-full font-black uppercase text-[10px] tracking-widest flex items-center gap-2 hover:bg-white hover:text-black transition-all"
+                              >
+                                View Project <ArrowDownRight size={14} />
+                              </motion.button>
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+           </div>
         </div>
+
+        <div className="flex justify-center gap-4 mt-10 md:mt-16">
+          <button onClick={prevProject} className="w-12 h-12 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white transition-all">
+            <ArrowDownRight className="rotate-135 w-5 h-5" />
+          </button>
+          <button onClick={nextProject} className="w-12 h-12 rounded-full border border-black flex items-center justify-center hover:bg-black hover:text-white transition-all">
+            <ArrowDownRight className="-rotate-45 w-5 h-5" />
+          </button>
+        </div>
+        <p className="text-center text-[10px] font-bold uppercase tracking-[0.4em] mt-8 text-gray-400">Swipe or use buttons to navigate</p>
       </section>
 
       {/* STATS SECTION */}
