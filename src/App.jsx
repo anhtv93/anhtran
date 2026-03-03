@@ -72,9 +72,47 @@ const MagneticButton = ({ children, className = "", onClick }) => {
   );
 };
 
+const ScrambleText = ({ text, trigger }) => {
+  const [displayText, setDisplayText] = useState(text);
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+';
+  const intervalRef = useRef(null);
+
+  const scramble = () => {
+    let iteration = 0;
+    clearInterval(intervalRef.current);
+
+    intervalRef.current = setInterval(() => {
+      setDisplayText(prev => 
+        text.split("")
+          .map((char, index) => {
+            if (index < iteration) return text[index];
+            if (char === " ") return " ";
+            return characters[Math.floor(Math.random() * characters.length)];
+          })
+          .join("")
+      );
+
+      if (iteration >= text.length) {
+        clearInterval(intervalRef.current);
+      }
+      iteration += 1 / 3;
+    }, 30);
+  };
+
+  useEffect(() => {
+    if (trigger) scramble();
+  }, [trigger, text]);
+
+  return (
+    <span onMouseEnter={scramble} className="cursor-default">
+      {displayText}
+    </span>
+  );
+};
+
 const SectionTitle = ({ title, subtitle }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false });
+  const isInView = useInView(ref, { once: false, margin: "-10% 0px -10% 0px" });
 
   return (
     <div ref={ref} className="mb-10 md:mb-20">
@@ -83,7 +121,7 @@ const SectionTitle = ({ title, subtitle }) => {
         animate={isInView ? { opacity: 1, x: 0 } : {}}
         className="text-purple-500 font-mono text-sm tracking-tighter uppercase mb-2 block"
       >
-        / {subtitle}
+        / <ScrambleText text={subtitle} trigger={isInView} />
       </motion.span>
       <div className="overflow-hidden">
         <motion.h2
@@ -92,7 +130,7 @@ const SectionTitle = ({ title, subtitle }) => {
           transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
           className="text-5xl md:text-8xl font-black uppercase leading-none"
         >
-          {title}
+          <ScrambleText text={title} trigger={isInView} />
         </motion.h2>
       </div>
     </div>
@@ -153,13 +191,105 @@ const ExperienceRow = ({ exp, index, isActive, onOpenDetail }) => {
   );
 };
 
+const MinimalHeroBackground = () => {
+  return (
+    <div className="absolute inset-0 z-0 overflow-hidden bg-[#050505]">
+      <div 
+        className="absolute inset-0 opacity-[0.05]" 
+        style={{ 
+          backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', 
+          backgroundSize: '40px 40px' 
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/20 to-[#050505]" />
+    </div>
+  );
+};
+
+const CreditLoader = ({ onComplete }) => {
+  const keywords = ["Growth", "Strategy", "Creative", "Data"];
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const duration = 2800; 
+    const interval = 20;
+    const step = 100 / (duration / interval);
+    
+    const timer = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          return 100;
+        }
+        return prev + step;
+      });
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, []);
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-between py-24 md:py-32 overflow-hidden"
+    >
+      <div className="relative flex-1 w-full flex flex-col items-center justify-center overflow-hidden">
+        <div className="relative h-[200px] md:h-[300px] flex flex-col items-center">
+          {keywords.map((word, i) => (
+            <motion.div
+              key={word}
+              initial={{ y: 350, opacity: 0 }}
+              animate={{ y: -350, opacity: [0, 1, 1, 0] }}
+              transition={{ 
+                duration: 2.8, 
+                delay: i * 0.5, 
+                ease: "easeInOut",
+                times: [0, 0.25, 0.75, 1]
+              }}
+              onAnimationComplete={() => {
+                if (i === keywords.length - 1) {
+                  setTimeout(onComplete, 400);
+                }
+              }}
+              className="absolute text-5xl md:text-9xl font-black uppercase tracking-tighter text-white"
+            >
+              {word}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-full max-w-sm md:max-w-xl px-10 flex flex-col items-center gap-6 mt-12">
+        <div className="flex justify-between w-full items-end">
+            <span className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-500">Initializing Journey</span>
+            <span className="font-mono text-2xl md:text-4xl font-black text-pink-500">{Math.round(progress)}%</span>
+        </div>
+        
+        <div className="w-full h-[4px] bg-white/10 relative rounded-full overflow-hidden">
+          <motion.div 
+            className="absolute top-0 left-0 h-full bg-pink-500 rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
+        <div className="font-mono text-[8px] md:text-[10px] uppercase tracking-[0.5em] text-gray-600 text-center">
+            Anh Tran Viet — Portfolio 2026
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const [selectedExp, setSelectedExp] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false); // State để quản lý việc mở khóa scroll
   
-  // States cho phần Connect
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSent, setIsSent] = useState(false);
 
@@ -170,24 +300,31 @@ export default function App() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
+  // Quản lý việc khóa scroll body
+  useEffect(() => {
+    if (!isUnlocked) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isUnlocked]);
+
   const handleFormSubmit = async () => {
     if (isSent || isSubmitting) return;
 
-    // Kiểm tra tính hợp lệ của form (các trường có required)
     if (formRef.current && !formRef.current.checkValidity()) {
         formRef.current.reportValidity();
         return;
     }
     
     setIsSubmitting(true);
-    
-    // Giả lập thời gian gửi để hiển thị hiệu ứng Loading
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
     setIsSubmitting(false);
     setIsSent(true);
     
-    // Thực hiện submit form thật sau khi xử lý hiệu ứng
     const realSubmit = document.getElementById("real-submit");
     if (realSubmit) realSubmit.click();
   };
@@ -212,6 +349,7 @@ export default function App() {
 
   useEffect(() => {
     const handleScroll = () => {
+      if (!isUnlocked) return;
       const vh = window.innerHeight;
       const center = vh / 2;
       expRefs.current.forEach((ref, idx) => {
@@ -224,16 +362,32 @@ export default function App() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isUnlocked]);
 
   const scrollToSection = (id) => {
+    // Luôn mở khóa khi điều hướng
+    setIsUnlocked(true);
     const element = document.getElementById(id);
     if (element) {
       setIsMenuOpen(false);
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset;
-      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      setTimeout(() => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      }, 50);
     }
+  };
+
+  const startJourney = () => {
+    setIsLoading(true);
+  };
+
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+    setIsUnlocked(true); // Mở khóa cuộn sau khi loading xong
+    setTimeout(() => {
+      scrollToSection('services');
+    }, 100);
   };
 
   const services = [
@@ -248,7 +402,7 @@ export default function App() {
       period: "2021 - 2025",
       role: "CEO",
       company: "Dự Án Việt Nam",
-      image: "https://i.ibb.co/4wHf7MLn/IMG-7762.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "https://i.ibb.co/4wHf7MLn/IMG-7762.jpg",
       desc: "Kiến trúc sư trưởng cho hệ thống TMĐT xây dựng tiên phong duanvietnam.vn. Chịu trách nhiệm toàn diện từ chiến lược sản phẩm, vận hành đến tăng trưởng.",
       details: [
         "Hoạch định chiến lược kinh doanh, xây dựng sản phẩm lõi B2B/B2C.", 
@@ -264,7 +418,7 @@ export default function App() {
       period: "2020",
       role: "Phó BP.Online",
       company: "Hệ thống Nguyễn Văn Cừ",
-      image: "https://i.ibb.co/GhVKk41/c7f1becf306e6185a0a7324b11a94545.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "https://i.ibb.co/GhVKk41/c7f1becf306e6185a0a7324b11a94545.jpg",
       desc: "Dẫn dắt công cuộc Chuyển đổi số toàn diện, đưa thương hiệu truyền thống lâu đời thâm nhập thị trường TMĐT.",
       details: [
         "Nghiên cứu thị trường, phân tích các lợi thế cạnh tranh để đề xuất lộ trình phát triển.", 
@@ -279,7 +433,7 @@ export default function App() {
       period: "2019",
       role: "Project Marketing",
       company: "LEGO Education",
-      image: "https://i.ibb.co/HThDHMF8/IMG-8232.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "https://i.ibb.co/HThDHMF8/IMG-8232.jpg",
       desc: "Triển khai mở rộng chuỗi hoạt động 'Educate Market', định hình tư duy phụ huynh về phương pháp giáo dục STEAM.",
       details: [
         "Tổ chức họp báo ra mắt sản phẩm chiến lược LEGO Education SPIKE Prime.", 
@@ -294,7 +448,7 @@ export default function App() {
       period: "2019",
       role: "Marketing Manager",
       company: "FitForce Fitness",
-      image: "https://i.ibb.co/RkBGSNz7/IMG-8231.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "https://i.ibb.co/RkBGSNz7/IMG-8231.jpg",
       desc: "Kiến tạo trải nghiệm khách hàng và tối ưu hóa doanh thu dịch vụ cao cấp thông qua chiến lược KOLs và Event.",
       details: [
         "Xây dựng bộ máy vận hành: Thiết lập phòng ban Sales & Marketing chuyên nghiệp, quản lý ngân sách và điều phối KPI.", 
@@ -309,7 +463,7 @@ export default function App() {
       period: "2018",
       role: "Sales & Marketing",
       company: "Ambassador Hotel",
-      image: "https://i.ibb.co/HThDHMF8/IMG-8232.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "https://i.ibb.co/HThDHMF8/IMG-8232.jpg",
       desc: "Đặt nền móng thương hiệu cho chi nhánh mới tại TP.Vũng Tàu, khai thác thị trường khu vực trung tâm thành phố.",
       details: [
         "Phát triển song song 2 thương hiệu: Ambassador (Hotel) & Camellia (F&B).", 
@@ -479,6 +633,7 @@ export default function App() {
     }
   ];
 
+
   const stats = [
     { value: "5B+", label: "Total Budget" },
     { value: "50+", label: "Project Delivered" },
@@ -491,14 +646,16 @@ export default function App() {
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     ::selection { background: white; color: black; }
-    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    .animate-marquee { display: flex; animation: marquee 30s linear infinite; }
   `;
 
   return (
     <div ref={containerRef} className="bg-[#050505] text-white selection:bg-white selection:text-black overflow-x-hidden min-h-screen">
       <style dangerouslySetInnerHTML={{ __html: globalStyles }} />
       <motion.div className="fixed top-0 left-0 right-0 h-1 bg-white z-[100] origin-left" style={{ scaleX }} />
+
+      <AnimatePresence>
+        {isLoading && <CreditLoader onComplete={handleLoadingComplete} />}
+      </AnimatePresence>
 
       <nav className="fixed w-full z-50 p-6 flex justify-between items-center mix-blend-difference">
         <motion.div 
@@ -611,7 +768,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Project/Gallery Modal */}
+      {/* Projects (Works) Details Modal */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div 
@@ -621,42 +778,30 @@ export default function App() {
           >
             <motion.div 
               initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-              className="max-w-6xl w-full grid md:grid-cols-2 gap-8 md:gap-10 items-start bg-white/5 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/10"
+              className="max-w-5xl w-full grid md:grid-cols-2 gap-8 md:gap-10 items-center bg-white/5 p-6 md:p-8 rounded-[2rem] border border-white/10"
               onClick={e => e.stopPropagation()}
             >
-              <div className="rounded-2xl md:rounded-3xl overflow-hidden aspect-[4/3] bg-white/5 shadow-2xl">
-                <img 
-                  src={selectedProject.image} 
-                  alt={selectedProject.title} 
-                  className="w-full h-full object-cover"
-                />
+              <div className="rounded-2xl overflow-hidden aspect-[4/5] bg-white/5">
+                <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-full object-cover" />
               </div>
-              <div className="flex flex-col h-full justify-between py-2 md:py-4 text-left">
-                <div>
-                  <span className="text-purple-500 font-mono text-[10px] md:text-sm uppercase tracking-widest mb-2 md:mb-4 block">Project Gallery</span>
-                  <h2 className="text-3xl md:text-7xl font-black uppercase mb-2 md:mb-4 leading-tight tracking-tighter">{selectedProject.title}</h2>
-                  <p className="text-gray-400 font-bold uppercase text-[10px] md:text-xs tracking-widest mb-6 md:mb-8">{selectedProject.category}</p>
-                  <div className="space-y-4 md:space-y-6 mb-8 md:mb-12">
-                     <p className="text-gray-300 text-base md:text-lg leading-relaxed">
-                       {selectedProject.description}
-                     </p>
-                  </div>
-                </div>
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8 pt-6 md:pt-8 border-t border-white/10">
-                <div className="flex gap-3 md:gap-4">
-                     <button 
-                       onClick={() => window.open(selectedProject.link, '_blank')} 
-                       className="flex-1 md:flex-none flex items-center justify-center gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] bg-purple-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-full hover:bg-white hover:text-black transition-all whitespace-nowrap"
-                     >
-                       View More <ArrowDownRight size={14} />
-                     </button>
-                     <button 
-                       onClick={() => setSelectedProject(null)} 
-                       className="flex-1 md:flex-none flex items-center justify-center gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] border border-white/20 text-white px-6 md:px-8 py-3 md:py-4 rounded-full hover:bg-white hover:text-black transition-all"
-                     >
-                       Close
-                     </button>
-                   </div>
+              <div className="flex flex-col h-full justify-center text-left">
+                <span className="text-pink-500 font-mono text-[10px] md:text-sm uppercase tracking-widest mb-2 block">{selectedProject.category}</span>
+                <h2 className="text-4xl md:text-6xl font-black uppercase mb-4 leading-tight tracking-tighter">{selectedProject.title}</h2>
+                <p className="text-lg md:text-xl text-gray-400 mb-8 leading-relaxed italic">"{selectedProject.description}"</p>
+                
+                <div className="flex gap-4">
+                  <button 
+                    onClick={() => window.open(selectedProject.link, '_blank')} 
+                    className="flex-1 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] bg-white text-black px-8 py-4 rounded-full hover:bg-pink-500 transition-all"
+                  >
+                    View Project <ExternalLink size={14} />
+                  </button>
+                  <button 
+                    onClick={() => setSelectedProject(null)} 
+                    className="w-14 h-14 flex items-center justify-center border border-white/20 text-white rounded-full hover:bg-white hover:text-black transition-all"
+                  >
+                    <X size={20} />
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -666,9 +811,8 @@ export default function App() {
 
       {/* HERO SECTION */}
       <section id="home" className="h-screen relative flex items-center justify-center px-6 overflow-hidden">
-        <motion.div initial={{ scale: 1.2, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.5 }} className="absolute inset-0 z-0">
-          <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center opacity-30 grayscale contrast-125" />
-        </motion.div>
+        <MinimalHeroBackground />
+        
         <div className="relative z-10 text-center">
           <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5, duration: 1 }}>
             <h1 className="text-[12vw] font-black leading-none uppercase mb-6 tracking-tighter">
@@ -676,39 +820,27 @@ export default function App() {
               <span className="text-outline-white text-transparent">Creative</span><br />
               Growth
             </h1>
-            <p className="text-lg md:text-2xl font-light max-w-2xl mx-auto text-gray-400 mb-12">
+            <p className="text-lg md:text-2xl font-light max-w-2xl mx-auto text-gray-400 mb-20"> {/* Tăng khoảng cách từ p xuống button */}
               Xây dựng và vận hành hệ thống Marketing chuyển hóa thương hiệu thành doanh thu.
             </p>
             <MagneticButton 
               className="px-12 py-5 bg-white text-black rounded-full font-black uppercase tracking-widest hover:scale-105 transition-transform flex items-center gap-4 mx-auto"
-              onClick={() => scrollToSection('services')}
+              onClick={startJourney}
             >
               Bắt đầu hành trình <ArrowDownRight className="w-6 h-6" />
             </MagneticButton>
           </motion.div>
         </div>
-        <motion.div animate={{ y: [0, 20, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute bottom-10 left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-[0.3em] opacity-50">
-          Scroll to explore
+        
+        {/* Hướng dẫn cuộn đã được chuyển sang phải và thay đổi nội dung */}
+        <motion.div 
+          animate={{ y: [0, 10, 0] }} 
+          transition={{ repeat: Infinity, duration: 2 }} 
+          className="absolute bottom-10 right-10 md:right-16 text-xs font-bold uppercase tracking-[0.3em] opacity-50 z-20"
+        >
+          Use button to explore
         </motion.div>
       </section>
-
-      {/* MARQUEE SECTION */}
-      <div className="py-10 border-y border-white/5 bg-white/2 backdrop-blur-sm overflow-hidden whitespace-nowrap relative z-10">
-        <div className="animate-marquee">
-          {[1,2,3,4].map(i => (
-            <div key={i} className="flex gap-20 items-center px-10 shrink-0">
-              <span className="text-5xl md:text-8xl font-black uppercase flex items-center gap-6">
-                GROWTH <Sparkles className="w-10 h-10 text-pink-500" />
-              </span>
-              <span className="text-5xl md:text-8xl font-black uppercase text-outline-white text-transparent">STRATEGY</span>
-              <span className="text-5xl md:text-8xl font-black uppercase flex items-center gap-6">
-                CREATIVE <Globe2 className="w-10 h-10 text-indigo-500" />
-              </span>
-              <span className="text-5xl md:text-8xl font-black uppercase text-outline-white text-transparent">DATA</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* SERVICES SECTION */}
       <section id="services" className="py-24 md:py-40 px-6 max-w-7xl mx-auto relative z-10">
@@ -759,12 +891,11 @@ export default function App() {
         </div>
       </section>
 
-      {/* WORKS / GALLERY SECTION */}
+      {/* WORKS SECTION */}
       <section id="works" className="py-24 md:py-40 bg-white text-black overflow-hidden relative z-10">
         <div className="px-6 mb-10 md:mb-20 max-w-7xl mx-auto">
           <SectionTitle title="The Works" subtitle="Gallery" />
         </div>
-
         <div className="flex overflow-x-auto gap-6 md:gap-10 px-6 scrollbar-hide pb-10">
           {projects.map((p, i) => (
             <motion.div 
@@ -823,7 +954,6 @@ export default function App() {
 
       {/* CONNECT SECTION */}
       <section id="connect" className="relative min-h-[80vh] bg-[#030303] pt-32 md:pt-40 pb-20 px-6 md:px-8 overflow-hidden z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-pink-600/10 blur-[150px] rounded-full" />
         <div className="relative z-10 max-w-7xl mx-auto w-full">
           <SectionTitle title="Connect" subtitle="Contact" />
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-end">
@@ -840,22 +970,18 @@ export default function App() {
                 <button type="submit" className="hidden" id="real-submit" />
               </form>
             </div>
-            
             <div className="flex flex-col gap-12 items-start lg:items-end w-full">
               <div className="relative">
-                {/* Thông báo thành công */}
                 <AnimatePresence>
                   {isSent && (
                     <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                       className="absolute -top-16 left-1/2 -translate-x-1/2 bg-white text-black px-4 py-2 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center gap-2 whitespace-nowrap z-20 shadow-lg"
                     >
                       <CheckCircle2 size={14} className="text-green-500" /> Message Sent
                     </motion.div>
                   )}
                 </AnimatePresence>
-
                 <MagneticElement distance={isSent ? 0 : 0.5}>
                   <div 
                     className={`w-40 h-40 md:w-64 md:h-64 rounded-full border border-pink-500/30 flex items-center justify-center p-2 transition-all duration-500 ${isSent ? 'opacity-50 pointer-events-none' : 'group cursor-pointer hover:scale-105'}`}
@@ -863,20 +989,10 @@ export default function App() {
                   >
                     <div className={`w-full h-full rounded-full flex items-center justify-center text-black overflow-hidden relative transition-colors duration-500 ${isSent ? 'bg-white' : 'bg-pink-500'}`}>
                       <div className="relative z-10 flex flex-col items-center gap-2">
-                        {isSubmitting ? (
-                          <div className="animate-spin w-6 h-6 border-2 border-black border-t-transparent rounded-full" />
-                        ) : isSent ? (
-                          <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8" />
-                        ) : (
-                          <Send className="w-6 h-6 md:w-8 md:h-8" />
-                        )}
-                        <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">
-                          {isSubmitting ? 'Sending' : isSent ? 'Sent' : 'Send Hi'}
-                        </span>
+                        {isSubmitting ? <div className="animate-spin w-6 h-6 border-2 border-black border-t-transparent rounded-full" /> : isSent ? <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8" /> : <Send className="w-6 h-6 md:w-8 md:h-8" />}
+                        <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">{isSubmitting ? 'Sending' : isSent ? 'Sent' : 'Send Hi'}</span>
                       </div>
-                      {!isSent && !isSubmitting && (
-                        <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                      )}
+                      {!isSent && !isSubmitting && <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />}
                     </div>
                   </div>
                 </MagneticElement>
@@ -886,7 +1002,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* FOOTER SECTION */}
       <footer className="bg-[#030303] pb-20 px-6 md:px-8 z-10">
         <div className="relative z-10 w-full max-w-7xl mx-auto border-t border-white/10 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
           <div className="flex gap-8 md:gap-12">
