@@ -11,6 +11,11 @@ import {
   Globe2,
   Send,
   X,
+  Mail,
+  Phone,
+  Facebook,
+  MessageCircle,
+  ArrowUp,
   CheckCircle2
 } from 'lucide-react';
 
@@ -261,9 +266,18 @@ const CreditLoader = ({ onComplete }) => {
         </div>
       </div>
 
-      <div className="w-full max-w-sm md:max-w-xl px-10 flex flex-col items-center gap-6 mt-12">
-        <div className="flex justify-between w-full items-end">
-            <span className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-500">Initializing Journey</span>
+      <div className="w-full max-w-sm md:max-w-xl px-10 flex flex-col items-center gap-6 mt-12 relative">
+        <div className="flex justify-between w-full items-end gap-4">
+            <div className="flex items-center gap-3">
+                <motion.img 
+                  src="https://i.ibb.co/qYVpRnX8/Logo-A.png" 
+                  alt="Logo" 
+                  className="w-10 h-10 md:w-14 md:h-14 object-contain filter brightness-100"
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+                />
+                <span className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-500">Initializing Journey</span>
+            </div>
             <span className="font-mono text-2xl md:text-4xl font-black text-pink-500">{Math.round(progress)}%</span>
         </div>
         
@@ -1095,13 +1109,38 @@ const projects = [
         </div>
       </section>
 
-      <footer className="bg-[#030303] pb-20 px-6 md:px-8 z-10">
-        <div className="relative z-10 w-full max-w-7xl mx-auto border-t border-white/10 pt-12 flex flex-col md:flex-row justify-between items-center gap-6 text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
-          <div className="flex gap-8 md:gap-12">
-            <a href="https://zalo.me/84919999781" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Zalo</a>
-            <a href="https://www.facebook.com/4nhtran/" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Facebook</a>
+      <footer className="pt-20 pb-10 px-6 border-t border-white/5 relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-4xl">
+            {[
+              { label: 'Email', val: 'anh@anhtranviet.com', icon: <Mail size={18} />, url: 'mailto:anh@anhtranviet.com' },
+              { label: 'Hotline', val: '091.9999.781', icon: <Phone size={18} />, url: 'tel:+84919999781' },
+              { label: 'Zalo', val: 'Chat now', icon: <MessageCircle size={18} />, url: 'https://zalo.me/84919999781' },
+              { label: 'Fanpage', val: 'Follow me', icon: <Facebook size={18} />, url: 'https://www.facebook.com/4nhtran/' }
+            ].map((item, idx) => (
+              <a key={idx} href={item.url} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-3 group">
+                <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-gray-400 group-hover:bg-pink-500 group-hover:text-black group-hover:border-pink-500 transition-all">
+                  {item.icon}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-600 mb-0.5">{item.label}</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-gray-300 group-hover:text-white transition-colors">{item.val}</span>
+                </div>
+              </a>
+            ))}
           </div>
-          <p>© {new Date().getFullYear()} ANH.TRANVIET.</p>
+
+          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 pt-12 border-t border-white/5 opacity-50">
+            <span className="text-[10px] font-bold uppercase tracking-[0.4em]">
+              © {new Date().getFullYear()} Anh Tran Viet
+            </span>
+            <button 
+              onClick={() => scrollToSection('home')}
+              className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] hover:text-pink-500 transition-colors group"
+            >
+              Back to top <ArrowUp size={12} className="group-hover:-translate-y-1 transition-transform" />
+            </button>
+          </div>
         </div>
       </footer>
     </div>
