@@ -270,7 +270,7 @@ const CreditLoader = ({ onComplete }) => {
         <div className="flex justify-between w-full items-end gap-4">
             <div className="flex items-center gap-3">
                 <motion.img 
-                  src="https://i.ibb.co/qYVpRnX8/Logo-A.png" 
+                  src="/assets/logoa.png" 
                   alt="Logo" 
                   className="w-10 h-10 md:w-14 md:h-14 object-contain filter brightness-100"
                   animate={{ rotate: 360 }}
@@ -360,7 +360,7 @@ export default function App() {
       linkFavicon.rel = 'icon';
       document.head.appendChild(linkFavicon);
     }
-    linkFavicon.href = "https://i.ibb.co/qYVpRnX8/Logo-A.png";
+    linkFavicon.href = "/assets/logoa.png";
   }, []);
 
   useEffect(() => {
@@ -417,7 +417,7 @@ export default function App() {
       period: "2021 - 2025",
       role: "CEO",
       company: "Dự Án Việt Nam",
-      image: "https://i.ibb.co/4wHf7MLn/IMG-7762.jpg",
+      image: "/assets/1.jpeg",
       desc: "Kiến trúc sư trưởng cho hệ thống TMĐT xây dựng tiên phong duanvietnam.vn. Chịu trách nhiệm toàn diện từ chiến lược sản phẩm, vận hành đến tăng trưởng.",
       details: [
         "Hoạch định chiến lược kinh doanh, xây dựng sản phẩm lõi B2B/B2C.", 
@@ -433,7 +433,7 @@ export default function App() {
       period: "2020",
       role: "Phó BP.Online",
       company: "Hệ thống Nguyễn Văn Cừ",
-      image: "https://i.ibb.co/GhVKk41/c7f1becf306e6185a0a7324b11a94545.jpg",
+      image: "/assets/2.jpeg",
       desc: "Dẫn dắt công cuộc Chuyển đổi số toàn diện, đưa thương hiệu truyền thống lâu đời thâm nhập thị trường TMĐT.",
       details: [
         "Nghiên cứu thị trường, phân tích các lợi thế cạnh tranh để đề xuất lộ trình phát triển.", 
@@ -448,7 +448,7 @@ export default function App() {
       period: "2019",
       role: "Project Marketing",
       company: "LEGO Education",
-      image: "https://i.ibb.co/HThDHMF8/IMG-8232.jpg",
+      image: "/assets/3.jpeg",
       desc: "Triển khai mở rộng chuỗi hoạt động 'Educate Market', định hình tư duy phụ huynh về phương pháp giáo dục STEAM.",
       details: [
         "Tổ chức họp báo ra mắt sản phẩm chiến lược LEGO Education SPIKE Prime.", 
@@ -463,7 +463,7 @@ export default function App() {
       period: "2019",
       role: "Marketing Manager",
       company: "FitForce Fitness",
-      image: "https://i.ibb.co/RkBGSNz7/IMG-8231.jpg",
+      image: "/assets/4.jpeg",
       desc: "Kiến tạo trải nghiệm khách hàng và tối ưu hóa doanh thu dịch vụ cao cấp thông qua chiến lược KOLs và Event.",
       details: [
         "Xây dựng bộ máy vận hành: Thiết lập phòng ban Sales & Marketing chuyên nghiệp, quản lý ngân sách và điều phối KPI.", 
@@ -478,7 +478,7 @@ export default function App() {
       period: "2018",
       role: "Sales & Marketing",
       company: "Ambassador Hotel",
-      image: "https://i.ibb.co/HThDHMF8/IMG-8232.jpg",
+      image: "/assets/5.jpeg",
       desc: "Đặt nền móng thương hiệu cho chi nhánh mới tại TP.Vũng Tàu, khai thác thị trường khu vực trung tâm thành phố.",
       details: [
         "Phát triển song song 2 thương hiệu: Ambassador (Hotel) & Camellia (F&B).", 
@@ -495,154 +495,154 @@ const projects = [
     {
       title: "Đại diện thương hiệu",
       category: "Branding",
-      image: "https://i.ibb.co/V07s3kjs/HUY07053.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/6.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Dự Án Việt Nam nhận giải thưởng Top 10 Asia Top Brand Award 2024.",
       link: "https://www.facebook.com/reel/987442559539122"
     },
     {
       title: "Tư vấn chiến lược thương hiệu",
       category: "Marketing Strategy",
-      image: "https://i.ibb.co/SDMtCpzY/IMG-6606.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/7.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Định vị thương hiệu, xây dựng lộ trình phát triển nhân sự và chiến lược marketing dài hạn cho hệ thống Onsen Nhật.",
       link: "https://drive.google.com/drive/folders/18EePklHJB1nS5eMQ5oittod5AsQw58Cl?usp=sharing"
     },
     {
       title: "Đào tạo nhân sự",
       category: "Training",
-      image: "https://i.ibb.co/DDBmTJ6T/IMG-5500.avif?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/8.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Thiết kế bài giảng và tổ chức đào tạo cho sản phẩm chiến lược mới cho chuỗi Trung tâm Tiếng Anh khu vực miền Nam.",
       link: "https://docs.google.com/presentation/d/1jNi_LlrgeViBc2TIu6oEIoAqJzI2XyUd/edit?usp=sharing&ouid=116372570508469460772&rtpof=true&sd=true"
     },
    {
       title: "Tổ chức sự kiện",
       category: "Workshop",
-      image: "https://i.ibb.co/YF0gSDgp/IMG-2561.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/9.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Tổ chức workshop 'Marketing gắn liền với quản trị SME' khai thác nhóm khách hàng mục tiêu.",
       link: "https://www.facebook.com/share/v/1QjRa3wwj1"
     },
     {
       title: "Tư vấn chiến lược thương hiệu",
       category: "Marketing Strategy",
-      image: "https://i.ibb.co/DfjXRKqH/463606762-1116268483834789-7250201260302132560-n.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/10.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Tư vấn tái định vị thương hiệu, xây dựng chiến lược marketing và kế hoạch ra mắt các dòng sản phẩm mới, đồng thời phát triển thương hiệu cá nhân bà Huynh.",
       link: "https://drive.google.com/file/d/1sAqQLPlSmI2lQS23BAo8UpKlZ1-SZZdE/view?usp=sharing"
     },
     {
       title: "Chuyển đổi số Xây dựng",
       category: "Event",
-      image: "https://i.ibb.co/Y4K5m10M/picture1-17405408.webp?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/11.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Giới thiệu gói giải pháp 'Ứng dụng nền tảng TMĐT vào ngành xây dựng' tại sự kiện.",
       link: "https://baoxaydung.vn/du-an-viet-nam-lan-song-moi-thuong-mai-dien-tu-nganh-xay-dung-1926868376281.htm"
     },
     {
       title: "Chuyển đổi số Nhà sách",
       category: "Transformation",
-      image: "https://i.ibb.co/B2nMgjhG/nh-m-n-h-nh-2026-02-14-l-c-20-49-31.png?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/12.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Xây dựng hệ thống TMĐT đa kênh, logistics, quản lý kho bằng phần mềm, hợp tác các nhãn hàng, NXB mới, triển khai social media cho hệ thống.",
       link: "https://nhasachnguyenvancu.vn/"
     },
     {
       title: "Chuyển đổi số Giáo dục",
       category: "Transformation",
-      image: "https://i.ibb.co/0yLfzqfg/2020-03-13-001.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/13.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Sản xuất và phát hành series 'HỌC LÀM NHÀ PHÁT MINH CÔNG NGHỆ VỚI LEGO SPIKE PRIME'.",
       link: "https://www.youtube.com/playlist?list=PLoVM1h2NMGedtN4dGV13m0WFEulBF3JKB"
     },
     {
       title: "Xây dựng và vận hành hệ thống bán lẻ",
       category: "Ecommerce",
-      image: "https://i.ibb.co/K8x5Jyj/326804800-841212936980388-1635642820059160142-n.png?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/14.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Xây dựng hệ thống TMĐT đa kênh, bộ nhận diện thương hiệu, website và đội ngũ marketing mới cho doanh nghiệp.",
       link: "https://www.facebook.com/congtyquatangata"
     },
     {
       title: "Setup nhà hàng",
       category: "F&B",
-      image: "https://i.ibb.co/VcgWk92K/2018-09-12-003.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/15.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Triển khai xây dựng ý tưởng nhà hàng ăn vặt đầu tiên tại Vũng Tàu.",
       link: "https://www.tripadvisor.com.vn/Restaurant_Review-g303946-d14948011-Reviews-Camellia_Coffee_Restaurant-Vung_Tau_Ba_Ria_Vung_Tau_Province.html"
     },    
     {
       title: "Khách mời Podcast",
       category: "Podcast",
-      image: "https://i.ibb.co/9HdPTVNT/Xem-nh-g-n-y.png?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/16.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Chia sẻ câu chuyện khởi nghiệp Dự Án Việt Nam, personal branding",
       link: "https://drive.google.com/file/d/1ly37dJYfFfn50gHxCLItw37oWYm5Sssc/view?usp=sharing"
     },
     {
       title: "Tài trợ sự kiện",
       category: "Event",
-      image: "https://i.ibb.co/xbQBm3j/H-nh-nh-1.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/17.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Tổ chức gian hàng tại 'Vietbuild 2024', giới thiệu giải pháp & khai thác khách hàng tiềm năng.",
       link: "https://www.tiktok.com/@duanvietnam/video/7385468335833599239"
     },
     {
       title: "Tài trợ sự kiện",
       category: "Event",
-      image: "https://i.ibb.co/6cfN3ZGd/IMG-1766.avif?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/18.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Tổ chức gian hàng tại 'Kết nối giao thương CLB doanh nhân trẻ TP HCM', giới thiệu giải pháp & khai thác khách hàng tiềm năng.",
       link: "https://www.facebook.com/share/v/14aGWYWH5LJ"
     },
     {
       title: "Tổ chức sự kiện",
       category: "Workshop",
-      image: "https://i.ibb.co/hFMbfyHP/DSC05937.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/19.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Tổ chức workshop 'Xây dựng & quản trị doanh nghiệp theo khoa học phong thuỷ', go viral trên các kênh social.",
       link: "https://www.tiktok.com/@duanvietnam/video/7405381047292103956"
     },
     {
       title: "Tổ chức sự kiện",
       category: "Workshop",
-      image: "https://i.ibb.co/WjZGrYG/NAK-6356.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/20.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Tổ chức sự kiện 'Tầm quan trọng của đấu thầu đối với sinh viên ngành xây dựng' tại HUTECH, branding & trust",
       link: "https://www.hutech.edu.vn/homepage/tin-tuc/hoat-dong-sinh-vien/14612371-sinh-vien-nganh-xay-dung-hutech-tim-hieu-co-hoi-nghe-nghiep-ve-dau-thau-qua-mang-cung-chuyen-gia"
     },
     {
       title: "Khách mời Podcast",
       category: "Podcast",
-      image: "https://i.ibb.co/HDVH43Kn/H-nh-nh.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/21.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Tham gia 'Podcast Nhảy việc cuối năm hay chờ thưởng Tết', go viral nhờ chủ đề tranh cãi & đúng thời điểm",
       link: "https://www.youtube.com/watch?v=P0pekIKb1I0$0"
     },
     {
       title: "Tài trợ sự kiện",
       category: "Event",
-      image: "https://i.ibb.co/SXcky3FK/IMG-8747.avif?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/22.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "NTT Kim Cương - Giải Tenis Doanh nhân Lan Anh 2022, thu hút khách hàng tiềm năng tham gia giải",
       link: "https://www.facebook.com/share/p/17BhWsc9oJ/"
     },
     {
       title: "Tổ chức sự kiện",
       category: "Event",
-      image: "https://i.ibb.co/TBbkf6B6/475875893-946567974248849-5401705813596239019-n.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/23.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Sự kiện trải nghiệm thu hút nhiều lượt quan tâm, go viral nhờ chủ đề được quan tâm và đánh giá cao.",
       link: "https://www.tiktok.com/@duanvietnam/video/7331738767734115586"
     },
     {
       title: "Dự án quà Tết 2024",
       category: "Branding",
-      image: "https://i.ibb.co/DH1dXpMR/476118625-946048054300841-4916888734441721401-n.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/24.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Dự án quà tặng độc đáo đầy ý nghĩa từ đội ngũ Dự Án Việt Nam, khai thác nhóm khách hàng trung thành",
       link: "https://www.youtube.com/watch?v=gtelaltr2kg"
     },
     {
       title: "Sản xuất Campaign",
       category: "Campaign",
-      image: "https://i.ibb.co/1G1Jbtk2/475295641-939901134915533-2582455679541459243-n.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/25.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Campaign tuyển dụng thu hút CTV xây dựng nhờ nội dung vui nhộn bắt trend, target nhóm người nội trợ",
       link: "https://www.facebook.com/reel/1173113730744110"
     },
     {
       title: "Sản xuất Podcast",
       category: "Podcast",
-      image: "https://i.ibb.co/PGytWkpy/476025777-946034737635506-7400360316311342076-n.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/26.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Sản xuất 'Podcast Xây nhà cuối năm', go viral nhờ chủ đề tranh cãi & đúng thời điểm, đánh đúng đối tượng mục tiêu",
       link: "https://www.youtube.com/watch?v=XttzQ1aUcIo"
     },
     {
       title: "Sản xuất Media",
       category: "Branding",
-      image: "https://i.ibb.co/qYZ9Svjq/476128433-946058190966494-8179110441562004188-n.jpg?auto=format&fit=crop&q=80&w=1200",
+      image: "/assets/27.jpeg?auto=format&fit=crop&q=80&w=1200",
       description: "Xây dựng hình ảnh Dự Án Việt Nam thông qua những 'Video revew thành phẩm' chất lượng cao được đầu tư quay dựng bài bản, branding & trust",
       link: "https://www.youtube.com/watch?v=xvJmW73i9DE$0"
     }
@@ -683,7 +683,7 @@ const projects = [
         >
           <div className="relative w-8 h-8 md:w-10 md:h-10 overflow-hidden flex items-center justify-center">
             <img 
-              src="https://i.ibb.co/qYVpRnX8/Logo-A.png" 
+              src="/assets/logoa.png" 
               alt="Logo" 
               className="w-full h-full object-contain filter brightness-100 contrast-125"
             />
