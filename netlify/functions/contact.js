@@ -1,31 +1,17 @@
-import http from 'node:http';
-import fs from 'node:fs';
-import path from 'node:path';
 import nodemailer from 'nodemailer';
 import process from 'node:process';
 
-const loadEnvFile = () => {
-  const envPath = path.resolve(process.cwd(), '.env');
-  if (!fs.existsSync(envPath)) return;
+const CONTACT_TO = process.env.CONTACT_TO || '4nhtran@gmail.com';
 
-  const lines = fs.readFileSync(envPath, 'utf8').split('\n');
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const splitIdx = trimmed.indexOf('=');
-    if (splitIdx <= 0) continue;
-    const key = trimmed.slice(0, splitIdx).trim();
-    const value = trimmed.slice(splitIdx + 1).trim();
-    if (!process.env[key]) {
-      process.env[key] = value;
-    }
-  }
+const headers = {
+  'Content-Type': 'application/json; charset=utf-8',
 };
 
-loadEnvFile();
-
-const PORT = Number(process.env.PORT || 8787);
-const CONTACT_TO = process.env.CONTACT_TO || '4nhtran@gmail.com';
+const json = (statusCode, payload) => ({
+  statusCode,
+  headers,
+  body: JSON.stringify(payload),
+});
 
 const escapeHtml = (value = '') =>
   value
@@ -35,29 +21,6 @@ const escapeHtml = (value = '') =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
-const readJsonBody = (req) =>
-  new Promise((resolve, reject) => {
-    let raw = '';
-
-    req.on('data', (chunk) => {
-      raw += chunk;
-      if (raw.length > 1_000_000) {
-        reject(new Error('PAYLOAD_TOO_LARGE'));
-        req.destroy();
-      }
-    });
-
-    req.on('end', () => {
-      try {
-        resolve(raw ? JSON.parse(raw) : {});
-      } catch {
-        reject(new Error('INVALID_JSON'));
-      }
-    });
-
-    req.on('error', reject);
-  });
-
 const buildTransport = () => {
   const service = process.env.SMTP_SERVICE;
   const host = process.env.SMTP_HOST;
@@ -66,9 +29,7 @@ const buildTransport = () => {
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
-  if (!user || !pass) {
-    throw new Error('SMTP_AUTH_MISSING');
-  }
+  if (!user || !pass) throw new Error('SMTP_AUTH_MISSING');
 
   if (service) {
     return nodemailer.createTransport({
@@ -77,9 +38,7 @@ const buildTransport = () => {
     });
   }
 
-  if (!host) {
-    throw new Error('SMTP_HOST_MISSING');
-  }
+  if (!host) throw new Error('SMTP_HOST_MISSING');
 
   return nodemailer.createTransport({
     host,
@@ -89,31 +48,17 @@ const buildTransport = () => {
   });
 };
 
-const sendJson = (res, statusCode, payload) => {
-  res.writeHead(statusCode, {
-    'Content-Type': 'application/json; charset=utf-8',
-  });
-  res.end(JSON.stringify(payload));
-};
-
-const server = http.createServer(async (req, res) => {
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    });
-    res.end();
-    return;
+export const handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers };
   }
 
-  if (req.url !== '/api/contact' || req.method !== 'POST') {
-    sendJson(res, 404, { error: 'NOT_FOUND' });
-    return;
+  if (event.httpMethod !== 'POST') {
+    return json(405, { error: 'METHOD_NOT_ALLOWED' });
   }
 
   try {
-    const body = await readJsonBody(req);
+    const body = JSON.parse(event.body || '{}');
 
     const name = String(body.name || '').trim();
     const brand = String(body.brand || '').trim();
@@ -121,19 +66,17 @@ const server = http.createServer(async (req, res) => {
     const message = String(body.message || '').trim();
 
     if (!name || !brand || !email || !message) {
-      sendJson(res, 400, { error: 'MISSING_FIELDS' });
-      return;
+      return json(400, { error: 'MISSING_FIELDS' });
     }
 
     const transporter = buildTransport();
     const from = process.env.SMTP_FROM || process.env.SMTP_USER;
 
-    const now = new Date();
     const sentAt = new Intl.DateTimeFormat('vi-VN', {
       dateStyle: 'full',
       timeStyle: 'medium',
       timeZone: 'Asia/Ho_Chi_Minh',
-    }).format(now);
+    }).format(new Date());
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 760px; margin: 0 auto; color: #111827;">
@@ -171,14 +114,10 @@ const server = http.createServer(async (req, res) => {
       html,
     });
 
-    sendJson(res, 200, { ok: true });
+    return json(200, { ok: true });
   } catch (error) {
     const detail = error instanceof Error ? error.message : 'UNKNOWN';
-    console.error('[contact-api]', error);
-    sendJson(res, 500, { error: 'SEND_FAILED', detail });
+    console.error('[netlify-contact-function]', error);
+    return json(500, { error: 'SEND_FAILED', detail });
   }
-});
-
-server.listen(PORT, () => {
-  console.log(`[contact-api] running at http://localhost:${PORT}`);
-});
+};

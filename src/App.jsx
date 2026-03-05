@@ -744,7 +744,11 @@ export default function App() {
   const [activeServiceIdx, setActiveServiceIdx] = useState(0);
   const activeServiceIdxRef = useRef(0);
   const [openWorkIdx, setOpenWorkIdx] = useState(null);
+  const openWorkIdxRef = useRef(null);
   const workSwipeRef = useRef({ startX: 0, startY: 0, moved: false });
+  const worksOuterRef = useRef(null);
+  const workCardRefs = useRef([]);
+  const worksSectionRef = useRef(null);
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
@@ -796,44 +800,47 @@ export default function App() {
     const inner = servicesInnerRef.current;
     if (!outer || !inner) return;
 
-    const getInsets = () => {
+    const state = {
+      mode: null,
+      left: null,
+      width: null,
+      insetsLeft: 0,
+      insetsRight: 0,
+    };
+
+    const updateInsets = () => {
       const styles = window.getComputedStyle(outer);
-      return {
-        left: Number.parseFloat(styles.paddingLeft || '0') || 0,
-        right: Number.parseFloat(styles.paddingRight || '0') || 0,
-      };
+      state.insetsLeft = Number.parseFloat(styles.paddingLeft || '0') || 0;
+      state.insetsRight = Number.parseFloat(styles.paddingRight || '0') || 0;
     };
 
-    const applyAbsoluteTop = () => {
-      const insets = getInsets();
+    const applyPosition = (mode, rect) => {
+      if (mode === 'fixed') {
+        const left = Math.round((rect.left + state.insetsLeft) * 10) / 10;
+        const width = Math.round((rect.width - state.insetsLeft - state.insetsRight) * 10) / 10;
+        if (state.mode === mode && state.left === left && state.width === width) return;
+        state.mode = mode;
+        state.left = left;
+        state.width = width;
+        inner.style.position = 'fixed';
+        inner.style.top = '0';
+        inner.style.bottom = 'auto';
+        inner.style.left = `${left}px`;
+        inner.style.right = 'auto';
+        inner.style.width = `${width}px`;
+        return;
+      }
+
+      if (state.mode === mode) return;
+      state.mode = mode;
+      state.left = null;
+      state.width = null;
       inner.style.position = 'absolute';
-      inner.style.top = '0';
-      inner.style.bottom = 'auto';
-      inner.style.left = `${insets.left}px`;
-      inner.style.right = `${insets.right}px`;
+      inner.style.left = `${state.insetsLeft}px`;
+      inner.style.right = `${state.insetsRight}px`;
       inner.style.width = 'auto';
-    };
-
-    const applyAbsoluteBottom = () => {
-      const insets = getInsets();
-      inner.style.position = 'absolute';
-      inner.style.top = 'auto';
-      inner.style.bottom = '0';
-      inner.style.left = `${insets.left}px`;
-      inner.style.right = `${insets.right}px`;
-      inner.style.width = 'auto';
-    };
-
-    const applyFixed = (rect) => {
-      const insets = getInsets();
-      const left = Math.max(rect.left + insets.left, 0);
-      const width = Math.max(rect.width - insets.left - insets.right, 0);
-      inner.style.position = 'fixed';
-      inner.style.top = '0';
-      inner.style.bottom = 'auto';
-      inner.style.left = `${left}px`;
-      inner.style.right = 'auto';
-      inner.style.width = `${width}px`;
+      inner.style.top = mode === 'top' ? '0' : 'auto';
+      inner.style.bottom = mode === 'bottom' ? '0' : 'auto';
     };
 
     const updatePin = () => {
@@ -842,11 +849,11 @@ export default function App() {
       const end = rect.bottom - window.innerHeight;
 
       if (start <= 0 && end >= 0) {
-        applyFixed(rect);
+        applyPosition('fixed', rect);
       } else if (start > 0) {
-        applyAbsoluteTop();
+        applyPosition('top', rect);
       } else {
-        applyAbsoluteBottom();
+        applyPosition('bottom', rect);
       }
     };
 
@@ -859,13 +866,19 @@ export default function App() {
       });
     };
 
+    const onResize = () => {
+      updateInsets();
+      onScroll();
+    };
+
+    updateInsets();
     updatePin();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', onResize);
 
     return () => {
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('resize', onResize);
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, []);
@@ -941,7 +954,7 @@ export default function App() {
       if (code === 'SMTP_NOT_CONFIGURED') {
         setSubmitError('Server email chưa cấu hình SMTP. Vui lòng cập nhật file .env.');
       } else if (code === 'Failed to fetch') {
-        setSubmitError('Không kết nối được API. Hãy chạy backend bằng npm run dev:server.');
+        setSubmitError('Không kết nối được dịch vụ gửi form. Vui lòng thử lại sau.');
       } else {
         setSubmitError('Không thể gửi lúc này. Vui lòng thử lại sau.');
       }
@@ -1049,6 +1062,10 @@ export default function App() {
     }, 100);
   }, [scrollToSection]);
 
+  useEffect(() => {
+    openWorkIdxRef.current = openWorkIdx;
+  }, [openWorkIdx]);
+
   const handleWorkTouchStart = useCallback((e) => {
     const touch = e.touches?.[0];
     if (!touch) return;
@@ -1073,6 +1090,43 @@ export default function App() {
     setOpenWorkIdx((prev) => (prev === idx ? null : idx));
   }, []);
 
+  useEffect(() => {
+    const container = worksOuterRef.current;
+    if (!container) return;
+
+    let raf = null;
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = null;
+        const center = container.scrollLeft + container.clientWidth / 2;
+        let nextIdx = null;
+        let minDistance = Number.POSITIVE_INFINITY;
+
+        workCardRefs.current.forEach((card, idx) => {
+          if (!card) return;
+          const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+          const distance = Math.abs(cardCenter - center);
+          if (distance < minDistance) {
+            minDistance = distance;
+            nextIdx = idx;
+          }
+        });
+
+        if (nextIdx !== null && nextIdx !== openWorkIdxRef.current) {
+          openWorkIdxRef.current = nextIdx;
+          setOpenWorkIdx(nextIdx);
+        }
+      });
+    };
+
+    container.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      container.removeEventListener('scroll', onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, []);
+
   const navItems = useMemo(
     () => [
       { label: 'Home', id: 'home' },
@@ -1083,6 +1137,15 @@ export default function App() {
     ],
     []
   );
+
+  const worksInView = useInView(worksSectionRef, { once: true, margin: '-20% 0px -20% 0px' });
+
+  useEffect(() => {
+    if (worksInView && openWorkIdxRef.current === null) {
+      openWorkIdxRef.current = 0;
+      setOpenWorkIdx(0);
+    }
+  }, [worksInView]);
 
   const serviceCards = useMemo(
     () =>
@@ -1112,7 +1175,13 @@ export default function App() {
       PROJECTS.map((p, idx) => {
         const isOpen = openWorkIdx === idx;
         return (
-          <article key={p.title} className="group shrink-0 w-[78%] sm:w-[68%] md:w-[52%] lg:w-[46%] xl:w-[44%] snap-center lg:snap-start will-change-transform">
+          <article
+            key={p.title}
+            ref={(el) => {
+              workCardRefs.current[idx] = el;
+            }}
+            className="group shrink-0 w-[78%] sm:w-[68%] md:w-[52%] lg:w-[46%] xl:w-[44%] snap-center lg:snap-start will-change-transform"
+          >
             <div className="rounded-[22px] md:rounded-[24px] overflow-visible bg-transparent h-auto flex flex-col transition-[transform] duration-300">
               <div
                 className={`relative w-full transition-[aspect-ratio,transform] duration-300 ${
@@ -1134,7 +1203,7 @@ export default function App() {
                   <img
                     src={p.image}
                     alt={p.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full max-w-full max-h-full object-cover"
                     loading="lazy"
                     decoding="async"
                     draggable={false}
@@ -1280,27 +1349,31 @@ export default function App() {
           >
             <motion.div 
               initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-              className="max-w-6xl w-full h-[100dvh] md:h-[86vh] grid grid-rows-[auto,1fr] md:grid-cols-2 md:grid-rows-1 gap-6 md:gap-10 items-stretch bg-white/5 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 overflow-hidden"
+              className="max-w-5xl w-full h-[calc(100dvh-2rem)] max-h-[calc(100dvh-2rem)] md:h-[calc(100dvh-4rem)] md:max-h-[calc(100dvh-4rem)] grid grid-rows-[auto,minmax(0,1fr)] gap-4 md:gap-6 bg-white/5 p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <div className="rounded-2xl md:rounded-3xl overflow-hidden aspect-[4/3] bg-white/5">
-                <img src={selectedExp.image} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
-              </div>
-              <div className="flex flex-col h-full justify-between py-1 md:py-4 text-left min-h-0">
-                <div className="min-h-0 overflow-y-auto pr-1 md:pr-2">
-                  <span className="text-pink-500 font-mono text-[10px] md:text-sm uppercase tracking-widest mb-2 md:mb-4 block">{selectedExp.period}</span>
-                  <h2 className="text-3xl md:text-7xl font-black uppercase mb-2 md:mb-4 leading-tight tracking-tighter">{selectedExp.role}</h2>
-                  <p className="text-lg md:text-2xl font-bold text-gray-400 mb-4 md:mb-6">{selectedExp.company}</p>
-                  <div className="space-y-3 md:space-y-5 mb-4 md:mb-8">
-                     <p className="text-gray-300 italic text-base md:text-lg leading-relaxed">{selectedExp.desc}</p>
-                     <div className="space-y-2 md:space-y-3">
-                        {selectedExp.details.map((detail, idx) => (
-                           <div key={idx} className="flex gap-3 text-sm md:text-base text-gray-400 items-start">
-                              <CheckCircle2 size={18} className="text-pink-500 shrink-0 mt-0.5" />
-                              <span>{detail}</span>
-                           </div>
-                        ))}
-                     </div>
+              <div className="flex flex-col h-full justify-between py-0.5 md:py-1 text-left min-h-0 min-w-0">
+                <div className="min-h-0 flex flex-col gap-4 md:gap-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start">
+                    <div className="rounded-2xl md:rounded-3xl overflow-hidden aspect-[5/3] md:aspect-[16/10] h-auto max-h-[28vh] md:max-h-[34vh] bg-white/5 min-w-0 min-h-0 shrink-0">
+                      <img src={selectedExp.image} alt="" className="w-full h-full max-w-full max-h-full object-cover" loading="lazy" decoding="async" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-pink-500 font-mono text-[10px] md:text-sm uppercase tracking-widest mb-2 md:mb-4 block">{selectedExp.period}</span>
+                      <h2 className="text-3xl md:text-5xl font-black uppercase mb-2 md:mb-4 leading-tight tracking-tighter">{selectedExp.role}</h2>
+                      <p className="text-lg md:text-2xl font-bold text-gray-400 mb-3 md:mb-5">{selectedExp.company}</p>
+                      <p className="text-gray-300 italic text-base md:text-lg leading-relaxed">{selectedExp.desc}</p>
+                    </div>
+                  </div>
+                  <div className="min-h-0 overflow-y-auto pr-1 md:pr-2 scrollbar-hide">
+                    <div className="space-y-2 md:space-y-3">
+                      {selectedExp.details.map((detail, idx) => (
+                        <div key={idx} className="flex gap-3 text-sm md:text-base text-gray-400 items-start">
+                          <CheckCircle2 size={18} className="text-pink-500 shrink-0 mt-0.5" />
+                          <span>{detail}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 pt-4 md:pt-6 border-t border-white/10">
@@ -1348,7 +1421,7 @@ export default function App() {
               onClick={e => e.stopPropagation()}
             >
               <div className="rounded-2xl overflow-hidden aspect-[4/5] bg-white/5">
-                <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-full max-w-full max-h-full object-cover" loading="lazy" decoding="async" />
               </div>
               <div className="flex flex-col h-full justify-center text-left">
                 <span className="text-pink-500 font-mono text-[10px] md:text-sm uppercase tracking-widest mb-2 block">{selectedProject.category}</span>
@@ -1427,7 +1500,7 @@ export default function App() {
               <div className="pt-6 md:pt-8">
                 <SectionTitle title="Expertise" subtitle="Services" />
               </div>
-              <motion.div style={{ x: servicesX }} className="flex">
+              <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex">
                 {serviceCards}
               </motion.div>
 
@@ -1469,12 +1542,13 @@ export default function App() {
       </section>
 
       {/* WORKS SECTION */}
-      <section id="works" className="py-24 md:py-40 bg-white text-black relative z-10">
+      <section id="works" ref={worksSectionRef} className="py-24 md:py-40 bg-white text-black relative z-10">
         <SectionTransitionGlow light />
         <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4 md:pt-6">
           <SectionTitle title="The Works" subtitle="Gallery" dark={true} subtitleClassName="text-purple-500" />
 
           <div
+            ref={worksOuterRef}
             className="mt-12 md:mt-16 overflow-x-auto scrollbar-hide snap-x snap-mandatory touch-auto"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
