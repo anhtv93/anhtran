@@ -636,27 +636,71 @@ const FloatingAction = ({ children, distance = 4, duration = 2.8 }) => (
   </motion.div>
 );
 
+const ORBIT_DEGS = [45, 135, 225, 315];
+const HUD_GLYPHS = ['Δ', 'Σ', '⊗', '⎔'];
+
 const CreditLoader = ({ onComplete }) => {
-  const keywords = ["Strategy", "Growth", "Creative", "Data"];
+  const LOADER_DURATION = 3360;
+  const logoParts = [
+    { key: "a", title: "(A) - Anh.TranViet", iconSrc: "/assets/loader/part-1.png" },
+    { key: "strategy", title: "Strategy", iconSrc: "/assets/loader/part-2.png" },
+    { key: "creative", title: "Growth", iconSrc: "/assets/loader/part-3.png" },
+    { key: "growth", title: "(#FFFF00) - Creative", iconSrc: "/assets/loader/part-4.png" },
+  ];
   const [progress, setProgress] = useState(0);
+  const progressRef = useRef(0);
+  const layout = useMemo(() => {
+    const rows = [12, 34, 56, 78];
+    const sides = ['left', 'right', 'left', 'right'];
+    const shuffle = (arr) => {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    };
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const shuffledRows = shuffle(rows);
+    const shuffledSides = shuffle(sides);
+
+    return logoParts.map((_, idx) => {
+      const baseTop = shuffledRows[idx];
+      const topJitter = (Math.random() * 8) - 4;
+      const top = clamp(baseTop + topJitter, 10, 86);
+      const side = shuffledSides[idx];
+      const baseLeft = side === 'left' ? 22 : 78;
+      const leftJitter = (Math.random() * 6) - 3;
+      const left = clamp(baseLeft + leftJitter, 12, 88);
+      return { top, left, side };
+    });
+  }, []);
 
   useEffect(() => {
-    const duration = 2800; 
-    const interval = 20;
-    const step = 100 / (duration / interval);
-    
-    const timer = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          return 100;
-        }
-        return prev + step;
-      });
-    }, interval);
+    let raf = null;
+    const start = performance.now();
 
-    return () => clearInterval(timer);
-  }, []);
+    const tick = (t) => {
+      const ratio = Math.min((t - start) / LOADER_DURATION, 1);
+      const next = Math.round(ratio * 100);
+      if (next !== progressRef.current) {
+        progressRef.current = next;
+        setProgress(next);
+      }
+      if (ratio < 1) {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => raf && cancelAnimationFrame(raf);
+  }, [LOADER_DURATION]);
+
+  useEffect(() => {
+    const extra = 600; // allow text scan to finish
+    const t = setTimeout(onComplete, LOADER_DURATION + extra);
+    return () => clearTimeout(t);
+  }, [onComplete, LOADER_DURATION]);
   
   return (
     <motion.div 
@@ -665,27 +709,162 @@ const CreditLoader = ({ onComplete }) => {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-between py-24 md:py-32 overflow-hidden"
     >
-      <div className="relative flex-1 w-full flex flex-col items-center justify-center overflow-hidden">
-        <div className="relative h-[200px] md:h-[300px] flex flex-col items-center">
-          {keywords.map((word, i) => (
+      <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
+        <div className="relative w-full max-w-5xl h-[56vh] min-h-[360px] md:min-h-[460px] px-4 md:px-6">
+          <div className="absolute inset-0 -z-10 opacity-[0.22] [mask-image:radial-gradient(circle_at_center,black,transparent_70%)]" aria-hidden="true">
+            <div
+              className="w-full h-full"
+              style={{
+                backgroundImage:
+                  'radial-gradient(circle at 20% 20%, rgba(236,72,153,0.25), transparent 55%), radial-gradient(circle at 80% 80%, rgba(236,72,153,0.2), transparent 45%), linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)',
+                backgroundSize: '100% 100%, 100% 100%, 28px 28px, 28px 28px',
+              }}
+            />
+          </div>
+          <motion.div
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-400/70 to-transparent"
+            animate={{ y: ['-10%', '110%'] }}
+            transition={{ duration: 3.4, repeat: Infinity, ease: "linear" }}
+          />
+
+          <div className="absolute inset-0 flex items-center justify-center">
+            {ORBIT_DEGS.map((deg, idx) => (
+              <motion.div
+                key={`cone-${deg}`}
+                aria-hidden="true"
+                className="absolute left-1/2 top-1/2 w-[18vw] md:w-[160px] h-[16vw] md:h-[140px] origin-left"
+                style={{
+                  transform: `rotate(${deg}deg)`,
+                  clipPath: 'polygon(0 50%, 100% 0, 100% 100%)',
+                  background: 'linear-gradient(90deg, rgba(236,72,153,0.2) 0%, rgba(236,72,153,0.05) 70%, transparent 100%)',
+                }}
+                animate={{ opacity: [0.15, 0.6, 0.15] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: idx * 0.2 }}
+              />
+            ))}
+
             <motion.div
-              key={word}
-              initial={{ y: 350, opacity: 0 }}
-              animate={{ y: -350, opacity: [0, 1, 1, 0] }}
-              transition={{ 
-                duration: 2.8, 
-                delay: i * 0.5, 
-                ease: "easeInOut",
-                times: [0, 0.25, 0.75, 1]
-              }}
-              onAnimationComplete={() => {
-                if (i === keywords.length - 1) {
-                  setTimeout(onComplete, 400);
-                }
-              }}
-              className="absolute text-5xl md:text-9xl font-black uppercase tracking-tighter text-white"
+              aria-hidden="true"
+              className="absolute left-1/2 top-1/2 w-[52%] h-[52%] rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
             >
-              {word}
+              {ORBIT_DEGS.map((deg, idx) => (
+                <motion.span
+                  key={`orbit-${deg}`}
+                  className="absolute left-1/2 top-1/2 h-2 w-2 rounded-full bg-pink-400/80 shadow-[0_0_12px_rgba(236,72,153,0.8)]"
+                  style={{ transform: `rotate(${deg}deg) translateX(48%)` }}
+                  animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut", delay: idx * 0.2 }}
+                />
+              ))}
+            </motion.div>
+            <motion.div
+              aria-hidden="true"
+              className="absolute w-[62%] h-[62%] rounded-full border border-pink-400/30"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.div
+              aria-hidden="true"
+              className="absolute w-[46%] h-[46%] rounded-full border border-pink-400/20"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            />
+
+            
+
+            <div className="relative">
+              <div className="absolute -inset-10 rounded-full bg-pink-500/15 blur-[80px]" aria-hidden="true" />
+              <motion.div
+                className="relative w-20 h-20 md:w-28 md:h-28 rounded-2xl border border-pink-500/50 bg-black/60 flex items-center justify-center overflow-hidden"
+                animate={{ boxShadow: ['0 0 0px rgba(236,72,153,0.0)', '0 0 34px rgba(236,72,153,0.5)', '0 0 0px rgba(236,72,153,0.0)'] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <div className="absolute inset-2 rounded-xl border border-pink-500/25" />
+                <div className="absolute inset-4 rounded-lg border border-pink-500/15" />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:16px_16px] opacity-[0.25]" />
+                <motion.div
+                  aria-hidden="true"
+                  className="absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-pink-400/35 to-transparent"
+                  animate={{ x: ['-40%', '140%'] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "linear" }}
+                />
+                <div className="absolute left-1/2 top-0 h-full w-px bg-pink-400/20" />
+                <div className="absolute top-1/2 left-0 h-px w-full bg-pink-400/20" />
+                <img src="/assets/loader/part-0.png" alt="Logo" className="w-12 h-12 md:w-20 md:h-20 object-contain relative z-10" />
+              </motion.div>
+              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] md:text-[10px] font-mono uppercase tracking-[0.4em] text-gray-500">
+                Core Logo
+              </div>
+            </div>
+          </div>
+
+          {logoParts.map((part, i) => {
+            const reverse = layout[i]?.side === 'left';
+            return (
+              <motion.div
+                key={part.key}
+                initial={{ opacity: 0, scale: 0.96, y: 6 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute w-[42vw] max-w-[230px] md:max-w-[320px] -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  left: `${layout[i]?.left ?? 50}%`,
+                  top: `${layout[i]?.top ?? 50}%`,
+                }}
+              >
+                <div className={`relative flex items-center gap-2.5 md:gap-4 ${reverse ? 'flex-row-reverse text-right' : ''}`}>
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                    className="inline-flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full border border-pink-400/60 bg-black/40 overflow-hidden shadow-[0_0_20px_rgba(236,72,153,0.6)] shrink-0 aspect-square"
+                  >
+                    <img
+                      src={part.iconSrc}
+                      alt=""
+                      className="w-full h-full object-cover object-center rounded-full brightness-110 contrast-110"
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                    />
+                  </motion.span>
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 + i * 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className={`relative px-1.5 py-0.5 ${reverse ? 'items-end' : 'items-start'}`}
+                  >
+                    <span className="text-[1.15rem] md:text-[1.9rem] font-black uppercase tracking-tighter text-white leading-none">
+                      {part.title}
+                    </span>
+                    <motion.span
+                      aria-hidden="true"
+                      className="absolute inset-0 rounded-md bg-[linear-gradient(90deg,transparent,rgba(236,72,153,0.28),transparent)] opacity-0"
+                      animate={{ x: ['-120%', '120%'], opacity: [0, 0.7, 0] }}
+                      transition={{ duration: 1.6, repeat: Infinity, ease: "linear", delay: i * 0.25 }}
+                    />
+                    <span className="absolute left-0 -bottom-1 h-px w-full bg-pink-400/40" />
+                  </motion.div>
+                </div>
+              </motion.div>
+            );
+          })}
+          {HUD_GLYPHS.map((glyph, i) => (
+            <motion.div
+              key={`glyph-${glyph}`}
+              aria-hidden="true"
+              className="absolute left-1/2 top-1/2 text-pink-300/70 text-xs md:text-sm font-mono"
+              animate={{
+                x: i === 0 ? [-10, -120] : i === 1 ? [10, 120] : i === 2 ? [-10, -120] : [10, 120],
+                y: i < 2 ? [-10, -80] : [10, 80],
+                opacity: [0, 1, 0],
+              }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
+            >
+              {glyph}
             </motion.div>
           ))}
         </div>
