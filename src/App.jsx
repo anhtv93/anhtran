@@ -650,7 +650,7 @@ const CreditLoader = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
   const progressRef = useRef(0);
   const layout = useMemo(() => {
-    const rows = [12, 34, 56, 78];
+    const rows = [22, 40, 60, 78];
     const sides = ['left', 'right', 'left', 'right'];
     const shuffle = (arr) => {
       const copy = [...arr];
@@ -664,14 +664,25 @@ const CreditLoader = ({ onComplete }) => {
     const shuffledRows = shuffle(rows);
     const shuffledSides = shuffle(sides);
 
+    const isNearCenter = (top, left) => {
+      const dx = left - 50;
+      const dy = top - 50;
+      return Math.hypot(dx, dy) < 20;
+    };
+
     return logoParts.map((_, idx) => {
       const baseTop = shuffledRows[idx];
-      const topJitter = (Math.random() * 8) - 4;
-      const top = clamp(baseTop + topJitter, 10, 86);
+      const topJitter = (Math.random() * 6) - 3;
+      const top = clamp(baseTop + topJitter, 18, 84);
       const side = shuffledSides[idx];
-      const baseLeft = side === 'left' ? 22 : 78;
-      const leftJitter = (Math.random() * 6) - 3;
-      const left = clamp(baseLeft + leftJitter, 12, 88);
+      const baseLeft = side === 'left' ? 25 : 75;
+      const leftJitter = (Math.random() * 4) - 2;
+      const left = clamp(baseLeft + leftJitter, 22, 78);
+      if (isNearCenter(top, left)) {
+        const bumpedLeft = clamp(left + (side === 'left' ? -8 : 8), 22, 78);
+        const bumpedTop = clamp(top + (top < 50 ? -6 : 6), 18, 84);
+        return { top: bumpedTop, left: bumpedLeft, side };
+      }
       return { top, left, side };
     });
   }, []);
@@ -707,10 +718,10 @@ const CreditLoader = ({ onComplete }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-between py-24 md:py-32 overflow-hidden"
+      className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-between pt-8 pb-8 md:pt-12 md:pb-12 overflow-hidden"
     >
       <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
-        <div className="relative w-full max-w-5xl h-[56vh] min-h-[360px] md:min-h-[460px] px-4 md:px-6">
+        <div className="relative w-full max-w-5xl h-[50vh] min-h-[330px] md:h-[54vh] md:min-h-[440px] px-4 md:px-6">
           <div className="absolute inset-0 -z-10 opacity-[0.22] [mask-image:radial-gradient(circle_at_center,black,transparent_70%)]" aria-hidden="true">
             <div
               className="w-full h-full"
@@ -809,7 +820,7 @@ const CreditLoader = ({ onComplete }) => {
                 initial={{ opacity: 0, scale: 0.96, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute w-[42vw] max-w-[230px] md:max-w-[320px] -translate-x-1/2 -translate-y-1/2"
+                className="absolute w-[40vw] max-w-[220px] md:max-w-[300px] -translate-x-1/2 -translate-y-1/2"
                 style={{
                   left: `${layout[i]?.left ?? 50}%`,
                   top: `${layout[i]?.top ?? 50}%`,
@@ -870,7 +881,7 @@ const CreditLoader = ({ onComplete }) => {
         </div>
       </div>
 
-      <div className="w-full max-w-sm md:max-w-xl px-10 flex flex-col items-center gap-6 mt-12 relative">
+      <div className="w-full max-w-sm md:max-w-xl px-10 flex flex-col items-center gap-6 mt-4 md:mt-8 relative">
         <div className="flex justify-between w-full items-end gap-4">
             <div className="flex items-center gap-3">
                 <motion.img 
@@ -1079,7 +1090,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!isUnlocked || selectedExp) {
+    if (isLoading || !isUnlocked || selectedExp) {
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
     } else {
@@ -1090,7 +1101,7 @@ export default function App() {
       document.body.style.overflow = 'auto';
       document.body.style.overscrollBehavior = '';
     };
-  }, [isUnlocked, selectedExp]);
+  }, [isLoading, isUnlocked, selectedExp]);
 
   const handleFormSubmit = async () => {
     if (isSent || isSubmitting) return;
@@ -1160,7 +1171,7 @@ export default function App() {
       linkFavicon.rel = 'icon';
       document.head.appendChild(linkFavicon);
     }
-    linkFavicon.href = "/assets/logoa.png";
+    linkFavicon.href = "/logo.png";
   }, []);
 
   const activateExperience = useCallback((idx) => {
