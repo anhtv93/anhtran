@@ -114,6 +114,13 @@ const PROJECTS = [
   {
     title: "Tư vấn chiến lược thương hiệu",
     category: "Marketing Strategy",
+    image: "/assets/28.jpeg?auto=format&fit=crop&q=80&w=1200",
+    description: "Tái định vị thương hiệu nhãn hàng Nước giải khát tỉnh Khánh Hòa.",
+    link: "https://drive.google.com/drive/folders/1xWq9vmXwFj7mxfCx_Y0uyCwPa0P1uaql?usp=share_link"
+  },
+  {
+    title: "Tư vấn chiến lược thương hiệu",
+    category: "Marketing Strategy",
     image: "/assets/7.jpeg?auto=format&fit=crop&q=80&w=1200",
     description: "Định vị thương hiệu, xây dựng lộ trình phát triển nhân sự và chiến lược marketing dài hạn cho hệ thống Onsen Nhật.",
     link: "https://drive.google.com/drive/folders/18EePklHJB1nS5eMQ5oittod5AsQw58Cl?usp=sharing"
