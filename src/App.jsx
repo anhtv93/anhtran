@@ -19,9 +19,9 @@ import {
 
 const SERVICES = [
   { title: "Brand Strategy", Icon: Target, desc: "Xây dựng và định vị ADN thương hiệu độc bản, R&D sản phẩm giúp SME nổi bật giữa số đông." },
-  { title: "Performance", Icon: TrendingUp, desc: "Thiết kế và tối ưu phễu chuyển đổi, quy trình từ Sales-MKT-ADM, tăng trưởng doanh thu dài hạn." },
+  { title: "Performance", Icon: TrendingUp, desc: "Thiết kế và tối ưu phễu chuyển đổi, quy trình từ Sales-Mar-Fin, tăng trưởng doanh thu dài hạn." },
   { title: "Martech", Icon: Zap, desc: "Triển khai CRM, Automation và AI nâng cao hiệu suất đội ngũ và tối ưu năng suất marketing." },
-  { title: "Omni channel", Icon: ShoppingBag, desc: "Xây dựng chiến lược nội dung và triển khai đa kênh bán hàng gia tăng nhận diện và chuyển đổi." }
+  { title: "Omni channel", Icon: ShoppingBag, desc: "Xây dựng chiến lược nội dung và triển khai đa kênh bán hàng, gia tăng nhận diện và chuyển đổi." }
 ];
 
 const EXPERIENCES = [
@@ -32,11 +32,12 @@ const EXPERIENCES = [
     image: "/assets/1.jpeg",
     desc: "Kiến trúc sư trưởng cho hệ thống TMĐT xây dựng tiên phong duanvietnam.vn. Chịu trách nhiệm toàn diện từ chiến lược sản phẩm, vận hành đến tăng trưởng.",
     details: [
-      "Hoạch định chiến lược kinh doanh, xây dựng sản phẩm lõi B2B/B2C.", 
-      "Thiết lập hệ thống quản trị: OKRs, KPI, quy trình liên phòng ban (Sales-MKT-Tech-HR).", 
-      "Quản lý tài chính, tối ưu hóa chi phí vận hành.", 
-      "Đào tạo và dẫn dắt đội ngũ 20 nhân sự chính thức và hàng trăm CTV.", 
-      "Đại diện thương hiệu đàm phán với đối tác chiến lược và hiệp hội."
+      "Chiến lược Go-to-Market: Thiết lập mô hình kinh doanh B2B2C, định vị duanvietnam.vn là hệ thống TMĐT tiên phong trong lĩnh vực xây dựng.", 
+      "Phát triển Core Product: Xây dựng Roadmap trên nền tảng Angular 8.0, tối ưu hoá UX và nâng cấp hệ thống dịch vụ.", 
+      "Thiết lập hệ thống quản trị: Xây dựng bộ máy nhân sự, văn hoá doanh nghiệp và hệ thống OKRs, KPIs cho Sales, Marketing, Tech, Finance với quy mô tinh gọn 20 nhân sự.", 
+      "P&L: Chịu trách nhiệm về hiệu quả tài chính, tối ưu hóa chi phí vận hành linh hoạt theo từng thời điểm.", 
+      "Marketing: Thực hiện R&D, hoạch định chiến lược, điều phối hoạt động Branding, Digital, Media.",
+      "Scaling: Phát triển các dịch vụ B2B, B2C, mở rộng mạng lưới CTV, đàm phán hợp tác với các hiệp hội và tổ chức trong ngoài ngành."
     ],
     tags: ["Strategy", "Leadership", "Start-up", "P&L Management"],
     link: "https://www.nguoiduatin.vn/doanh-nhan-tre-tran-viet-anh-thuong-mai-dien-tu-lan-song-moi-cho-nganh-xay-dung-204665722.htm"
@@ -48,10 +49,11 @@ const EXPERIENCES = [
     image: "/assets/2.jpeg",
     desc: "Dẫn dắt công cuộc Chuyển đổi số toàn diện, đưa thương hiệu truyền thống lâu đời thâm nhập thị trường TMĐT.",
     details: [
-      "Nghiên cứu thị trường, phân tích các lợi thế cạnh tranh để đề xuất lộ trình phát triển.", 
-      "Xây dựng hạ tầng TMĐT từ con số 0: Website, Ecom platform, Logistics.", 
-      "Triển khai Marketing tổng lực (ATL & BTL).", 
-      "Xây dựng và quản lý đội ngũ nhân sự trẻ kế cận cho doanh nghiệp."
+      "Strategy: Thực hiện R&D định vị lại thương hiệu Nguyễn Văn Cừ, chuẩn hoá Brand Identity/Voice/Equity nhằm gắn kết hơn với tệp khách hàng hiện đại.", 
+      "Digital Transformation: Dịch chuyển trọng tâm từ bán lẻ truyền thống sang mô hình Omnichannel, ứng dụng công nghệ vào các hoạt động vận hành.", 
+      "Marketing: Xây dựng chiến lược BTL, tập trung Lead2Order và tối ưu hoá CVR, collab với các thương hiệu văn phòng phẩm, Art toys, Boardgames.", 
+      "E-commerce: Xây dựng hạ tầng TMĐT Website, E-com platforms, Logistics và triển khai các chương trình bán hàng, tìm kiếm nhà cung cấp.",
+      "HRM: Tuyển dụng và đào tạo đội ngũ kế cận, thiết lập hệ thống KPIs, báo cáo chiến lược đến BOD."
     ],
     tags: ["Conversion", "Branding", "Data", "CRM"],
     link: "https://www.behance.net/gallery/106953807/NguyenVanCu-Bookstores"
@@ -61,12 +63,14 @@ const EXPERIENCES = [
     role: "Project Marketing",
     company: "LEGO Education",
     image: "/assets/3.jpeg",
-    desc: "Triển khai mở rộng chuỗi hoạt động 'Educate Market', định hình tư duy phụ huynh về phương pháp giáo dục STEAM.",
+    desc: "Triển khai mở rộng chuỗi hoạt động Educate Market, định hình tư duy phụ huynh về phương pháp giáo dục STEAM.",
     details: [
-      "Tổ chức họp báo ra mắt sản phẩm chiến lược LEGO Education SPIKE Prime.", 
-      "Quản lý các kênh digital và sản xuất nội dung media chất lượng cao (bài giảng, recap).", 
-      "Thiết lập và quản trị mạng lưới phân phối chiến lược thông qua các đối tác giáo dục & bán lẻ hàng đầu: MyKingdom, ILA, Sylvan Learning.", 
-      "Tiên phong chuyển đổi mô hình học tập với chiến dịch 'Vui học tại nhà', duy trì kết nối và giá trị thương hiệu xuyên suốt giai đoạn đại dịch COVID."
+      "Product Launch: Triển khai các chiến dịch ATL ra mắt sản phẩm chiến lược LEGO Education SPIKE Prime qua các campaign và hội thảo giáo dục.", 
+      "Brand Equity: Đảm bảo nhất quán thương hiệu LEGO Education trên hệ sinh thái digital của nhãn hàng và đối tác.", 
+      "Content Creation: Sản xuất các nội dung phục vụ campaign và nội dung media chất lượng cao.", 
+      "Performance: Trực tiếp làm việc với các Agency marketing, kết hợp Sales team tối ưu chỉ số CPL, ROAS, CAC, CLV.",
+      "Partnerships: Thiết lập và vận hành mạng lưới phân phối chiến lược thông qua các đối tác giáo dục & bán lẻ hàng đầu: MyKingdom, ILA, Sylvan Learning.",
+      "Digital Transformation: Tiên phong chuyển đổi mô hình học tập với chiến dịch 'Vui học tại nhà', duy trì kết nối và giá trị thương hiệu xuyên suốt giai đoạn đại dịch COVID."
     ],
     tags: ["Branding", "Creative", "Scaling", "Execution"],
     link: "https://www.behance.net/gallery/106955351/LEGO-Education"
@@ -76,12 +80,14 @@ const EXPERIENCES = [
     role: "Marketing Manager",
     company: "FitForce Fitness",
     image: "/assets/4.jpeg",
-    desc: "Kiến tạo trải nghiệm khách hàng và tối ưu hóa doanh thu dịch vụ cao cấp thông qua chiến lược KOLs và Event.",
+    desc: "Xây dựng định vị thương hiệu Fitness cao cấp tại trung tâm Q1 và tối ưu hoá giá trị khách hàng.",
     details: [
-      "Xây dựng bộ máy vận hành: Thiết lập phòng ban Sales & Marketing chuyên nghiệp, quản lý ngân sách và điều phối KPI.", 
-      "Mở rộng mạng lưới KOLs/Partners: Kết nối thành công các nhãn hàng thể thao và người nổi tiếng.", 
-      "Chiến lược hóa sản phẩm: Thiết kế các gói sản phẩm Upsell/Cross-sell linh hoạt.", 
-      "Chỉ đạo sản xuất các ấn phẩm, đảm bảo tiêu chuẩn hóa hình ảnh thương hiệu."
+      "Brand Positioning: Kiến tạo trải nghiệm khách hàng cao cấp thông qua: Brand Image/Voice premium, tăng trải nghiệm cá nhân hoá, kết hợp hình ảnh Influencers, các sự kiện membership độc quyền.", 
+      "Performance: Chỉ đạo sản xuất nội dung và trực tiếp triển khai các campaign BTL, tối ưu chỉ số CVR, CPL, ROAS, CAC.", 
+      "Growth: Đồng bộ Sales team khai thác tệp khách hàng mới tiềm năng, song song thiết lập hệ thống CRM re-targeting khách hàng cũ, thông qua các Activations tại cơ sở.", 
+      "Sales Optimization: R&D, testing và launching các nhóm sản phẩm mới (giáo trình bài tập, thực phẩm bổ sung, sản phẩm hỗ trợ) thúc đẩy doanh thu và chỉ số CLV.",
+      "PR & Communication: Kết nối thành công các nhãn hàng thể thao và Influencers, KOCs, hành chính địa phương để tạo độ phủ và tăng uy tín thương hiệu.",
+      "HRM: Tuyển dụng, đào tạo và quản lý đội ngũ nhân sự: Content, Performance, Media, báo cáo trực tiếp cho BOD."
     ],
     tags: ["Social Media", "Branding", "Event", "Influencer"],
     link: "https://www.behance.net/gallery/106954181/FitForce-Fitness-Yoga"
@@ -91,12 +97,14 @@ const EXPERIENCES = [
     role: "Sales & Marketing",
     company: "Ambassador Hotel",
     image: "/assets/5.jpeg",
-    desc: "Đặt nền móng thương hiệu cho chi nhánh mới tại TP.Vũng Tàu, khai thác thị trường khu vực trung tâm thành phố.",
+    desc: "Đặt nền móng thương hiệu cho chi nhánh mới tại TP. Vũng Tàu, khai thác thị trường khu vực trung tâm thành phố.",
     details: [
-      "Phát triển song song 2 thương hiệu: Ambassador (Hotel) & Camellia (F&B).", 
-      "Tối ưu hóa công suất phòng qua quản lý Booking/OTA.", 
-      "Xây dựng và phát triển kênh social media của Ambassdor group.", 
-      "Đối ngoại và hợp tác các doanh nghiệp địa phương."
+      "Brand Positioning: Định vị rõ phân khúc tầm trung; dựa trên đặc điểm vị trí, tập trung vào nhóm khách hàng ưa thích du lịch trải nghiệm, ưu tiên tính tiện lợi, và nhóm khách hàng thích trải nghiệm ẩm thực mới lạ.", 
+      "Market Penetration: Triển khai chiến lược thâm nhập thị trường Vũng Tàu cho thương hiệu Ambassador ở mảng Hotel và Camellia ở mảng F&B.", 
+      "Social Media: Xây dựng hệ thống kênh MXH cho Ambassador tập trung vào các nội dung hình ảnh tương tác nhằm tăng nhận diện và tạo phễu leads data.",
+      "Brand Equity: Phát triển hình ảnh và đảm bảo nhất quán thương hiệu Online2Offline ở các chi nhánh.",
+      "Networking: Duy trì quan hệ với các doanh nghiệp địa phương và các hiệp hội du lịch, khai thác tệp Corporate.",
+      "Inventory Optimization: Tối ưu công suất phòng qua hệ thống OTA, TA, các kênh Booking online của hệ thống."
     ],
     tags: ["Social Media", "Branding", "Revenue", "Execution"],
     link: "https://www.behance.net/gallery/106960225/Ambassador-Hotel-Group"
@@ -108,56 +116,56 @@ const PROJECTS = [
     title: "Đại diện thương hiệu",
     category: "Branding",
     image: "/assets/6.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Dự Án Việt Nam nhận giải thưởng Top 10 Asia Top Brand Award 2024.",
+    description: "Đại diện Dự Án Việt Nam nhận giải thưởng Top 10 Asia Top Brand Award 2024.",
     link: "https://www.facebook.com/reel/987442559539122"
   },
   {
     title: "Tư vấn chiến lược thương hiệu",
     category: "Marketing Strategy",
     image: "/assets/28.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Tái định vị thương hiệu nhãn hàng Nước giải khát tỉnh Khánh Hòa.",
+    description: "Tái định vị thương hiệu Nước giải khát tỉnh Khánh Hòa, đưa thương hiệu trở lại đường đua và bắt kịp xu hướng.",
     link: "https://drive.google.com/drive/folders/1xWq9vmXwFj7mxfCx_Y0uyCwPa0P1uaql?usp=share_link"
   },
   {
     title: "Tư vấn chiến lược thương hiệu",
     category: "Marketing Strategy",
     image: "/assets/7.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Định vị thương hiệu, xây dựng lộ trình phát triển nhân sự và chiến lược marketing dài hạn cho hệ thống Onsen Nhật.",
+    description: "Định vị thương hiệu, xây dựng & chuyển giao lộ trình phát triển nhân sự và chiến lược marketing dài hạn cho hệ thống Onsen Nhật.",
     link: "https://drive.google.com/drive/folders/18EePklHJB1nS5eMQ5oittod5AsQw58Cl?usp=sharing"
   },
   {
     title: "Đào tạo nhân sự",
     category: "Training",
     image: "/assets/8.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Thiết kế bài giảng và tổ chức đào tạo cho sản phẩm chiến lược mới cho chuỗi Trung tâm Tiếng Anh khu vực miền Nam.",
+    description: "Thiết kế bài giảng và tổ chức đào tạo cho sản phẩm chiến lược mới cho chuỗi Trung tâm Tiếng Anh tại khu vực miền Nam.",
     link: "https://docs.google.com/presentation/d/1jNi_LlrgeViBc2TIu6oEIoAqJzI2XyUd/edit?usp=sharing&ouid=116372570508469460772&rtpof=true&sd=true"
   },
   {
     title: "Tổ chức sự kiện",
     category: "Workshop",
     image: "/assets/9.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Tổ chức workshop 'Marketing gắn liền với quản trị SME' khai thác nhóm khách hàng mục tiêu.",
+    description: "Tổ chức workshop 'Marketing gắn liền với quản trị SME' xây dựng uy tín thương hiệu và khai thác tệp khách hàng mục tiêu.",
     link: "https://www.facebook.com/share/v/1QjRa3wwj1"
   },
   {
     title: "Tư vấn chiến lược thương hiệu",
     category: "Marketing Strategy",
     image: "/assets/10.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Tư vấn tái định vị thương hiệu, xây dựng chiến lược marketing và kế hoạch ra mắt các dòng sản phẩm mới, đồng thời phát triển thương hiệu cá nhân bà Huynh.",
+    description: "Tư vấn tái định vị thương hiệu, xây dựng chiến lược sản phẩm mới, đồng thời phát triển thương hiệu cá nhân bà Huynh.",
     link: "https://drive.google.com/file/d/1sAqQLPlSmI2lQS23BAo8UpKlZ1-SZZdE/view?usp=sharing"
   },
   {
     title: "Chuyển đổi số Xây dựng",
     category: "Event",
     image: "/assets/11.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Giới thiệu gói giải pháp 'Ứng dụng nền tảng TMĐT vào ngành xây dựng' tại sự kiện.",
+    description: "Giới thiệu gói giải pháp 'Ứng dụng nền tảng TMĐT vào ngành xây dựng' tại sự kiện, giúp SMEs tối ưu vận hành và tăng trưởng.",
     link: "https://baoxaydung.vn/du-an-viet-nam-lan-song-moi-thuong-mai-dien-tu-nganh-xay-dung-1926868376281.htm"
   },
   {
     title: "Chuyển đổi số Nhà sách",
     category: "Transformation",
     image: "/assets/12.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Xây dựng hệ thống TMĐT đa kênh, logistics, quản lý kho bằng phần mềm, hợp tác các nhãn hàng, NXB mới, triển khai social media cho hệ thống.",
+    description: "Xây dựng hệ thống TMĐT đa kênh, logistics, data management; hợp tác các nhãn hàng, NXB mới; triển khai kênh social media cho hệ thống.",
     link: "https://nhasachnguyenvancu.vn/"
   },
   {
@@ -171,7 +179,7 @@ const PROJECTS = [
     title: "Xây dựng và vận hành hệ thống bán lẻ",
     category: "Ecommerce",
     image: "/assets/14.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Xây dựng hệ thống TMĐT đa kênh, bộ nhận diện thương hiệu, website và đội ngũ marketing mới cho doanh nghiệp.",
+    description: "Xây dựng hệ thống TMĐT đa kênh, làm mới Brand Identity, đào tạo đội ngũ marketing mới cho doanh nghiệp.",
     link: "https://www.facebook.com/congtyquatangata"
   },
   {
@@ -185,84 +193,84 @@ const PROJECTS = [
     title: "Khách mời Podcast",
     category: "Podcast",
     image: "/assets/16.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Chia sẻ câu chuyện khởi nghiệp Dự Án Việt Nam, personal branding",
+    description: "Chia sẻ câu chuyện khởi nghiệp Dự Án Việt Nam - Personal Branding.",
     link: "https://drive.google.com/file/d/1ly37dJYfFfn50gHxCLItw37oWYm5Sssc/view?usp=sharing"
   },
   {
     title: "Tài trợ sự kiện",
     category: "Event",
     image: "/assets/17.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Tổ chức gian hàng tại 'Vietbuild 2024', giới thiệu giải pháp & khai thác khách hàng tiềm năng.",
+    description: "Tổ chức gian hàng tại 'Vietbuild 2024', giới thiệu giải pháp & khai thác tệp khách hàng tiềm năng.",
     link: "https://www.tiktok.com/@duanvietnam/video/7385468335833599239"
   },
   {
     title: "Tài trợ sự kiện",
     category: "Event",
     image: "/assets/18.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Tổ chức gian hàng tại 'Kết nối giao thương CLB doanh nhân trẻ TP HCM', giới thiệu giải pháp & khai thác khách hàng tiềm năng.",
+    description: "Đặt gian hàng tại 'Kết nối giao thương CLB doanh nhân trẻ TP HCM', tăng nhận diện thương hiệu & khai thác tệp khách hàng tiềm năng.",
     link: "https://www.facebook.com/share/v/14aGWYWH5LJ"
   },
   {
     title: "Tổ chức sự kiện",
     category: "Workshop",
     image: "/assets/19.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Tổ chức workshop 'Xây dựng & quản trị doanh nghiệp theo khoa học phong thuỷ', go viral trên các kênh social.",
+    description: "Tổ chức workshop 'Xây dựng & quản trị doanh nghiệp theo khoa học phong thuỷ', series go viral trên các kênh social.",
     link: "https://www.tiktok.com/@duanvietnam/video/7405381047292103956"
   },
   {
     title: "Tổ chức sự kiện",
     category: "Workshop",
     image: "/assets/20.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Tổ chức sự kiện 'Tầm quan trọng của đấu thầu đối với sinh viên ngành xây dựng' tại HUTECH, branding & trust",
+    description: "Tổ chức sự kiện 'Tầm quan trọng của đấu thầu đối với sinh viên ngành xây dựng' tại HUTECH, tăng branding & trust.",
     link: "https://www.hutech.edu.vn/homepage/tin-tuc/hoat-dong-sinh-vien/14612371-sinh-vien-nganh-xay-dung-hutech-tim-hieu-co-hoi-nghe-nghiep-ve-dau-thau-qua-mang-cung-chuyen-gia"
   },
   {
     title: "Khách mời Podcast",
     category: "Podcast",
     image: "/assets/21.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Tham gia 'Podcast Nhảy việc cuối năm hay chờ thưởng Tết', go viral nhờ chủ đề tranh cãi & đúng thời điểm",
+    description: "Tham gia 'Podcast Nhảy việc cuối năm hay chờ thưởng Tết', go viral nhờ chủ đề tranh cãi & đúng thời điểm.",
     link: "https://www.youtube.com/watch?v=P0pekIKb1I0"
   },
   {
     title: "NTT Kim Cương - Giải Tenis Doanh nhân Lan Anh 2022",
     category: "Event",
     image: "/assets/22.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Thu hút khách hàng tiềm năng tham gia giải",
+    description: "Tăng nhận diện thương hiệu đến tệp khách hàng B2B tiềm năng.",
     link: "https://www.facebook.com/share/p/17BhWsc9oJ/"
   },
   {
     title: "Tổ chức sự kiện",
     category: "Event",
     image: "/assets/23.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Sự kiện trải nghiệm thu hút nhiều lượt quan tâm, go viral nhờ chủ đề được quan tâm và đánh giá cao.",
-    link: "https://www.tiktok.com/@duanvietnam/video/7331738767734115586"
+    description: "Sự kiện trải nghiệm thu hút nhiều lượt quan tâm, go viral nhờ chủ đề nhân văn và hướng về các nét đẹp văn hoá Tết cổ truyền.",
+    link: "https://www.tiktok.com/@duanvietnam/video/7332505366900641026"
   },
   {
     title: "Dự án quà Tết 2024",
     category: "Branding",
     image: "/assets/24.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Dự án quà tặng độc đáo đầy ý nghĩa từ đội ngũ Dự Án Việt Nam, khai thác nhóm khách hàng trung thành",
+    description: "Dự án quà tặng độc đáo đầy ý nghĩa từ đội ngũ Dự Án Việt Nam, mang ý nghĩa cộng đồng và gắn kết nhóm khách hàng trung thành.",
     link: "https://www.youtube.com/watch?v=gtelaltr2kg"
   },
   {
     title: "Sản xuất Campaign",
     category: "Campaign",
     image: "/assets/25.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Campaign tuyển dụng thu hút CTV xây dựng nhờ nội dung vui nhộn bắt trend, target nhóm người nội trợ",
+    description: "Campaign tuyển dụng thu hút CTV xây dựng nhờ nội dung vui nhộn bắt trend, target nhóm người nội trợ.",
     link: "https://www.facebook.com/reel/1173113730744110"
   },
   {
     title: "Sản xuất Podcast",
     category: "Podcast",
     image: "/assets/26.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Sản xuất 'Podcast Xây nhà cuối năm', go viral nhờ chủ đề tranh cãi & đúng thời điểm, đánh đúng đối tượng mục tiêu",
+    description: "Sản xuất 'Podcast Xây nhà cuối năm', go viral nhờ chủ đề tranh cãi & đúng thời điểm, đánh đúng nhóm đối tượng mục tiêu.",
     link: "https://www.youtube.com/watch?v=XttzQ1aUcIo"
   },
   {
     title: "Sản xuất Media",
     category: "Branding",
     image: "/assets/27.jpeg?auto=format&fit=crop&q=80&w=1200",
-    description: "Xây dựng hình ảnh Dự Án Việt Nam thông qua những 'Video revew thành phẩm' chất lượng cao được đầu tư quay dựng bài bản, branding & trust",
+    description: "Xây dựng uy tín Dự Án Việt Nam qua những 'Video revew thành phẩm' chất lượng cao được đầu tư quay dựng bài bản, tăng branding & trust.",
     link: "https://www.youtube.com/watch?v=xvJmW73i9DE"
   }
 ];
