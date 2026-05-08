@@ -945,6 +945,8 @@ export default function App() {
   const activeIdxRef = useRef(0);
   const servicesOuterRef = useRef(null);
   const servicesInnerRef = useRef(null);
+  const servicesPinUpdateRef = useRef(null);
+  const pendingJourneyScrollRef = useRef(false);
   const [servicesItemsPerView, setServicesItemsPerView] = useState(1);
   const [activeServiceIdx, setActiveServiceIdx] = useState(0);
   const activeServiceIdxRef = useRef(0);
@@ -1076,33 +1078,40 @@ export default function App() {
       onScroll();
     };
 
-    updateInsets();
-    updatePin();
+    const refreshPin = () => {
+      updateInsets();
+      updatePin();
+    };
+
+    servicesPinUpdateRef.current = refreshPin;
+    refreshPin();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
 
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
+      servicesPinUpdateRef.current = null;
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, []);
 
   useEffect(() => {
     if (!PROJECTS.length || typeof window === 'undefined') return;
+    if (!isUnlocked || isLoading) return;
 
     const run = () => {
       PROJECTS.slice(0, 3).forEach((p) => preloadImage(p.image));
     };
 
     if ('requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(run, { timeout: 2000 });
+      const id = window.requestIdleCallback(run, { timeout: 3000 });
       return () => window.cancelIdleCallback(id);
     }
 
-    const t = window.setTimeout(run, 250);
+    const t = window.setTimeout(run, 1200);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [isLoading, isUnlocked]);
 
   useEffect(() => {
     if (isLoading || !isUnlocked || selectedExp) {
@@ -1263,11 +1272,22 @@ export default function App() {
   }, []);
 
   const handleLoadingComplete = useCallback(() => {
+    pendingJourneyScrollRef.current = true;
     setIsLoading(false);
-    setIsUnlocked(true); 
-    setTimeout(() => {
+    setIsUnlocked(true);
+  }, []);
+
+  const handleLoaderExitComplete = useCallback(() => {
+    if (!pendingJourneyScrollRef.current) return;
+    pendingJourneyScrollRef.current = false;
+
+    window.requestAnimationFrame(() => {
+      servicesPinUpdateRef.current?.();
       scrollToSection('services');
-    }, 100);
+      window.setTimeout(() => {
+        servicesPinUpdateRef.current?.();
+      }, 450);
+    });
   }, [scrollToSection]);
 
   useEffect(() => {
@@ -1490,7 +1510,7 @@ export default function App() {
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
       <motion.div className="fixed top-0 left-0 right-0 h-1 bg-white z-[100] origin-left" style={{ scaleX }} />
 
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={handleLoaderExitComplete}>
         {isLoading && <CreditLoader onComplete={handleLoadingComplete} />}
       </AnimatePresence>
 
@@ -1672,7 +1692,7 @@ export default function App() {
             </h1>
             <p className="text-base md:text-[1.4rem] font-light max-w-2xl mx-auto text-gray-300 mb-14 md:mb-14 leading-relaxed"> 
               Xây dựng và vận hành hệ thống Marketing <br />
-              chuyển hóa thương hiệu thành doanh thu.
+              Nâng tầm thương hiệu - tăng trưởng doanh thu.
             </p>
             <FloatingAction distance={5} duration={3}>
               <MagneticButton 
@@ -1707,7 +1727,7 @@ export default function App() {
               <div className="pt-6 md:pt-8">
                 <SectionTitle title="Expertise" subtitle="Services" />
               </div>
-              <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex">
+              <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex transform-gpu">
                 {serviceCards}
               </motion.div>
 
