@@ -115,161 +115,161 @@ const PROJECTS = [
   {
     title: "Đại diện thương hiệu",
     category: "Branding",
-    image: "/assets/6.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/6.jpeg",
     description: "Đại diện Dự Án Việt Nam nhận giải thưởng Top 10 Asia Top Brand Award 2024.",
     link: "https://www.facebook.com/reel/987442559539122"
   },
   {
     title: "Tư vấn chiến lược thương hiệu",
     category: "Marketing Strategy",
-    image: "/assets/28.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/28.jpeg",
     description: "Tái định vị thương hiệu Nước giải khát tỉnh Khánh Hòa, đưa thương hiệu trở lại đường đua và bắt kịp xu hướng.",
     link: "https://drive.google.com/drive/folders/1xWq9vmXwFj7mxfCx_Y0uyCwPa0P1uaql?usp=share_link"
   },
   {
     title: "Tư vấn chiến lược thương hiệu",
     category: "Marketing Strategy",
-    image: "/assets/7.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/7.jpeg",
     description: "Định vị thương hiệu, xây dựng & chuyển giao lộ trình phát triển nhân sự và chiến lược marketing dài hạn cho hệ thống Onsen Nhật.",
     link: "https://drive.google.com/drive/folders/18EePklHJB1nS5eMQ5oittod5AsQw58Cl?usp=sharing"
   },
   {
     title: "Đào tạo nhân sự",
     category: "Training",
-    image: "/assets/8.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/8.jpeg",
     description: "Thiết kế bài giảng và tổ chức đào tạo cho sản phẩm chiến lược mới cho chuỗi Trung tâm Tiếng Anh tại khu vực miền Nam.",
     link: "https://docs.google.com/presentation/d/1jNi_LlrgeViBc2TIu6oEIoAqJzI2XyUd/edit?usp=sharing&ouid=116372570508469460772&rtpof=true&sd=true"
   },
   {
     title: "Tổ chức sự kiện",
     category: "Workshop",
-    image: "/assets/9.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/9.jpeg",
     description: "Tổ chức workshop 'Marketing gắn liền với quản trị SME' xây dựng uy tín thương hiệu và khai thác tệp khách hàng mục tiêu.",
     link: "https://www.facebook.com/share/v/1QjRa3wwj1"
   },
   {
     title: "Tư vấn chiến lược thương hiệu",
     category: "Marketing Strategy",
-    image: "/assets/10.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/10.jpeg",
     description: "Tư vấn tái định vị thương hiệu, xây dựng chiến lược sản phẩm mới, đồng thời phát triển thương hiệu cá nhân bà Huynh.",
     link: "https://drive.google.com/file/d/1sAqQLPlSmI2lQS23BAo8UpKlZ1-SZZdE/view?usp=sharing"
   },
   {
     title: "Chuyển đổi số Xây dựng",
     category: "Event",
-    image: "/assets/11.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/11.jpeg",
     description: "Giới thiệu gói giải pháp 'Ứng dụng nền tảng TMĐT vào ngành xây dựng' tại sự kiện, giúp SMEs tối ưu vận hành và tăng trưởng.",
     link: "https://baoxaydung.vn/du-an-viet-nam-lan-song-moi-thuong-mai-dien-tu-nganh-xay-dung-1926868376281.htm"
   },
   {
     title: "Chuyển đổi số Nhà sách",
     category: "Transformation",
-    image: "/assets/12.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/12.jpeg",
     description: "Xây dựng hệ thống TMĐT đa kênh, logistics, data management; hợp tác các nhãn hàng, NXB mới; triển khai kênh social media cho hệ thống.",
     link: "https://nhasachnguyenvancu.vn/"
   },
   {
     title: "Chuyển đổi số Giáo dục",
     category: "Transformation",
-    image: "/assets/13.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/13.jpeg",
     description: "Sản xuất và phát hành series 'HỌC LÀM NHÀ PHÁT MINH CÔNG NGHỆ VỚI LEGO SPIKE PRIME'.",
     link: "https://www.youtube.com/playlist?list=PLoVM1h2NMGedtN4dGV13m0WFEulBF3JKB"
   },
   {
     title: "Xây dựng và vận hành hệ thống bán lẻ",
     category: "Ecommerce",
-    image: "/assets/14.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/14.jpeg",
     description: "Xây dựng hệ thống TMĐT đa kênh, làm mới Brand Identity, đào tạo đội ngũ marketing mới cho doanh nghiệp.",
     link: "https://www.facebook.com/congtyquatangata"
   },
   {
     title: "Setup nhà hàng",
     category: "F&B",
-    image: "/assets/15.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/15.jpeg",
     description: "Triển khai xây dựng ý tưởng nhà hàng ăn vặt đầu tiên tại Vũng Tàu.",
     link: "https://www.tripadvisor.com.vn/Restaurant_Review-g303946-d14948011-Reviews-Camellia_Coffee_Restaurant-Vung_Tau_Ba_Ria_Vung_Tau_Province.html"
   },    
   {
     title: "Khách mời Podcast",
     category: "Podcast",
-    image: "/assets/16.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/16.jpeg",
     description: "Chia sẻ câu chuyện khởi nghiệp Dự Án Việt Nam - Personal Branding.",
     link: "https://drive.google.com/file/d/1ly37dJYfFfn50gHxCLItw37oWYm5Sssc/view?usp=sharing"
   },
   {
     title: "Tài trợ sự kiện",
     category: "Event",
-    image: "/assets/17.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/17.jpeg",
     description: "Tổ chức gian hàng tại 'Vietbuild 2024', giới thiệu giải pháp & khai thác tệp khách hàng tiềm năng.",
     link: "https://www.tiktok.com/@duanvietnam/video/7385468335833599239"
   },
   {
     title: "Tài trợ sự kiện",
     category: "Event",
-    image: "/assets/18.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/18.jpeg",
     description: "Đặt gian hàng tại 'Kết nối giao thương CLB doanh nhân trẻ TP HCM', tăng nhận diện thương hiệu & khai thác tệp khách hàng tiềm năng.",
     link: "https://www.facebook.com/share/v/14aGWYWH5LJ"
   },
   {
     title: "Tổ chức sự kiện",
     category: "Workshop",
-    image: "/assets/19.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/19.jpeg",
     description: "Tổ chức workshop 'Xây dựng & quản trị doanh nghiệp theo khoa học phong thuỷ', series go viral trên các kênh social.",
     link: "https://www.tiktok.com/@duanvietnam/video/7405381047292103956"
   },
   {
     title: "Tổ chức sự kiện",
     category: "Workshop",
-    image: "/assets/20.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/20.jpeg",
     description: "Tổ chức sự kiện 'Tầm quan trọng của đấu thầu đối với sinh viên ngành xây dựng' tại HUTECH, tăng branding & trust.",
     link: "https://www.hutech.edu.vn/homepage/tin-tuc/hoat-dong-sinh-vien/14612371-sinh-vien-nganh-xay-dung-hutech-tim-hieu-co-hoi-nghe-nghiep-ve-dau-thau-qua-mang-cung-chuyen-gia"
   },
   {
     title: "Khách mời Podcast",
     category: "Podcast",
-    image: "/assets/21.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/21.jpeg",
     description: "Tham gia 'Podcast Nhảy việc cuối năm hay chờ thưởng Tết', go viral nhờ chủ đề tranh cãi & đúng thời điểm.",
     link: "https://www.youtube.com/watch?v=P0pekIKb1I0"
   },
   {
     title: "NTT Kim Cương - Giải Tenis Doanh nhân Lan Anh 2022",
     category: "Event",
-    image: "/assets/22.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/22.jpeg",
     description: "Tăng nhận diện thương hiệu đến tệp khách hàng B2B tiềm năng.",
     link: "https://www.facebook.com/share/p/17BhWsc9oJ/"
   },
   {
     title: "Tổ chức sự kiện",
     category: "Event",
-    image: "/assets/23.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/23.jpeg",
     description: "Sự kiện trải nghiệm thu hút nhiều lượt quan tâm, go viral nhờ chủ đề nhân văn và hướng về các nét đẹp văn hoá Tết cổ truyền.",
     link: "https://www.tiktok.com/@duanvietnam/video/7332505366900641026"
   },
   {
     title: "Dự án quà Tết 2024",
     category: "Branding",
-    image: "/assets/24.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/24.jpeg",
     description: "Dự án quà tặng độc đáo đầy ý nghĩa từ đội ngũ Dự Án Việt Nam, mang ý nghĩa cộng đồng và gắn kết nhóm khách hàng trung thành.",
     link: "https://www.youtube.com/watch?v=gtelaltr2kg"
   },
   {
     title: "Sản xuất Campaign",
     category: "Campaign",
-    image: "/assets/25.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/25.jpeg",
     description: "Campaign tuyển dụng thu hút CTV xây dựng nhờ nội dung vui nhộn bắt trend, target nhóm người nội trợ.",
     link: "https://www.facebook.com/reel/1173113730744110"
   },
   {
     title: "Sản xuất Podcast",
     category: "Podcast",
-    image: "/assets/26.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/26.jpeg",
     description: "Sản xuất 'Podcast Xây nhà cuối năm', go viral nhờ chủ đề tranh cãi & đúng thời điểm, đánh đúng nhóm đối tượng mục tiêu.",
     link: "https://www.youtube.com/watch?v=XttzQ1aUcIo"
   },
   {
     title: "Sản xuất Media",
     category: "Branding",
-    image: "/assets/27.jpeg?auto=format&fit=crop&q=80&w=1200",
+    image: "/assets/27.jpeg",
     description: "Xây dựng uy tín Dự Án Việt Nam qua những 'Video revew thành phẩm' chất lượng cao được đầu tư quay dựng bài bản, tăng branding & trust.",
     link: "https://www.youtube.com/watch?v=xvJmW73i9DE"
   }
@@ -1431,8 +1431,8 @@ export default function App() {
                 </h3>
                 <div className={`mt-1.5 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100`}>
                   <p
-                    className="text-sm md:text-base text-gray-600 leading-relaxed min-h-0 md:min-h-[4em]"
-                    style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                    className="text-sm md:text-base text-gray-600 leading-relaxed min-h-0 md:min-h-[5.5em]"
+                    style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
                   >
                     {p.description}
                   </p>
@@ -1569,11 +1569,11 @@ export default function App() {
                       <span className="text-pink-500 font-mono text-[10px] md:text-sm uppercase tracking-widest mb-2 md:mb-4 block">{selectedExp.period}</span>
                       <h2 className="text-3xl md:text-5xl font-black uppercase mb-2 md:mb-4 leading-tight tracking-tighter">{selectedExp.role}</h2>
                       <p className="text-lg md:text-2xl font-bold text-gray-400 mb-3 md:mb-5">{selectedExp.company}</p>
-                      <p className="text-gray-300 italic text-base md:text-lg leading-relaxed">{selectedExp.desc}</p>
                     </div>
                   </div>
                   <div className="min-h-0 overflow-y-auto pr-1 md:pr-2 scrollbar-hide">
                     <div className="space-y-2 md:space-y-3">
+                      <p className="text-gray-300 italic text-base md:text-lg leading-relaxed">{selectedExp.desc}</p>
                       {selectedExp.details.map((detail, idx) => (
                         <div key={idx} className="flex gap-3 text-sm md:text-base text-gray-400 items-start">
                           <CheckCircle2 size={18} className="text-pink-500 shrink-0 mt-0.5" />
