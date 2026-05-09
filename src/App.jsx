@@ -730,7 +730,7 @@ const CreditLoader = ({ onComplete }) => {
   
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
+      initial={false}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-between pt-8 pb-8 md:pt-12 md:pb-12 overflow-hidden"
@@ -1256,25 +1256,41 @@ export default function App() {
     return () => observer.disconnect();
   }, [activateExperience, isUnlocked]);
 
-  const scrollToSection = useCallback((id) => {
+  const scrollToSection = useCallback((id, behavior = 'smooth') => {
     setIsUnlocked(true);
     setIsMenuOpen(false);
 
     window.requestAnimationFrame(() => {
       const element = document.getElementById(id);
       if (!element) return;
-      window.scrollTo({ top: element.offsetTop, behavior: 'smooth' });
+      window.scrollTo({ top: element.offsetTop, behavior });
     });
   }, []);
 
   const startJourney = useCallback(() => {
+    pendingJourneyScrollRef.current = true;
     setIsLoading(true);
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        setIsUnlocked(true);
+        const element = document.getElementById('services');
+        if (!element) return;
+        const root = document.documentElement;
+        const previousScrollBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        window.scrollTo({ top: element.offsetTop, behavior: 'auto' });
+        root.style.scrollBehavior = previousScrollBehavior;
+
+        window.requestAnimationFrame(() => {
+          servicesPinUpdateRef.current?.();
+        });
+      });
+    });
   }, []);
 
   const handleLoadingComplete = useCallback(() => {
-    pendingJourneyScrollRef.current = true;
     setIsLoading(false);
-    setIsUnlocked(true);
   }, []);
 
   const handleLoaderExitComplete = useCallback(() => {
@@ -1283,12 +1299,8 @@ export default function App() {
 
     window.requestAnimationFrame(() => {
       servicesPinUpdateRef.current?.();
-      scrollToSection('services');
-      window.setTimeout(() => {
-        servicesPinUpdateRef.current?.();
-      }, 450);
     });
-  }, [scrollToSection]);
+  }, []);
 
   useEffect(() => {
     openWorkIdxRef.current = openWorkIdx;
@@ -1725,7 +1737,7 @@ export default function App() {
           <div ref={servicesInnerRef} className="h-screen overflow-hidden">
             <div className="h-full flex flex-col justify-center bg-[#050505]">
               <div className="pt-6 md:pt-8">
-                <SectionTitle title="Expertise" subtitle="Services" />
+                <SectionTitle key={isLoading ? 'services-loading' : 'services-ready'} title="Expertise" subtitle="Services" />
               </div>
               <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex transform-gpu">
                 {serviceCards}
