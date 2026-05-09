@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring, useInView, useMotionValue, useTransform } from 'framer-motion';
 import { 
   TrendingUp, 
@@ -6,15 +6,18 @@ import {
   Zap, 
   ExternalLink,
   ArrowDownRight,
+  BriefcaseBusiness,
+  Building2,
+  Copy,
+  Download,
   ShoppingBag,
   Send,
   X,
   Mail,
-  Phone,
-  Facebook,
-  MessageCircle,
+  Mic2,
   ArrowUp,
-  CheckCircle2
+  CheckCircle2,
+  Sparkles
 } from 'lucide-react';
 
 const SERVICES = [
@@ -291,6 +294,46 @@ const STATS = [
   { value: "03PM", label: "Digital Transform." }
 ];
 
+const CONTACT_ROUTES = [
+  {
+    id: 'ceo',
+    label: 'CEO / Founder',
+    eyebrow: 'System Audit',
+    title: 'Find the leak before starting.',
+    intent: 'Dành cho SMEs muốn xây dựng thương hiệu, phễu bán hàng hoặc tìm ra điểm nghẽn ở đâu.',
+    Icon: Building2,
+    bullets: ['Phân tích Marketing Strategy', 'Gợi ý ưu tiên hành động', 'Kế hoạch triển khai 14 ngày'],
+    cta: 'Audit my system',
+    emailSubject: 'Anhtranviet.com | System Audit Request',
+    message: 'Tôi muốn audit hệ thống growth/brand/funnel hiện tại.',
+  },
+  {
+    id: 'hr',
+    label: 'HR / Recruiter',
+    eyebrow: 'Strategic Profile.',
+    title: 'GET THE FOLIO-READY SNAPSHOT.',
+    intent: 'Dành cho HR cần đặt lịch hẹn và tải profile ngắn gọn.',
+    Icon: BriefcaseBusiness,
+    bullets: ['Summary', 'Experiences', 'Key achievements'],
+    cta: 'Arrange for a meeting.',
+    emailSubject: 'Anhtranviet.com | Arrange for a meeting',
+    message: 'Tôi muốn nhận trao đổi về nhu cầu tuyển dụng.',
+    cvHref: '/Tran-Viet-Anh-CMO-Leadership-Profile.html',
+  },
+  {
+    id: 'collab',
+    label: 'Collaboration',
+    eyebrow: 'Strategic Conversation',
+    title: 'Foster shared success.',
+    intent: 'Dành cho talk, podcast, partnership hoặc dự án sắp triển khai.',
+    Icon: Mic2,
+    bullets: ['Start-ups', 'Transformation / GTM', 'Podcast / event / advisory'],
+    cta: 'Start a conversation',
+    emailSubject: 'Anhtranviet.com | Strategic Collaboration',
+    message: 'Tôi muốn trao đổi về nhu cầu hợp tác.',
+  },
+];
+
 const GLOBAL_STYLES = `
   .text-outline-white { -webkit-text-stroke: 1px white; }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -407,7 +450,7 @@ const ScrambleText = ({ text, trigger }) => {
     clearInterval(intervalRef.current);
 
     intervalRef.current = setInterval(() => {
-      setDisplayText(prev => 
+      setDisplayText(
         text.split("")
           .map((char, index) => {
             if (index < iteration) return text[index];
@@ -473,8 +516,8 @@ const CountUp = ({ value, duration = 700 }) => {
     const raw = String(value);
     const match = raw.match(/[0-9]+(?:\\.[0-9]+)?/);
     if (!match) {
-      setDisplay(raw);
-      return;
+      const t = setTimeout(() => setDisplay(raw), 0);
+      return () => clearTimeout(t);
     }
 
     const num = parseFloat(match[0]);
@@ -626,7 +669,7 @@ const ScrollMouseHint = ({ axis = 'vertical', dark = false }) => {
           dark ? 'border-black/35' : 'border-white/35'
         } ${isVertical ? 'h-10 w-6' : 'h-6 w-10'}`}
       >
-        <motion.span
+        <MotionSpan
           className={`absolute rounded-full ${
             dark ? 'bg-black/55' : 'bg-white/70'
           } ${isVertical ? 'h-2.5 w-1.5 left-1/2 -translate-x-1/2' : 'h-1.5 w-2.5 top-1/2 -translate-y-1/2'}`}
@@ -653,54 +696,26 @@ const FloatingAction = ({ children, distance = 4, duration = 2.8 }) => (
 
 const ORBIT_DEGS = [45, 135, 225, 315];
 const HUD_GLYPHS = ['Δ', 'Σ', '⊗', '⎔'];
+const MotionSpan = motion.span;
+const LOADER_LOGO_PARTS = [
+  { key: "a", title: "(A) - Anh.TranViet", iconSrc: "/assets/loader/part-1.png" },
+  { key: "strategy", title: "Strategy", iconSrc: "/assets/loader/part-2.png" },
+  { key: "creative", title: "Growth", iconSrc: "/assets/loader/part-3.png" },
+  { key: "growth", title: "(#FFFF00) - Creative", iconSrc: "/assets/loader/part-4.png" },
+];
+const LOADER_PART_LAYOUT = [
+  { top: 22, left: 25, side: 'left' },
+  { top: 40, left: 75, side: 'right' },
+  { top: 60, left: 25, side: 'left' },
+  { top: 78, left: 75, side: 'right' },
+];
 
 const CreditLoader = ({ onComplete }) => {
   const LOADER_DURATION = 3360;
-  const logoParts = [
-    { key: "a", title: "(A) - Anh.TranViet", iconSrc: "/assets/loader/part-1.png" },
-    { key: "strategy", title: "Strategy", iconSrc: "/assets/loader/part-2.png" },
-    { key: "creative", title: "Growth", iconSrc: "/assets/loader/part-3.png" },
-    { key: "growth", title: "(#FFFF00) - Creative", iconSrc: "/assets/loader/part-4.png" },
-  ];
+  const logoParts = LOADER_LOGO_PARTS;
   const [progress, setProgress] = useState(0);
   const progressRef = useRef(0);
-  const layout = useMemo(() => {
-    const rows = [22, 40, 60, 78];
-    const sides = ['left', 'right', 'left', 'right'];
-    const shuffle = (arr) => {
-      const copy = [...arr];
-      for (let i = copy.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    };
-    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-    const shuffledRows = shuffle(rows);
-    const shuffledSides = shuffle(sides);
-
-    const isNearCenter = (top, left) => {
-      const dx = left - 50;
-      const dy = top - 50;
-      return Math.hypot(dx, dy) < 20;
-    };
-
-    return logoParts.map((_, idx) => {
-      const baseTop = shuffledRows[idx];
-      const topJitter = (Math.random() * 6) - 3;
-      const top = clamp(baseTop + topJitter, 18, 84);
-      const side = shuffledSides[idx];
-      const baseLeft = side === 'left' ? 25 : 75;
-      const leftJitter = (Math.random() * 4) - 2;
-      const left = clamp(baseLeft + leftJitter, 22, 78);
-      if (isNearCenter(top, left)) {
-        const bumpedLeft = clamp(left + (side === 'left' ? -8 : 8), 22, 78);
-        const bumpedTop = clamp(top + (top < 50 ? -6 : 6), 18, 84);
-        return { top: bumpedTop, left: bumpedLeft, side };
-      }
-      return { top, left, side };
-    });
-  }, []);
+  const layout = LOADER_PART_LAYOUT;
 
   useEffect(() => {
     let raf = null;
@@ -935,12 +950,13 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false); 
   
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSent, setIsSent] = useState(false);
-  const [submitError, setSubmitError] = useState("");
+  const [activeContactRouteId, setActiveContactRouteId] = useState('ceo');
+  const [isChoosingContactChannel, setIsChoosingContactChannel] = useState(false);
+  const [isContactMessageCopied, setIsContactMessageCopied] = useState(false);
+  const [contactActionStatus, setContactActionStatus] = useState("");
+  const [hasExpDetailScrolled, setHasExpDetailScrolled] = useState(false);
 
   const containerRef = useRef(null);
-  const formRef = useRef(null);
   const expRefs = useRef([]);
   const activeIdxRef = useRef(0);
   const servicesOuterRef = useRef(null);
@@ -959,6 +975,30 @@ export default function App() {
 
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+  const activeContactRoute = useMemo(
+    () => CONTACT_ROUTES.find((route) => route.id === activeContactRouteId) || CONTACT_ROUTES[0],
+    [activeContactRouteId]
+  );
+  const contactEmailBody = useMemo(
+    () =>
+      [
+        'Xin chào Anh Trần,',
+        '',
+        activeContactRoute.message,
+        '',
+        '- Nội dung trao đổi: ',
+        '- Company / brand: ',
+        '- Expected timeline: ',
+        '',
+        'Trân trọng.',
+      ].join('\n'),
+    [activeContactRoute.message]
+  );
+  const contactMailtoHref = `mailto:anh@anhtranviet.com?subject=${encodeURIComponent(activeContactRoute.emailSubject)}&body=${encodeURIComponent(contactEmailBody)}`;
+  const contactZaloMessage = `${activeContactRoute.emailSubject}\n\n${contactEmailBody}`;
+  const contactCvHref = activeContactRoute.cvHref
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}${activeContactRoute.cvHref}`
+    : '';
 
   const { scrollYProgress: servicesProgress } = useScroll({
     target: servicesOuterRef,
@@ -970,6 +1010,21 @@ export default function App() {
   );
   const servicesX = useTransform(servicesProgress, [0, 1], ['0%', `-${servicesMaxTranslatePct}%`]);
 
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    const previousRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    const resetScrollBeforeUnload = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('beforeunload', resetScrollBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', resetScrollBeforeUnload);
+      window.history.scrollRestoration = previousRestoration;
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -1114,6 +1169,13 @@ export default function App() {
   }, [isLoading, isUnlocked]);
 
   useEffect(() => {
+    if (selectedExp) {
+      const t = setTimeout(() => setHasExpDetailScrolled(false), 0);
+      return () => clearTimeout(t);
+    }
+  }, [selectedExp]);
+
+  useEffect(() => {
     if (isLoading || !isUnlocked || selectedExp) {
       document.body.style.overflow = 'hidden';
       document.body.style.overscrollBehavior = 'none';
@@ -1127,58 +1189,29 @@ export default function App() {
     };
   }, [isLoading, isUnlocked, selectedExp]);
 
-  const handleFormSubmit = async () => {
-    if (isSent || isSubmitting) return;
+  const handleContactRouteChange = useCallback((id) => {
+    setActiveContactRouteId(id);
+    setIsChoosingContactChannel(false);
+    setIsContactMessageCopied(false);
+    setContactActionStatus("");
+  }, []);
 
-    if (formRef.current && !formRef.current.checkValidity()) {
-        formRef.current.reportValidity();
-        return;
-    }
-
-    const formData = new FormData(formRef.current);
-    const payload = {
-      name: (formData.get('Name') || '').toString().trim(),
-      brand: (formData.get('Brand') || '').toString().trim(),
-      email: (formData.get('Email') || '').toString().trim(),
-      message: (formData.get('Message') || '').toString().trim(),
-    };
-
-    setSubmitError("");
-    setIsSubmitting(true);
-
+  const handleCopyAndOpenZalo = useCallback(async () => {
+    const zaloWindow = window.open('about:blank', '_blank');
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        const detail = (data?.detail || data?.error || '').toString();
-
-        if (detail === 'SMTP_AUTH_MISSING' || detail === 'SMTP_HOST_MISSING') {
-          throw new Error('SMTP_NOT_CONFIGURED');
-        }
-
-        throw new Error('REQUEST_FAILED');
-      }
-
-      setIsSent(true);
-    } catch (error) {
-      const code = error instanceof Error ? error.message : 'UNKNOWN';
-
-      if (code === 'SMTP_NOT_CONFIGURED') {
-        setSubmitError('Server email chưa cấu hình SMTP. Vui lòng cập nhật file .env.');
-      } else if (code === 'Failed to fetch') {
-        setSubmitError('Không kết nối được dịch vụ gửi form. Vui lòng thử lại sau.');
-      } else {
-        setSubmitError('Không thể gửi lúc này. Vui lòng thử lại sau.');
-      }
-    } finally {
-      setIsSubmitting(false);
+      await navigator.clipboard.writeText(contactZaloMessage);
+      setIsContactMessageCopied(true);
+      setContactActionStatus('Copied message to clipboard and opened Zalo.');
+    } catch {
+      setIsContactMessageCopied(false);
+      setContactActionStatus('Opened Zalo. Clipboard copy was blocked by the browser.');
     }
-  };
+    if (zaloWindow) {
+      zaloWindow.location.href = 'https://zalo.me/84919999781';
+    } else {
+      window.location.href = 'https://zalo.me/84919999781';
+    }
+  }, [contactZaloMessage]);
 
   useEffect(() => {
     document.title = "Anh Trần Việt | Creative Marketing Strategy & Growth";
@@ -1263,7 +1296,11 @@ export default function App() {
     window.requestAnimationFrame(() => {
       const element = document.getElementById(id);
       if (!element) return;
-      window.scrollTo({ top: element.offsetTop, behavior });
+      const top = Math.max(0, element.getBoundingClientRect().top + window.scrollY);
+      window.scrollTo({ top, behavior });
+      window.setTimeout(() => {
+        servicesPinUpdateRef.current?.();
+      }, behavior === 'smooth' ? 450 : 0);
     });
   }, []);
 
@@ -1383,7 +1420,8 @@ export default function App() {
   useEffect(() => {
     if (worksInView && openWorkIdxRef.current === null) {
       openWorkIdxRef.current = 0;
-      setOpenWorkIdx(0);
+      const t = setTimeout(() => setOpenWorkIdx(0), 0);
+      return () => clearTimeout(t);
     }
   }, [worksInView]);
 
@@ -1505,16 +1543,6 @@ export default function App() {
     []
   );
 
-  const contactCards = useMemo(
-    () => [
-      { label: 'Email', val: 'anh@anhtranviet.com', icon: <Mail size={18} />, url: 'mailto:anh@anhtranviet.com' },
-      { label: 'Hotline', val: '091.9999.781', icon: <Phone size={18} />, url: 'tel:+84919999781' },
-      { label: 'Zalo', val: 'Chat now', icon: <MessageCircle size={18} />, url: 'https://zalo.me/84919999781' },
-      { label: 'Fanpage', val: 'Follow me', icon: <Facebook size={18} />, url: 'https://www.facebook.com/4nhtran/' }
-    ],
-    []
-  );
-
   // Gallery Navigation (scroll-driven)
 
   return (
@@ -1603,7 +1631,20 @@ export default function App() {
                       <p className="text-lg md:text-2xl font-bold text-gray-400 mb-3 md:mb-5">{selectedExp.company}</p>
                     </div>
                   </div>
-                  <div className="min-h-0 overflow-y-auto pr-1 md:pr-2 scrollbar-hide">
+                  <div className="relative min-h-0 overflow-hidden">
+                    {!hasExpDetailScrolled && (
+                      <div className="md:hidden pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 opacity-70">
+                        <ScrollMouseHint axis="vertical" />
+                      </div>
+                    )}
+                    <div
+                      className="h-full min-h-0 overflow-y-auto pr-1 md:pr-2 scrollbar-hide"
+                      onScroll={(e) => {
+                        if (!hasExpDetailScrolled && e.currentTarget.scrollTop > 6) {
+                          setHasExpDetailScrolled(true);
+                        }
+                      }}
+                    >
                     <div className="space-y-2 md:space-y-3">
                       <p className="text-gray-300 italic text-base md:text-lg leading-relaxed">{selectedExp.desc}</p>
                       {selectedExp.details.map((detail, idx) => (
@@ -1612,6 +1653,7 @@ export default function App() {
                           <span>{detail}</span>
                         </div>
                       ))}
+                    </div>
                     </div>
                   </div>
                 </div>
@@ -1735,7 +1777,7 @@ export default function App() {
           style={{ height: `${(1 + servicesMaxTranslatePct / 100) * 100}vh` }}
         >
           <div ref={servicesInnerRef} className="h-screen overflow-hidden">
-            <div className="h-full flex flex-col justify-center bg-[#050505]">
+            <div className="h-full flex flex-col justify-center">
               <div className="pt-6 md:pt-8">
                 <SectionTitle key={isLoading ? 'services-loading' : 'services-ready'} title="Expertise" subtitle="Services" />
               </div>
@@ -1820,85 +1862,146 @@ export default function App() {
       </section>
 
       {/* CONNECT SECTION */}
-      <section id="connect" className="relative min-h-[80vh] bg-[#030303] pt-32 md:pt-40 pb-20 overflow-hidden z-10">
+      <section id="connect" className="relative min-h-[90vh] bg-[#030303] pt-28 md:pt-36 pb-20 overflow-hidden z-10">
         <SectionTransitionGlow />
         <div className="relative z-10 max-w-7xl mx-auto w-full px-4 md:px-6">
-          <SectionTitle title="Connect" subtitle="Contact" />
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-end">
-            <div>
-              <motion.h3 className="text-6xl md:text-[12rem] font-black uppercase leading-[0.8] mb-12 tracking-tighter" whileHover={{ skewX: -5 }}>
-                Let's <br /> Talk <span className="text-pink-500">.</span>
-              </motion.h3>
-              <form
-                ref={formRef}
-                className={`space-y-6 w-full max-w-xl transition-opacity ${isSent ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleFormSubmit();
-                }}
-              >
-                <input type="text" name="Name" placeholder="Người liên hệ" required disabled={isSent || isSubmitting} className="w-full bg-transparent border-b border-gray-600 focus:border-pink-500 outline-none py-3 text-white transition disabled:opacity-60 disabled:cursor-not-allowed" />
-                <input type="text" name="Brand" placeholder="Tên thương hiệu" required disabled={isSent || isSubmitting} className="w-full bg-transparent border-b border-gray-600 focus:border-pink-500 outline-none py-3 text-white transition disabled:opacity-60 disabled:cursor-not-allowed" />
-                <input type="email" name="Email" placeholder="Email" required disabled={isSent || isSubmitting} className="w-full bg-transparent border-b border-gray-600 focus:border-pink-500 outline-none py-3 text-white transition disabled:opacity-60 disabled:cursor-not-allowed" />
-                <textarea name="Message" placeholder="Nội dung trao đổi" rows="4" required disabled={isSent || isSubmitting} className="w-full bg-transparent border-b border-gray-600 focus:border-pink-500 outline-none py-3 text-white transition resize-none disabled:opacity-60 disabled:cursor-not-allowed" />
-              </form>
-            </div>
-            <div className="flex flex-col gap-12 items-end w-full pr-3 md:pr-0">
-              <div className="relative">
-                <AnimatePresence>
-                  {isSent && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                      className="absolute -top-16 left-1/2 -translate-x-1/2 bg-white text-black px-4 py-2 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center gap-2 whitespace-nowrap z-20 shadow-lg"
-                    >
-                      <CheckCircle2 size={14} className="text-green-500" /> Thanks! I will reply within 24h.
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                <FloatingAction distance={isSent ? 0 : 4} duration={3.2}>
-                  <MagneticElement distance={isSent ? 0 : 0.5}>
-                    <div 
-                      className={`w-40 h-40 md:w-64 md:h-64 rounded-full border border-pink-500/30 flex items-center justify-center p-2 transition-all duration-500 ${isSent ? 'opacity-50 pointer-events-none' : 'group cursor-pointer hover:scale-105'}`}
-                      onClick={handleFormSubmit}
-                    >
-                      <div className={`w-full h-full rounded-full flex items-center justify-center text-black overflow-hidden relative transition-colors duration-500 ${isSent ? 'bg-white' : 'bg-pink-500'}`}>
-                        <div className="relative z-10 flex flex-col items-center gap-2">
-                          {isSubmitting ? <div className="animate-spin w-6 h-6 border-2 border-black border-t-transparent rounded-full" /> : isSent ? <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8" /> : <Send className="w-6 h-6 md:w-8 md:h-8" />}
-                          <span className="font-black text-[10px] md:text-xs uppercase tracking-widest">{isSubmitting ? 'Sending' : isSent ? 'Sent' : 'Send Hi'}</span>
-                        </div>
-                        {!isSent && !isSubmitting && <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />}
+          <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <SectionTitle title="Choose Your Next Move" subtitle="Contact" />
+            <p className="max-w-xl text-gray-300 text-base md:text-xl leading-relaxed md:pb-8">
+              Chọn ngữ cảnh mà bạn muốn bắt đầu cuộc trò chuyện.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:gap-6 max-w-5xl mx-auto">
+            <div className="grid gap-3">
+              {CONTACT_ROUTES.map((route, index) => {
+                const Icon = route.Icon;
+                const isActive = route.id === activeContactRouteId;
+                return (
+                  <button
+                    key={route.id}
+                    type="button"
+                    onClick={() => handleContactRouteChange(route.id)}
+                    className={`group w-full text-left border transition-all duration-300 px-5 md:px-6 py-5 md:py-6 rounded-lg ${
+                      isActive
+                        ? 'bg-white text-black border-white'
+                        : 'bg-white/[0.035] border-white/10 text-white hover:bg-white/[0.08] hover:border-white/25'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <span className={`font-mono text-xs ${isActive ? 'text-pink-600' : 'text-gray-500'}`}>0{index + 1}</span>
+                        <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-pink-600' : 'text-pink-500'}`} />
+                        <span className="text-xl md:text-2xl font-black uppercase tracking-tight truncate">{route.label}</span>
                       </div>
+                      <ArrowDownRight className={`w-5 h-5 shrink-0 transition-transform ${isActive ? 'rotate-45' : 'group-hover:rotate-45'}`} />
                     </div>
-                  </MagneticElement>
-                </FloatingAction>
-                {!!submitError && (
-                  <p className="mt-4 text-right text-xs font-bold tracking-wide text-red-400 max-w-[220px] md:max-w-none">
-                    {submitError}
-                  </p>
-                )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="relative border border-white/10 bg-white/[0.04] rounded-lg overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-500 to-transparent" />
+              <div className="grid">
+                <div className="p-6 md:p-8 flex flex-col justify-between border-b border-white/10">
+                  <div>
+                    <div className="inline-flex items-center gap-2 text-pink-500 font-mono text-xs uppercase tracking-[0.25em]">
+                      <Sparkles className="w-4 h-4" />
+                      {activeContactRoute.eyebrow}
+                    </div>
+                    <h3 className="mt-5 text-4xl md:text-6xl font-black uppercase leading-[0.92] tracking-tighter">
+                      {activeContactRoute.title}
+                    </h3>
+                    <p className="mt-6 text-gray-300 text-base md:text-lg leading-relaxed">
+                      {activeContactRoute.intent}
+                    </p>
+                  </div>
+
+                  <div className="mt-10 space-y-3">
+                    {activeContactRoute.bullets.map((bullet) => (
+                      <div key={bullet} className="flex items-center gap-3 text-sm md:text-base text-gray-300">
+                        <CheckCircle2 className="w-5 h-5 text-pink-500 shrink-0" />
+                        <span>{bullet}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-6 md:p-8 flex flex-col justify-center">
+                  <div>
+                    {!isChoosingContactChannel ? (
+                      <button
+                        type="button"
+                        onClick={() => setIsChoosingContactChannel(true)}
+                        className="group w-full min-h-[72px] bg-pink-500 text-black rounded-full flex items-center justify-center gap-3 px-6 text-xs md:text-sm font-black uppercase tracking-[0.2em] hover:bg-white transition-colors"
+                      >
+                        <Send className="w-5 h-5" />
+                        {activeContactRoute.cta}
+                      </button>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <a
+                          href={contactMailtoHref}
+                          onClick={() => setContactActionStatus('Opened email app with prefilled subject and body.')}
+                          className="min-h-[72px] bg-pink-500 text-black rounded-full flex items-center justify-center gap-3 px-5 text-xs font-black uppercase tracking-[0.18em] hover:bg-white transition-colors"
+                        >
+                          <Mail className="w-5 h-5" />
+                          Send email
+                        </a>
+                        <button
+                          type="button"
+                          onClick={handleCopyAndOpenZalo}
+                          className="min-h-[72px] border border-white/15 bg-white/[0.06] text-white rounded-full flex items-center justify-center gap-3 px-5 text-xs font-black uppercase tracking-[0.18em] hover:border-pink-500/60 hover:bg-white/[0.1] transition-colors"
+                        >
+                          {isContactMessageCopied ? <CheckCircle2 className="w-5 h-5 text-pink-500" /> : <Copy className="w-5 h-5 text-pink-500" />}
+                          {isContactMessageCopied ? 'Copied + open Zalo' : 'Copy + open Zalo'}
+                        </button>
+                      </div>
+                    )}
+
+                    {isChoosingContactChannel && (
+                      <div className="mt-4 border border-white/10 bg-black/35 rounded-lg p-4">
+                        <div className="text-[10px] uppercase tracking-widest text-pink-500 font-black">Preview</div>
+                        <div className="mt-3 text-xs text-gray-400 font-mono leading-relaxed">
+                          <div className="text-white">Subject: {activeContactRoute.emailSubject}</div>
+                          <pre className="mt-2 whitespace-pre-wrap font-mono text-gray-400">{contactEmailBody}</pre>
+                        </div>
+                        {contactActionStatus && (
+                          <div className="mt-3 text-[11px] uppercase tracking-widest text-white font-black flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-pink-500" />
+                            {contactActionStatus}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {contactCvHref && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          window.location.href = contactCvHref;
+                        }}
+                        className="mt-4 w-full text-left min-h-[56px] border border-white/10 bg-black/30 rounded-lg px-4 py-4 hover:border-pink-500/60 hover:bg-white/[0.06] transition-colors flex items-center justify-between gap-4"
+                      >
+                        <div>
+                          <div className="text-[10px] uppercase tracking-widest text-gray-500 font-black">For HR</div>
+                          <div className="mt-1 text-sm font-bold text-white">Open profile PDF</div>
+                        </div>
+                        <Download className="w-5 h-5 text-pink-500 shrink-0" />
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="pt-20 pb-10 px-6 border-t border-white/5 relative z-10">
+      <footer className="pt-16 pb-10 px-6 border-t border-white/5 relative z-10">
         <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-4xl">
-            {contactCards.map((item, idx) => (
-              <a key={idx} href={item.url} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-3 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-gray-400 group-hover:bg-pink-500 group-hover:text-black group-hover:border-pink-500 transition-all">
-                  {item.icon}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-600 mb-0.5">{item.label}</span>
-                  <span className="text-[11px] font-black uppercase tracking-widest text-gray-300 group-hover:text-white transition-colors">{item.val}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-
-          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 pt-12 border-t border-white/5 opacity-50">
+          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 opacity-50">
             <span className="text-[10px] font-bold uppercase tracking-[0.4em]">
               © {new Date().getFullYear()} Anh Tran Viet
             </span>

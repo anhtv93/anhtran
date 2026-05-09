@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CV_anhtranviet.com</title>
+    <style>
+      @page {
+        margin: 10mm;
+      }
+
+      :root {
+        --bg: #050505;
+        --panel: rgba(255, 255, 255, 0.055);
+        --line: rgba(255, 255, 255, 0.12);
+        --text: #ffffff;
+        --muted: #a1a1aa;
+        --soft: #d4d4d8;
+        --pink: #ec4899;
+        --purple: #a855f7;
+        font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 12% 8%, rgba(236, 72, 153, 0.28), transparent 34%),
+          radial-gradient(circle at 88% 18%, rgba(168, 85, 247, 0.16), transparent 32%),
+          linear-gradient(135deg, #050505 0%, #101013 46%, #050505 100%);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.12;
+        background-image:
+          linear-gradient(to right, rgba(255, 255, 255, 0.22) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+        background-size: 34px 34px;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .floating-actions {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+      }
+
+      .float-button {
+        position: fixed;
+        pointer-events: auto;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+        background: rgba(5, 5, 5, 0.78);
+        color: #fff;
+        text-decoration: none;
+        backdrop-filter: blur(18px);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 180ms ease, background 180ms ease;
+      }
+
+      .float-button:hover {
+        transform: translateY(-1px);
+        background: rgba(18, 18, 20, 0.9);
+      }
+
+      .back-button {
+        top: 18px;
+        left: 18px;
+        width: 46px;
+        height: 46px;
+        font-size: 30px;
+        line-height: 1;
+        padding: 0 3px 3px 0;
+      }
+
+      .print-button {
+        right: 22px;
+        bottom: 22px;
+        width: 62px;
+        height: 62px;
+        background: rgba(236, 72, 153, 0.92);
+        color: #050505;
+        border-color: rgba(236, 72, 153, 0.92);
+      }
+
+      .print-button svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .wrap {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 34px 0 52px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero {
+        min-height: 42vh;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 28px;
+        align-items: end;
+        padding: 28px 0 32px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .eyebrow,
+      .label {
+        color: var(--pink);
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 14px 0 0;
+        font-size: clamp(54px, 10vw, 128px);
+        line-height: 0.82;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+      }
+
+      .outline {
+        color: transparent;
+        -webkit-text-stroke: 1px #fff;
+      }
+
+      .intro {
+        font-size: clamp(18px, 2.2vw, 28px);
+        line-height: 1.3;
+        color: var(--soft);
+        margin: 0;
+      }
+
+      .contact {
+        margin-top: 26px;
+        display: grid;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .card,
+      .role,
+      .work {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      h2 {
+        margin: 0 0 22px;
+        font-size: clamp(42px, 6vw, 82px);
+        line-height: 0.88;
+        letter-spacing: -0.05em;
+        text-transform: uppercase;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: clamp(24px, 3vw, 42px);
+        line-height: 0.95;
+        text-transform: uppercase;
+        letter-spacing: -0.04em;
+      }
+
+      section {
+        margin-top: 38px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      .works-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+
+      .card {
+        padding: 18px;
+        min-height: 170px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .card p,
+      .work p,
+      .role p,
+      li {
+        color: var(--soft);
+        line-height: 1.58;
+      }
+
+      .card p {
+        margin: 14px 0 0;
+        font-size: 16px;
+      }
+
+      .work {
+        padding: 16px;
+        min-height: 172px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .work-category {
+        color: var(--pink);
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 700;
+      }
+
+      .work h3 {
+        margin-top: 12px;
+        font-size: clamp(22px, 2vw, 30px);
+      }
+
+      .work p {
+        margin: 12px 0 0;
+        font-size: 15px;
+      }
+
+      .roles {
+        display: grid;
+        gap: 16px;
+      }
+
+      .role {
+        padding: 18px;
+      }
+
+      .role-top {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .period {
+        color: var(--pink);
+        font-family: "Courier New", monospace;
+        font-size: 13px;
+        letter-spacing: 0.12em;
+      }
+
+      .company {
+        margin-top: 8px;
+        color: var(--muted);
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      ul {
+        margin: 12px 0 0;
+        padding-left: 18px;
+      }
+
+      li {
+        margin: 5px 0;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .tag {
+        border: 1px solid rgba(236, 72, 153, 0.28);
+        color: var(--pink);
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .print-only {
+        display: none;
+      }
+
+      .profile-footer {
+        margin-top: 42px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        text-align: center;
+      }
+
+      @media (max-width: 780px) {
+        .wrap {
+          width: min(100% - 24px, 1120px);
+          padding-top: 26px;
+        }
+
+        .hero,
+        .grid,
+        .works-grid,
+        .role-top {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        :root {
+          --bg: #fff;
+          --panel: #fff;
+          --line: #bbb;
+          --text: #111;
+          --muted: #333;
+          --soft: #333;
+          --pink: #111;
+          --purple: #111;
+          color: #111 !important;
+          background: #fff !important;
+        }
+
+        html,
+        body {
+          color: #111 !important;
+          background: #fff !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        body *,
+        *,
+        *::before,
+        *::after {
+          color: #111 !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          box-shadow: none !important;
+          text-shadow: none !important;
+          filter: none !important;
+        }
+
+        body::before,
+        .floating-actions {
+          display: none !important;
+          content: none !important;
+          visibility: hidden !important;
+        }
+
+        .wrap {
+          display: block !important;
+          width: 100%;
+          padding: 0;
+          color: #111 !important;
+          background: #fff !important;
+        }
+
+        h1 {
+          font-size: 56px;
+        }
+
+        h2 {
+          font-size: 34px;
+          margin-bottom: 10px;
+        }
+
+        h3 {
+          font-size: 19px;
+          letter-spacing: -0.02em;
+        }
+
+        section {
+          margin-top: 20px;
+        }
+
+        .hero,
+        .card,
+        .role,
+        .work {
+          border: 1px solid #bbb !important;
+          background: #fff !important;
+          color: #111 !important;
+          break-inside: avoid;
+        }
+
+        .hero {
+          min-height: auto;
+          padding: 0 0 18px;
+          gap: 18px;
+        }
+
+        .grid {
+          gap: 8px;
+        }
+
+        .card,
+        .work,
+        .role {
+          padding: 10px;
+        }
+
+        .card {
+          min-height: 0;
+        }
+
+        .work {
+          min-height: 0;
+        }
+
+        .roles {
+          gap: 8px;
+        }
+
+        .role-top {
+          grid-template-columns: 92px 1fr;
+          gap: 12px;
+        }
+
+        .intro,
+        .contact,
+        .card p,
+        .work p,
+        .role p,
+        li {
+          font-size: 11px;
+          line-height: 1.38;
+        }
+
+        ul {
+          margin-top: 7px;
+        }
+
+        li {
+          margin: 3px 0;
+        }
+
+        .tags {
+          margin-top: 7px;
+          gap: 5px;
+        }
+
+        .tag {
+          padding: 3px 6px;
+          font-size: 8px;
+        }
+
+        .outline {
+          color: #111;
+          -webkit-text-stroke: 0;
+        }
+
+        .intro,
+        .contact,
+        .card p,
+        .work p,
+        .role p,
+        li,
+        .company {
+          color: #333;
+        }
+
+        .eyebrow,
+        .label,
+        .period,
+        .work-category,
+        .tag,
+        .profile-footer {
+          color: #111;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="floating-actions">
+      <button class="float-button back-button" type="button" aria-label="Back" onclick="history.length > 1 ? history.back() : window.location.href = '/#contact-demo'">‹</button>
+      <button class="float-button print-button" type="button" aria-label="Print or save PDF" onclick="window.print()">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 8V3h10v5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M7 18H5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M7 14h10v7H7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+          <path d="M17 11h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+    <main class="wrap">
+      <header class="hero">
+        <div>
+          <div class="eyebrow">/ Profile.PDF</div>
+          <h1>Anh <span class="outline">Trần Việt</span></h1>
+        </div>
+        <div>
+          <p class="intro">Strategy - Growth - Creative.</p>
+          <div class="contact">
+            <div>Phone: 091.9999.781</div>
+            <div>Email: anh@anhtranviet.com</div>
+            <div>Web: anhtranviet.com</div>
+          </div>
+        </div>
+      </header>
+
+      <section>
+        <div class="label">/ Services</div>
+        <h2>Expertise</h2>
+        <div class="grid">
+          <article class="card">
+            <h3>Brand Strategy</h3>
+            <p>Xây dựng và định vị ADN thương hiệu độc bản, R&amp;D sản phẩm giúp SME nổi bật giữa số đông.</p>
+          </article>
+          <article class="card">
+            <h3>Performance</h3>
+            <p>Thiết kế và tối ưu phễu chuyển đổi, quy trình từ Sales-Mar-Fin, tăng trưởng doanh thu dài hạn.</p>
+          </article>
+          <article class="card">
+            <h3>Martech</h3>
+            <p>Triển khai CRM, Automation và AI nâng cao hiệu suất đội ngũ và tối ưu năng suất marketing.</p>
+          </article>
+          <article class="card">
+            <h3>Omni channel</h3>
+            <p>Xây dựng chiến lược nội dung và triển khai đa kênh bán hàng, gia tăng nhận diện và chuyển đổi.</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="label">/ Journey</div>
+        <h2>Experience</h2>
+        <div class="roles">
+          <article class="role">
+            <div class="role-top">
+              <div class="period">2021 - 2025</div>
+              <div>
+                <h3>CEO</h3>
+                <div class="company">Dự Án Việt Nam</div>
+                <p>Kiến trúc sư trưởng cho hệ thống TMĐT xây dựng tiên phong duanvietnam.vn. Chịu trách nhiệm toàn diện từ chiến lược sản phẩm, vận hành đến tăng trưởng.</p>
+                <ul>
+                  <li>Chiến lược Go-to-Market: Thiết lập mô hình kinh doanh B2B2C, định vị duanvietnam.vn là hệ thống TMĐT tiên phong trong lĩnh vực xây dựng.</li>
+                  <li>Phát triển Core Product: Xây dựng Roadmap trên nền tảng Angular 8.0, tối ưu hoá UX và nâng cấp hệ thống dịch vụ.</li>
+                  <li>Thiết lập hệ thống quản trị: Xây dựng bộ máy nhân sự, văn hoá doanh nghiệp và hệ thống OKRs, KPIs cho Sales, Marketing, Tech, Finance với quy mô tinh gọn 20 nhân sự.</li>
+                  <li>P&amp;L: Chịu trách nhiệm về hiệu quả tài chính, tối ưu hóa chi phí vận hành linh hoạt theo từng thời điểm.</li>
+                  <li>Marketing: Thực hiện R&amp;D, hoạch định chiến lược, điều phối hoạt động Branding, Digital, Media.</li>
+                  <li>Scaling: Phát triển các dịch vụ B2B, B2C, mở rộng mạng lưới CTV, đàm phán hợp tác với các hiệp hội và tổ chức trong ngoài ngành.</li>
+                </ul>
+                <div class="tags"><span class="tag">Strategy</span><span class="tag">Leadership</span><span class="tag">Start-up</span><span class="tag">P&amp;L Management</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="role">
+            <div class="role-top">
+              <div class="period">2020</div>
+              <div>
+                <h3>Phó BP.Online</h3>
+                <div class="company">Hệ thống Nguyễn Văn Cừ</div>
+                <p>Dẫn dắt công cuộc Chuyển đổi số toàn diện, đưa thương hiệu truyền thống lâu đời thâm nhập thị trường TMĐT.</p>
+                <ul>
+                  <li>Strategy: Thực hiện R&amp;D định vị lại thương hiệu Nguyễn Văn Cừ, chuẩn hoá Brand Identity/Voice/Equity nhằm gắn kết hơn với tệp khách hàng hiện đại.</li>
+                  <li>Digital Transformation: Dịch chuyển trọng tâm từ bán lẻ truyền thống sang mô hình Omnichannel, ứng dụng công nghệ vào các hoạt động vận hành.</li>
+                  <li>Marketing: Xây dựng chiến lược BTL, tập trung Lead2Order và tối ưu hoá CVR, collab với các thương hiệu văn phòng phẩm, Art toys, Boardgames.</li>
+                  <li>E-commerce: Xây dựng hạ tầng TMĐT Website, E-com platforms, Logistics và triển khai các chương trình bán hàng, tìm kiếm nhà cung cấp.</li>
+                  <li>HRM: Tuyển dụng và đào tạo đội ngũ kế cận, thiết lập hệ thống KPIs, báo cáo chiến lược đến BOD.</li>
+                </ul>
+                <div class="tags"><span class="tag">Conversion</span><span class="tag">Branding</span><span class="tag">Data</span><span class="tag">CRM</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="role">
+            <div class="role-top">
+              <div class="period">2019</div>
+              <div>
+                <h3>Project Marketing</h3>
+                <div class="company">LEGO Education</div>
+                <p>Triển khai mở rộng chuỗi hoạt động Educate Market, định hình tư duy phụ huynh về phương pháp giáo dục STEAM.</p>
+                <ul>
+                  <li>Product Launch: Triển khai các chiến dịch ATL ra mắt sản phẩm chiến lược LEGO Education SPIKE Prime qua các campaign và hội thảo giáo dục.</li>
+                  <li>Brand Equity: Đảm bảo nhất quán thương hiệu LEGO Education trên hệ sinh thái digital của nhãn hàng và đối tác.</li>
+                  <li>Content Creation: Sản xuất các nội dung phục vụ campaign và nội dung media chất lượng cao.</li>
+                  <li>Performance: Trực tiếp làm việc với các Agency marketing, kết hợp Sales team tối ưu chỉ số CPL, ROAS, CAC, CLV.</li>
+                  <li>Partnerships: Thiết lập và vận hành mạng lưới phân phối chiến lược thông qua các đối tác giáo dục &amp; bán lẻ hàng đầu: MyKingdom, ILA, Sylvan Learning.</li>
+                  <li>Digital Transformation: Tiên phong chuyển đổi mô hình học tập với chiến dịch 'Vui học tại nhà', duy trì kết nối và giá trị thương hiệu xuyên suốt giai đoạn đại dịch COVID.</li>
+                </ul>
+                <div class="tags"><span class="tag">Branding</span><span class="tag">Creative</span><span class="tag">Scaling</span><span class="tag">Execution</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="role">
+            <div class="role-top">
+              <div class="period">2019</div>
+              <div>
+                <h3>Marketing Manager</h3>
+                <div class="company">FitForce Fitness</div>
+                <p>Xây dựng định vị thương hiệu Fitness cao cấp tại trung tâm Q1 và tối ưu hoá giá trị khách hàng.</p>
+                <ul>
+                  <li>Brand Positioning: Kiến tạo trải nghiệm khách hàng cao cấp thông qua: Brand Image/Voice premium, tăng trải nghiệm cá nhân hoá, kết hợp hình ảnh Influencers, các sự kiện membership độc quyền.</li>
+                  <li>Performance: Chỉ đạo sản xuất nội dung và trực tiếp triển khai các campaign BTL, tối ưu chỉ số CVR, CPL, ROAS, CAC.</li>
+                  <li>Growth: Đồng bộ Sales team khai thác tệp khách hàng mới tiềm năng, song song thiết lập hệ thống CRM re-targeting khách hàng cũ, thông qua các Activations tại cơ sở.</li>
+                  <li>Sales Optimization: R&amp;D, testing và launching các nhóm sản phẩm mới (giáo trình bài tập, thực phẩm bổ sung, sản phẩm hỗ trợ) thúc đẩy doanh thu và chỉ số CLV.</li>
+                  <li>PR &amp; Communication: Kết nối thành công các nhãn hàng thể thao và Influencers, KOCs, hành chính địa phương để tạo độ phủ và tăng uy tín thương hiệu.</li>
+                  <li>HRM: Tuyển dụng, đào tạo và quản lý đội ngũ nhân sự: Content, Performance, Media, báo cáo trực tiếp cho BOD.</li>
+                </ul>
+                <div class="tags"><span class="tag">Social Media</span><span class="tag">Branding</span><span class="tag">Event</span><span class="tag">Influencer</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="role">
+            <div class="role-top">
+              <div class="period">2018</div>
+              <div>
+                <h3>Sales &amp; Marketing</h3>
+                <div class="company">Ambassador Hotel</div>
+                <p>Đặt nền móng thương hiệu cho chi nhánh mới tại TP. Vũng Tàu, khai thác thị trường khu vực trung tâm thành phố.</p>
+                <ul>
+                  <li>Brand Positioning: Định vị rõ phân khúc tầm trung; dựa trên đặc điểm vị trí, tập trung vào nhóm khách hàng ưa thích du lịch trải nghiệm, ưu tiên tính tiện lợi, và nhóm khách hàng thích trải nghiệm ẩm thực mới lạ.</li>
+                  <li>Market Penetration: Triển khai chiến lược thâm nhập thị trường Vũng Tàu cho thương hiệu Ambassador ở mảng Hotel và Camellia ở mảng F&amp;B.</li>
+                  <li>Social Media: Xây dựng hệ thống kênh MXH cho Ambassador tập trung vào các nội dung hình ảnh tương tác nhằm tăng nhận diện và tạo phễu leads data.</li>
+                  <li>Brand Equity: Phát triển hình ảnh và đảm bảo nhất quán thương hiệu Online2Offline ở các chi nhánh.</li>
+                  <li>Networking: Duy trì quan hệ với các doanh nghiệp địa phương và các hiệp hội du lịch, khai thác tệp Corporate.</li>
+                  <li>Inventory Optimization: Tối ưu công suất phòng qua hệ thống OTA, TA, các kênh Booking online của hệ thống.</li>
+                </ul>
+                <div class="tags"><span class="tag">Social Media</span><span class="tag">Branding</span><span class="tag">Revenue</span><span class="tag">Execution</span></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="label">/ Gallery</div>
+        <h2>The Works</h2>
+        <div class="works-grid">
+          <article class="work">
+            <div>
+              <div class="work-category">Branding</div>
+              <h3>Đại diện thương hiệu</h3>
+            </div>
+            <p>Đại diện Dự Án Việt Nam nhận giải thưởng Top 10 Asia Top Brand Award 2024.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Marketing Strategy</div>
+              <h3>Tư vấn chiến lược thương hiệu</h3>
+            </div>
+            <p>Tái định vị thương hiệu Nước giải khát tỉnh Khánh Hòa, đưa thương hiệu trở lại đường đua và bắt kịp xu hướng.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Marketing Strategy</div>
+              <h3>Tư vấn chiến lược thương hiệu</h3>
+            </div>
+            <p>Định vị thương hiệu, xây dựng &amp; chuyển giao lộ trình phát triển nhân sự và chiến lược marketing dài hạn cho hệ thống Onsen Nhật.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Training</div>
+              <h3>Đào tạo nhân sự</h3>
+            </div>
+            <p>Thiết kế bài giảng và tổ chức đào tạo cho sản phẩm chiến lược mới cho chuỗi Trung tâm Tiếng Anh tại khu vực miền Nam.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Workshop</div>
+              <h3>Tổ chức sự kiện</h3>
+            </div>
+            <p>Tổ chức workshop 'Marketing gắn liền với quản trị SME' xây dựng uy tín thương hiệu và khai thác tệp khách hàng mục tiêu.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Event</div>
+              <h3>Chuyển đổi số Xây dựng</h3>
+            </div>
+            <p>Giới thiệu gói giải pháp 'Ứng dụng nền tảng TMĐT vào ngành xây dựng' tại sự kiện, giúp SMEs tối ưu vận hành và tăng trưởng.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Transformation</div>
+              <h3>Chuyển đổi số Nhà sách</h3>
+            </div>
+            <p>Xây dựng hệ thống TMĐT đa kênh, logistics, data management; hợp tác các nhãn hàng, NXB mới; triển khai kênh social media cho hệ thống.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Transformation</div>
+              <h3>Chuyển đổi số Giáo dục</h3>
+            </div>
+            <p>Sản xuất và phát hành series 'HỌC LÀM NHÀ PHÁT MINH CÔNG NGHỆ VỚI LEGO SPIKE PRIME'.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Ecommerce</div>
+              <h3>Xây dựng và vận hành hệ thống bán lẻ</h3>
+            </div>
+            <p>Xây dựng hệ thống TMĐT đa kênh, làm mới Brand Identity, đào tạo đội ngũ marketing mới cho doanh nghiệp.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Podcast</div>
+              <h3>Khách mời Podcast</h3>
+            </div>
+            <p>Chia sẻ câu chuyện khởi nghiệp Dự Án Việt Nam - Personal Branding.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Campaign</div>
+              <h3>Sản xuất Campaign</h3>
+            </div>
+            <p>Campaign tuyển dụng thu hút CTV xây dựng nhờ nội dung vui nhộn bắt trend, target nhóm người nội trợ.</p>
+          </article>
+          <article class="work">
+            <div>
+              <div class="work-category">Branding</div>
+              <h3>Sản xuất Media</h3>
+            </div>
+            <p>Xây dựng uy tín Dự Án Việt Nam qua những 'Video revew thành phẩm' chất lượng cao được đầu tư quay dựng bài bản, tăng branding &amp; trust.</p>
+          </article>
+        </div>
+      </section>
+      <footer class="profile-footer">View full version @ anhtranviet.com</footer>
+    </main>
+  </body>
+</html>
