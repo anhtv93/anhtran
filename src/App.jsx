@@ -305,7 +305,7 @@ const CONTACT_ROUTES = [
     title: 'Find the leak before starting.',
     intent: 'Dành cho SMEs muốn xây dựng thương hiệu, phễu bán hàng hoặc tìm ra điểm nghẽn ở đâu.',
     Icon: Building2,
-    bullets: ['Phân tích Marketing Strategy', 'Gợi ý ưu tiên hành động', 'Kế hoạch triển khai 14 ngày'],
+    bullets: ['Phân tích Marketing Strategy.', 'Gợi ý ưu tiên hành động.', 'Kế hoạch triển khai 14 ngày.'],
     cta: 'Audit my system',
     emailSubject: 'Anhtranviet.com | System Audit Request',
     message: 'Tôi muốn audit hệ thống growth/brand/funnel hiện tại.',
@@ -317,8 +317,8 @@ const CONTACT_ROUTES = [
     title: 'GET THE FOLIO-READY SNAPSHOT.',
     intent: 'Dành cho HR cần đặt lịch hẹn và tải profile ngắn gọn.',
     Icon: BriefcaseBusiness,
-    bullets: ['Summary', 'Experiences', 'Key achievements'],
-    cta: 'Arrange for a meeting.',
+    bullets: ['Summary.', 'Experiences.', 'Key achievements.'],
+    cta: 'Arrange for a meeting',
     emailSubject: 'Anhtranviet.com | Arrange for a meeting',
     message: 'Tôi muốn nhận trao đổi về nhu cầu tuyển dụng.',
     cvHref: '/Tran-Viet-Anh-CMO-Leadership-Profile.html',
@@ -330,7 +330,7 @@ const CONTACT_ROUTES = [
     title: 'Foster shared success.',
     intent: 'Dành cho talk, podcast, partnership hoặc dự án sắp triển khai.',
     Icon: Mic2,
-    bullets: ['Start-ups', 'Transformation / GTM', 'Podcast / event / advisory'],
+    bullets: ['Start-ups.', 'Transformation / GTM.', 'Podcast / event / advisory.'],
     cta: 'Start a conversation',
     emailSubject: 'Anhtranviet.com | Strategic Collaboration',
     message: 'Tôi muốn trao đổi về nhu cầu hợp tác.',
@@ -1047,6 +1047,8 @@ export default function App() {
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
+    window.__portfolioUnlockPreload?.();
+    document.documentElement.classList.remove('preload-lock');
     document.body.classList.remove('preload-lock');
     const previousRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
@@ -1165,6 +1167,11 @@ export default function App() {
 
     let raf = null;
     const onScroll = () => {
+      const rect = outer.getBoundingClientRect();
+      if (rect.top > 0 || rect.bottom < window.innerHeight) {
+        updatePin();
+        return;
+      }
       if (raf) return;
       raf = window.requestAnimationFrame(() => {
         raf = null;
@@ -1368,6 +1375,23 @@ export default function App() {
     setIsUnlocked(true);
     setIsMenuOpen(false);
 
+    if (id === 'home') {
+      const forceTop = () => {
+        const root = document.documentElement;
+        const previousScrollBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        root.style.scrollBehavior = previousScrollBehavior;
+        servicesPinUpdateRef.current?.();
+      };
+
+      forceTop();
+      window.requestAnimationFrame(forceTop);
+      window.setTimeout(forceTop, 80);
+      window.setTimeout(forceTop, 260);
+      return;
+    }
+
     window.requestAnimationFrame(() => {
       const element = document.getElementById(id);
       if (!element) return;
@@ -1519,13 +1543,18 @@ export default function App() {
     () =>
       SERVICES.map((s, idx) => (
         <div key={s.title} className="w-full lg:w-1/2 shrink-0 pr-4 md:pr-6 lg:pr-8">
-          <div className="group relative bg-white/5 border border-white/10 rounded-3xl p-6 md:p-7 min-h-[200px] h-[42vh] md:h-[46vh] max-h-[340px] md:max-h-[360px] flex flex-col justify-between overflow-hidden transition-colors duration-300 hover:bg-white/[0.06] hover:border-white/20">
+          <motion.div
+            initial={{ backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
+            whileInView={{ backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.2)' }}
+            viewport={{ once: false, amount: 0.55 }}
+            className={`group relative border rounded-3xl p-6 md:p-7 min-h-[200px] h-[42vh] md:h-[46vh] max-h-[340px] md:max-h-[360px] flex flex-col justify-between overflow-hidden transition-colors duration-300 hover:bg-white/[0.06] hover:border-white/20 ${activeServiceIdx === idx ? 'bg-white/[0.06] border-white/20' : 'bg-white/5 border-white/10'}`}
+          >
             <div
               className={`absolute inset-0 bg-pink-500/10 opacity-0 transition-opacity duration-300 ${
                 activeServiceIdx === idx ? 'opacity-100' : 'group-hover:opacity-100'
               }`}
             />
-            <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className={`absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent transition-opacity ${activeServiceIdx === idx ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
             <div>
               <div className="text-pink-500 mb-6 relative z-10">
                 <s.Icon className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14" />
@@ -1533,7 +1562,7 @@ export default function App() {
               <h3 className="text-3xl md:text-4xl lg:text-4xl font-bold mb-4 uppercase tracking-tight leading-tight relative z-10">{s.title}</h3>
             </div>
             <p className="text-gray-300 leading-relaxed text-base md:text-lg max-w-3xl relative z-10">{s.desc}</p>
-          </div>
+          </motion.div>
         </div>
       )),
     [activeServiceIdx]
@@ -1620,12 +1649,17 @@ export default function App() {
         <motion.div 
           key={s.label}
           initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0, backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.2)' }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true, amount: 0.3 }}
           className="group relative overflow-hidden p-4 md:p-6 border border-white/10 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center text-center hover:bg-white/[0.06] hover:border-white/20 transition-colors"
         >
-          <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <motion.div
+            className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: false, amount: 0.65 }}
+          />
           <span className="relative z-10 text-3xl md:text-5xl font-black mb-1 md:mb-2">
             <CountUp value={s.value} duration={650} />
           </span>
@@ -1988,11 +2022,26 @@ export default function App() {
                       viewport={{ once: true, amount: 0.35 }}
                       className="group relative pl-14 md:pl-20"
                     >
-                      <div className="absolute left-0 top-6 h-10 w-10 md:h-16 md:w-16 rounded-full border border-white/10 bg-[#050505] flex items-center justify-center group-hover:border-pink-500/60 transition-colors">
+                      <motion.div
+                        initial={{ borderColor: 'rgba(255,255,255,0.1)' }}
+                        whileInView={{ borderColor: 'rgba(236,72,153,0.6)' }}
+                        viewport={{ once: false, amount: 0.55 }}
+                        className="absolute left-0 top-6 h-10 w-10 md:h-16 md:w-16 rounded-full border bg-[#050505] flex items-center justify-center group-hover:border-pink-500/60 transition-colors"
+                      >
                         <Icon className="w-5 h-5 md:w-6 md:h-6 text-pink-500" />
-                      </div>
-                      <div className="relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-white/[0.035] p-5 md:p-7 hover:bg-white/[0.06] hover:border-white/20 transition-colors">
-                        <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </motion.div>
+                      <motion.div
+                        initial={{ backgroundColor: 'rgba(255,255,255,0.035)', borderColor: 'rgba(255,255,255,0.1)' }}
+                        whileInView={{ backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.2)' }}
+                        viewport={{ once: false, amount: 0.55 }}
+                        className="relative overflow-hidden rounded-2xl md:rounded-3xl border p-5 md:p-7 hover:bg-white/[0.06] hover:border-white/20 transition-colors"
+                      >
+                        <motion.div
+                          className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: false, amount: 0.55 }}
+                        />
                         <div className="relative flex items-start justify-between gap-4">
                           <div className="min-w-0">
                             <div className="flex items-center gap-3 mb-4">
@@ -2011,7 +2060,7 @@ export default function App() {
                             </span>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     </motion.article>
                   );
                 })}

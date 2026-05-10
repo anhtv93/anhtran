@@ -1,6 +1,70 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #050505;
+      }
+
+      html.preload-lock,
+      body.preload-lock {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        touch-action: none !important;
+      }
+
+      #root {
+        min-height: 100vh;
+        background: #050505;
+      }
+
+      #root:empty::before {
+        content: "ANH.TRANVIET";
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.7);
+        font: 900 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        letter-spacing: 0.42em;
+        text-transform: uppercase;
+        background:
+          radial-gradient(circle at 50% 45%, rgba(236, 72, 153, 0.18), transparent 34%),
+          #050505;
+        animation: initial-pulse 1.2s ease-in-out infinite;
+      }
+
+      @keyframes initial-pulse {
+        0%, 100% { opacity: 0.42; }
+        50% { opacity: 1; }
+      }
+    </style>
+    <script>
+      (function () {
+        var locked = true;
+        var prevent = function (event) {
+          if (!locked) return;
+          event.preventDefault();
+        };
+        document.documentElement.classList.add('preload-lock');
+        window.scrollTo(0, 0);
+        window.addEventListener('touchmove', prevent, { passive: false, capture: true });
+        window.addEventListener('wheel', prevent, { passive: false, capture: true });
+        window.__portfolioUnlockPreload = function () {
+          locked = false;
+          document.documentElement.classList.remove('preload-lock');
+          document.body && document.body.classList.remove('preload-lock');
+          window.removeEventListener('touchmove', prevent, { capture: true });
+          window.removeEventListener('wheel', prevent, { capture: true });
+          window.scrollTo(0, 0);
+        };
+      })();
+    </script>
     <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -21,47 +85,6 @@
     <meta property="og:url" content="https://anhtranviet.com" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <style>
-      html,
-      body {
-        margin: 0;
-        min-height: 100%;
-        background: #050505;
-      }
-
-      body.preload-lock {
-        overflow: hidden;
-        overscroll-behavior: none;
-        touch-action: none;
-      }
-
-      #root {
-        min-height: 100vh;
-        background: #050505;
-      }
-
-      #root:empty::before {
-        content: "ANH.TRANVIET";
-        position: fixed;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: rgba(255, 255, 255, 0.7);
-        font: 900 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        letter-spacing: 0.42em;
-        text-transform: uppercase;
-        background:
-          radial-gradient(circle at 50% 45%, rgba(236, 72, 153, 0.18), transparent 34%),
-          #050505;
-        animation: initial-pulse 1.2s ease-in-out infinite;
-      }
-
-      @keyframes initial-pulse {
-        0%, 100% { opacity: 0.42; }
-        50% { opacity: 1; }
-      }
-    </style>
   </head>
   <body class="preload-lock">
     <!-- Google Tag Manager (noscript) -->
