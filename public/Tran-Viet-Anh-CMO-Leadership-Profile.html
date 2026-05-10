@@ -251,6 +251,87 @@
         font-size: 15px;
       }
 
+
+      .credentials-list {
+        position: relative;
+        display: grid;
+        gap: 12px;
+        margin-top: 8px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .credentials-list::before {
+        content: "";
+        position: absolute;
+        left: 22px;
+        top: 12px;
+        bottom: 12px;
+        width: 1px;
+        background: linear-gradient(to bottom, var(--pink), rgba(255, 255, 255, 0.18), transparent);
+      }
+
+      .credential {
+        position: relative;
+        display: grid;
+        grid-template-columns: 46px minmax(0, 1fr) 68px;
+        gap: 10px;
+        align-items: start;
+        padding: 12px 20px 12px 12px;
+        background: var(--panel);
+        max-width: 100%;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .credential-icon {
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--bg);
+        color: var(--pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        position: relative;
+        z-index: 1;
+      }
+
+      .credential-type {
+        color: var(--pink);
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+
+      .credential h3 {
+        font-size: clamp(20px, 2.2vw, 30px);
+        overflow-wrap: anywhere;
+      }
+
+      .credential p {
+        margin: 8px 0 0;
+        color: var(--soft);
+        line-height: 1.5;
+      }
+
+      .credential-year {
+        font-size: clamp(26px, 3.1vw, 40px);
+        line-height: 0.9;
+        color: rgba(255, 255, 255, 0.12);
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        text-align: right;
+        padding-right: 4px;
+        white-space: nowrap;
+      }
+
       .roles {
         display: grid;
         gap: 16px;
@@ -408,7 +489,8 @@
         .hero,
         .card,
         .role,
-        .work {
+        .work,
+        .credential {
           border: 1px solid #bbb !important;
           background: #fff !important;
           color: #111 !important;
@@ -427,7 +509,8 @@
 
         .card,
         .work,
-        .role {
+        .role,
+        .credential {
           padding: 10px;
         }
 
@@ -437,6 +520,41 @@
 
         .work {
           min-height: 0;
+        }
+
+        .credentials-list {
+          gap: 8px;
+        }
+
+        .credentials-list::before {
+          left: 17px;
+        }
+
+        .credential {
+          grid-template-columns: 32px minmax(0, 1fr) 50px;
+          gap: 6px;
+          padding: 8px 14px 8px 8px;
+          break-inside: avoid;
+        }
+
+        .credential-icon {
+          width: 30px;
+          height: 30px;
+        }
+
+        .credential-type {
+          font-size: 8px;
+          margin-bottom: 5px;
+        }
+
+        .credential p {
+          font-size: 11px;
+          line-height: 1.35;
+        }
+
+        .credential-year {
+          font-size: 21px;
+          padding-right: 3px;
         }
 
         .roles {
@@ -654,6 +772,50 @@
                 <div class="tags"><span class="tag">Social Media</span><span class="tag">Branding</span><span class="tag">Revenue</span><span class="tag">Execution</span></div>
               </div>
             </div>
+          </article>
+        </div>
+      </section>
+
+
+      <section>
+        <div class="label">/ Beyond Work</div>
+        <h2>Credentials</h2>
+        <div class="credentials-list">
+          <article class="credential">
+            <div class="credential-icon">E</div>
+            <div>
+              <div class="credential-type">Education</div>
+              <h3>Đại học HUTECH</h3>
+              <p>Tài chính ngân hàng</p>
+            </div>
+            <div class="credential-year">2011</div>
+          </article>
+          <article class="credential">
+            <div class="credential-icon">E</div>
+            <div>
+              <div class="credential-type">Education</div>
+              <h3>Cao đẳng HUTECH</h3>
+              <p>Quản trị doanh nghiệp SMEs</p>
+            </div>
+            <div class="credential-year">2013</div>
+          </article>
+          <article class="credential">
+            <div class="credential-icon">A</div>
+            <div>
+              <div class="credential-type">Award</div>
+              <h3>Cuộc thi khởi nghiệp HUTECH</h3>
+              <p>Giải thưởng Top 20</p>
+            </div>
+            <div class="credential-year">2015</div>
+          </article>
+          <article class="credential">
+            <div class="credential-icon">C</div>
+            <div>
+              <div class="credential-type">Community</div>
+              <h3>CLB Doanh Nhân Trẻ TP. HCM</h3>
+              <p>Thành viên Ban Đại Sứ</p>
+            </div>
+            <div class="credential-year">2025</div>
           </article>
         </div>
       </section>

@@ -17,7 +17,10 @@ import {
   Mic2,
   ArrowUp,
   CheckCircle2,
-  Sparkles
+  Sparkles,
+  GraduationCap,
+  Trophy,
+  HandHeart
 } from 'lucide-react';
 
 const SERVICES = [
@@ -310,7 +313,7 @@ const CONTACT_ROUTES = [
   {
     id: 'hr',
     label: 'HR / Recruiter',
-    eyebrow: 'Strategic Profile.',
+    eyebrow: 'Strategic Profile',
     title: 'GET THE FOLIO-READY SNAPSHOT.',
     intent: 'Dành cho HR cần đặt lịch hẹn và tải profile ngắn gọn.',
     Icon: BriefcaseBusiness,
@@ -331,6 +334,37 @@ const CONTACT_ROUTES = [
     cta: 'Start a conversation',
     emailSubject: 'Anhtranviet.com | Strategic Collaboration',
     message: 'Tôi muốn trao đổi về nhu cầu hợp tác.',
+  },
+];
+
+const PROFILE_MARKERS = [
+  {
+    type: "Education",
+    year: "2011",
+    title: "Đại học HUTECH",
+    detail: "Tài chính ngân hàng",
+    Icon: GraduationCap,
+  },
+  {
+    type: "Education",
+    year: "2013",
+    title: "Cao đẳng HUTECH",
+    detail: "Quản trị doanh nghiệp SMEs",
+    Icon: GraduationCap,
+  },
+  {
+    type: "Award",
+    year: "2015",
+    title: "Cuộc thi khởi nghiệp HUTECH",
+    detail: "Giải thưởng Top 20",
+    Icon: Trophy,
+  },
+  {
+    type: "Community",
+    year: "2025",
+    title: "CLB Doanh Nhân Trẻ TP. HCM",
+    detail: "Thành viên Ban Đại Sứ",
+    Icon: HandHeart,
   },
 ];
 
@@ -479,7 +513,7 @@ const ScrambleText = ({ text, trigger }) => {
   );
 };
 
-const SectionTitle = ({ title, subtitle, dark = false, subtitleClassName = '' }) => {
+const SectionTitle = ({ title, subtitle, dark = false, subtitleClassName = '', reserveTwoLines = false }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, margin: "-10% 0px -10% 0px" });
 
@@ -497,7 +531,7 @@ const SectionTitle = ({ title, subtitle, dark = false, subtitleClassName = '' })
           initial={{ y: "100%" }}
           animate={isInView ? { y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
-          className={`text-5xl md:text-8xl font-black uppercase leading-none ${dark ? 'text-black' : 'text-white'}`}
+          className={`text-5xl md:text-8xl font-black uppercase leading-none whitespace-pre-line ${reserveTwoLines ? 'md:min-h-[2em]' : ''} ${dark ? 'text-black' : 'text-white'}`}
         >
           <ScrambleText text={title} trigger={isInView} />
         </motion.h2>
@@ -711,7 +745,7 @@ const LOADER_PART_LAYOUT = [
 ];
 
 const CreditLoader = ({ onComplete }) => {
-  const LOADER_DURATION = 3360;
+  const LOADER_DURATION = 2400;
   const logoParts = LOADER_LOGO_PARTS;
   const [progress, setProgress] = useState(0);
   const progressRef = useRef(0);
@@ -738,7 +772,7 @@ const CreditLoader = ({ onComplete }) => {
   }, [LOADER_DURATION]);
 
   useEffect(() => {
-    const extra = 600; // allow text scan to finish
+    const extra = 250; // keep the intro snappy on mobile
     const t = setTimeout(onComplete, LOADER_DURATION + extra);
     return () => clearTimeout(t);
   }, [onComplete, LOADER_DURATION]);
@@ -1013,14 +1047,24 @@ export default function App() {
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
+    document.body.classList.remove('preload-lock');
     const previousRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
+    const forceHome = () => window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    forceHome();
+    const raf = window.requestAnimationFrame(forceHome);
+    const t1 = window.setTimeout(forceHome, 80);
+    const t2 = window.setTimeout(forceHome, 320);
+
     const resetScrollBeforeUnload = () => {
       window.scrollTo(0, 0);
     };
     window.addEventListener('beforeunload', resetScrollBeforeUnload);
     return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
       window.removeEventListener('beforeunload', resetScrollBeforeUnload);
       window.history.scrollRestoration = previousRestoration;
     };
@@ -1176,16 +1220,47 @@ export default function App() {
   }, [selectedExp]);
 
   useEffect(() => {
-    if (isLoading || !isUnlocked || selectedExp) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.overscrollBehavior = 'none';
+    if (typeof window === 'undefined') return undefined;
+
+    const shouldLock = isLoading || !isUnlocked || selectedExp;
+    const body = document.body;
+    const root = document.documentElement;
+    const previousBodyOverflow = body.style.overflow;
+    const previousRootOverflow = root.style.overflow;
+    const previousBodyOverscroll = body.style.overscrollBehavior;
+    const previousRootOverscroll = root.style.overscrollBehavior;
+    const previousTouchAction = body.style.touchAction;
+
+    const preventPageScroll = (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.closest('[data-allow-scroll="true"]')) return;
+      event.preventDefault();
+    };
+
+    if (shouldLock) {
+      body.style.overflow = 'hidden';
+      root.style.overflow = 'hidden';
+      body.style.overscrollBehavior = 'none';
+      root.style.overscrollBehavior = 'none';
+      body.style.touchAction = isLoading || !isUnlocked ? 'none' : previousTouchAction;
+      window.addEventListener('touchmove', preventPageScroll, { passive: false, capture: true });
+      window.addEventListener('wheel', preventPageScroll, { passive: false, capture: true });
     } else {
-      document.body.style.overflow = 'auto';
-      document.body.style.overscrollBehavior = '';
+      body.style.overflow = previousBodyOverflow || 'auto';
+      root.style.overflow = previousRootOverflow || '';
+      body.style.overscrollBehavior = previousBodyOverscroll || '';
+      root.style.overscrollBehavior = previousRootOverscroll || '';
+      body.style.touchAction = previousTouchAction || '';
     }
+
     return () => {
-      document.body.style.overflow = 'auto';
-      document.body.style.overscrollBehavior = '';
+      window.removeEventListener('touchmove', preventPageScroll, { capture: true });
+      window.removeEventListener('wheel', preventPageScroll, { capture: true });
+      body.style.overflow = previousBodyOverflow || 'auto';
+      root.style.overflow = previousRootOverflow || '';
+      body.style.overscrollBehavior = previousBodyOverscroll || '';
+      root.style.overscrollBehavior = previousRootOverscroll || '';
+      body.style.touchAction = previousTouchAction || '';
     };
   }, [isLoading, isUnlocked, selectedExp]);
 
@@ -1305,7 +1380,14 @@ export default function App() {
   }, []);
 
   const startJourney = useCallback(() => {
+    if (isLoading) return;
+
     pendingJourneyScrollRef.current = true;
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    root.style.scrollBehavior = previousScrollBehavior;
     setIsLoading(true);
 
     window.requestAnimationFrame(() => {
@@ -1313,18 +1395,17 @@ export default function App() {
         setIsUnlocked(true);
         const element = document.getElementById('services');
         if (!element) return;
-        const root = document.documentElement;
-        const previousScrollBehavior = root.style.scrollBehavior;
+        const nextScrollBehavior = root.style.scrollBehavior;
         root.style.scrollBehavior = 'auto';
-        window.scrollTo({ top: element.offsetTop, behavior: 'auto' });
-        root.style.scrollBehavior = previousScrollBehavior;
+        window.scrollTo({ top: element.offsetTop, left: 0, behavior: 'auto' });
+        root.style.scrollBehavior = nextScrollBehavior;
 
         window.requestAnimationFrame(() => {
           servicesPinUpdateRef.current?.();
         });
       });
     });
-  }, []);
+  }, [isLoading]);
 
   const handleLoadingComplete = useCallback(() => {
     setIsLoading(false);
@@ -1335,6 +1416,14 @@ export default function App() {
     pendingJourneyScrollRef.current = false;
 
     window.requestAnimationFrame(() => {
+      const element = document.getElementById('services');
+      if (element) {
+        const root = document.documentElement;
+        const previousScrollBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        window.scrollTo({ top: element.offsetTop, left: 0, behavior: 'auto' });
+        root.style.scrollBehavior = previousScrollBehavior;
+      }
       servicesPinUpdateRef.current?.();
     });
   }, []);
@@ -1410,6 +1499,7 @@ export default function App() {
       { label: 'Services', id: 'services' },
       { label: 'Experience', id: 'experience' },
       { label: 'Works', id: 'works' },
+      { label: 'Credentials', id: 'credentials' },
       { label: 'Connect', id: 'connect' }
     ],
     []
@@ -1429,12 +1519,13 @@ export default function App() {
     () =>
       SERVICES.map((s, idx) => (
         <div key={s.title} className="w-full lg:w-1/2 shrink-0 pr-4 md:pr-6 lg:pr-8">
-          <div className="group relative bg-white/5 border border-white/10 rounded-3xl p-6 md:p-7 min-h-[200px] h-[42vh] md:h-[46vh] max-h-[340px] md:max-h-[360px] flex flex-col justify-between overflow-hidden">
+          <div className="group relative bg-white/5 border border-white/10 rounded-3xl p-6 md:p-7 min-h-[200px] h-[42vh] md:h-[46vh] max-h-[340px] md:max-h-[360px] flex flex-col justify-between overflow-hidden transition-colors duration-300 hover:bg-white/[0.06] hover:border-white/20">
             <div
               className={`absolute inset-0 bg-pink-500/10 opacity-0 transition-opacity duration-300 ${
                 activeServiceIdx === idx ? 'opacity-100' : 'group-hover:opacity-100'
               }`}
             />
+            <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div>
               <div className="text-pink-500 mb-6 relative z-10">
                 <s.Icon className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14" />
@@ -1532,12 +1623,13 @@ export default function App() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true, amount: 0.3 }}
-          className="p-4 md:p-6 border border-white/10 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center text-center hover:bg-white/5 transition-colors"
+          className="group relative overflow-hidden p-4 md:p-6 border border-white/10 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center text-center hover:bg-white/[0.06] hover:border-white/20 transition-colors"
         >
-          <span className="text-3xl md:text-5xl font-black mb-1 md:mb-2">
+          <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="relative z-10 text-3xl md:text-5xl font-black mb-1 md:mb-2">
             <CountUp value={s.value} duration={650} />
           </span>
-          <span className="text-[9px] md:text-[11px] uppercase font-bold tracking-widest text-pink-500">{s.label}</span>
+          <span className="relative z-10 text-[9px] md:text-[11px] uppercase font-bold tracking-widest text-pink-500">{s.label}</span>
         </motion.div>
       )),
     []
@@ -1633,12 +1725,13 @@ export default function App() {
                   </div>
                   <div className="relative min-h-0 overflow-hidden">
                     {!hasExpDetailScrolled && (
-                      <div className="md:hidden pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 opacity-70">
+                      <div className="md:hidden pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 opacity-100">
                         <ScrollMouseHint axis="vertical" />
                       </div>
                     )}
                     <div
                       className="h-full min-h-0 overflow-y-auto pr-1 md:pr-2 scrollbar-hide"
+                      data-allow-scroll="true"
                       onScroll={(e) => {
                         if (!hasExpDetailScrolled && e.currentTarget.scrollTop > 6) {
                           setHasExpDetailScrolled(true);
@@ -1769,8 +1862,9 @@ export default function App() {
       </section>
 
       {/* SERVICES SECTION */}
-      <section id="services" className="py-0 px-0 relative z-10">
+      <section id="services" className="py-0 px-0 relative z-10 overflow-hidden">
         <SectionTransitionGlow />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-60"><div className="absolute right-[-14%] top-20 h-[360px] w-[360px] rounded-full border border-pink-500/14" /><div className="absolute right-[-7%] top-40 h-[240px] w-[240px] rounded-full border border-white/10" /></div>
         <div
           ref={servicesOuterRef}
           className="relative max-w-7xl mx-auto px-4 md:px-6"
@@ -1802,8 +1896,9 @@ export default function App() {
       </section>
 
       {/* EXPERIENCE SECTION */}
-      <section id="experience" className="py-24 md:py-40 relative z-10">
+      <section id="experience" className="py-24 md:py-40 relative z-10 overflow-hidden">
         <SectionTransitionGlow />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-60"><div className="absolute left-[-14%] top-28 h-[400px] w-[400px] rounded-full border border-pink-500/14" /><div className="absolute left-[-7%] top-48 h-[250px] w-[250px] rounded-full border border-white/10" /></div>
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <SectionTitle title="Experience" subtitle="Journey" />
           <div className="flex flex-col">
@@ -1823,8 +1918,9 @@ export default function App() {
       </section>
 
       {/* WORKS SECTION */}
-      <section id="works" ref={worksSectionRef} className="py-24 md:py-40 bg-white text-black relative z-10">
+      <section id="works" ref={worksSectionRef} className="py-24 md:py-40 bg-white text-black relative z-10 overflow-hidden">
         <SectionTransitionGlow light />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-70"><div className="absolute right-[-14%] top-16 h-[390px] w-[390px] rounded-full border border-pink-500/18" /><div className="absolute right-[-6%] top-36 h-[250px] w-[250px] rounded-full border border-black/10" /></div>
         <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4 md:pt-6">
           <SectionTitle title="The Works" subtitle="Gallery" dark={true} subtitleClassName="text-purple-500" />
 
@@ -1844,8 +1940,9 @@ export default function App() {
       </section>
 
       {/* STATS SECTION */}
-      <section className="py-24 md:py-40 bg-[#050505] relative z-10">
+      <section className="py-24 md:py-40 bg-[#050505] relative z-10 overflow-hidden">
         <SectionTransitionGlow />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-55"><div className="absolute right-[-12%] top-20 h-[360px] w-[360px] rounded-full border border-pink-500/14" /><div className="absolute right-[-5%] top-40 h-[230px] w-[230px] rounded-full border border-white/10" /></div>
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
             <div>
@@ -1861,13 +1958,76 @@ export default function App() {
         </div>
       </section>
 
+      {/* CREDENTIALS SECTION */}
+      <section id="credentials" className="py-24 md:py-40 bg-[#050505] relative z-10 overflow-hidden">
+        <SectionTransitionGlow />
+        <div className="absolute inset-0 pointer-events-none opacity-70">
+          <div className="absolute right-[-18%] top-8 h-[420px] w-[420px] rounded-full border border-pink-500/20" />
+          <div className="absolute right-[-10%] top-28 h-[300px] w-[300px] rounded-full border border-white/10" />
+          <div className="absolute left-0 bottom-0 h-px w-full bg-gradient-to-r from-transparent via-pink-500/40 to-transparent" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6">
+          <div className="max-w-3xl">
+            <SectionTitle title="Credentials" subtitle="Beyond Work" />
+          </div>
+          <p className="-mt-4 md:-mt-12 text-lg md:text-xl text-gray-400 leading-relaxed max-w-md">
+            Nền tảng học vấn, giải thưởng và hoạt động cộng đồng.
+          </p>
+
+          <div className="relative mt-12 md:mt-16 max-w-5xl ml-auto">
+            <div className="absolute left-5 md:left-8 top-8 bottom-8 w-px bg-gradient-to-b from-pink-500 via-white/20 to-transparent" />
+            <div className="grid gap-4 md:gap-5">
+                {PROFILE_MARKERS.map((item, index) => {
+                  const Icon = item.Icon;
+                  return (
+                    <motion.article
+                      key={`${item.year}-${item.title}`}
+                      initial={{ opacity: 0, y: 34 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                      viewport={{ once: true, amount: 0.35 }}
+                      className="group relative pl-14 md:pl-20"
+                    >
+                      <div className="absolute left-0 top-6 h-10 w-10 md:h-16 md:w-16 rounded-full border border-white/10 bg-[#050505] flex items-center justify-center group-hover:border-pink-500/60 transition-colors">
+                        <Icon className="w-5 h-5 md:w-6 md:h-6 text-pink-500" />
+                      </div>
+                      <div className="relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-white/[0.035] p-5 md:p-7 hover:bg-white/[0.06] hover:border-white/20 transition-colors">
+                        <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-3 mb-4">
+                              <span className="text-[10px] font-black uppercase tracking-[0.28em] text-pink-500">{item.type}</span>
+                            </div>
+                            <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tighter leading-none">
+                              {item.title}
+                            </h3>
+                            <p className="mt-3 text-gray-400 text-base md:text-lg leading-relaxed">
+                              {item.detail}
+                            </p>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <span className="block text-4xl md:text-6xl font-black tracking-tighter text-white/10 group-hover:text-pink-500/25 transition-colors">
+                              {item.year}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.article>
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CONNECT SECTION */}
       <section id="connect" className="relative min-h-[90vh] bg-[#030303] pt-28 md:pt-36 pb-20 overflow-hidden z-10">
         <SectionTransitionGlow />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-55"><div className="absolute left-[-14%] top-16 h-[390px] w-[390px] rounded-full border border-pink-500/14" /><div className="absolute left-[-6%] top-36 h-[250px] w-[250px] rounded-full border border-white/10" /></div>
         <div className="relative z-10 max-w-7xl mx-auto w-full px-4 md:px-6">
-          <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <SectionTitle title="Choose Your Next Move" subtitle="Contact" />
-            <p className="max-w-xl text-gray-300 text-base md:text-xl leading-relaxed md:pb-8">
+          <div className="mb-8 md:mb-12">
+            <SectionTitle title="Choose Your Next Move" subtitle="Contact" reserveTwoLines />
+            <p className="-mt-4 md:-mt-12 max-w-xl text-gray-300 text-base md:text-xl leading-relaxed">
               Chọn ngữ cảnh mà bạn muốn bắt đầu cuộc trò chuyện.
             </p>
           </div>
@@ -1986,7 +2146,7 @@ export default function App() {
                       >
                         <div>
                           <div className="text-[10px] uppercase tracking-widest text-gray-500 font-black">For HR</div>
-                          <div className="mt-1 text-sm font-bold text-white">Open profile PDF</div>
+                          <div className="mt-1 text-sm font-bold text-white">Open Profile.PDF</div>
                         </div>
                         <Download className="w-5 h-5 text-pink-500 shrink-0" />
                       </button>
