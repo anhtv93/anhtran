@@ -8,7 +8,6 @@ import {
   ArrowDownRight,
   BriefcaseBusiness,
   Building2,
-  Copy,
   Download,
   ShoppingBag,
   Send,
@@ -22,6 +21,13 @@ import {
   Trophy,
   HandHeart
 } from 'lucide-react';
+
+
+const ZaloIcon = ({ className = '' }) => (
+  <span className={`box-border inline-grid shrink-0 place-items-center rounded-[4px] border font-black leading-none ${className}`}>
+    <span className="block text-[10px] leading-none translate-y-[0.25px]">Z</span>
+  </span>
+);
 
 const SERVICES = [
   { title: "Brand Strategy", Icon: Target, desc: "Xây dựng và tái định vị brand positioning dựa trên marketing research, internal data và customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
@@ -291,10 +297,10 @@ const preloadImage = (src) => {
 };
 
 const STATS = [
-  { value: "5.000M+", label: "Total Budget" },
+  { value: "5B+ VND", label: "Total Budget" },
   { value: "50+", label: "Project Delivered" },
-  { value: "100+", label: "Team Members" },
-  { value: "03PM", label: "Digital Transform." }
+  { value: "100+", label: "Team members" },
+  { value: "10+", label: "Industries" }
 ];
 
 const CONTACT_ROUTES = [
@@ -984,10 +990,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false); 
   
-  const [activeContactRouteId, setActiveContactRouteId] = useState('ceo');
+  const [activeContactRouteId, setActiveContactRouteId] = useState('hr');
   const [isChoosingContactChannel, setIsChoosingContactChannel] = useState(false);
-  const [isContactMessageCopied, setIsContactMessageCopied] = useState(false);
-  const [contactActionStatus, setContactActionStatus] = useState("");
   const [hasExpDetailScrolled, setHasExpDetailScrolled] = useState(false);
 
   const containerRef = useRef(null);
@@ -1274,19 +1278,14 @@ export default function App() {
   const handleContactRouteChange = useCallback((id) => {
     setActiveContactRouteId(id);
     setIsChoosingContactChannel(false);
-    setIsContactMessageCopied(false);
-    setContactActionStatus("");
   }, []);
 
   const handleCopyAndOpenZalo = useCallback(async () => {
     const zaloWindow = window.open('about:blank', '_blank');
     try {
       await navigator.clipboard.writeText(contactZaloMessage);
-      setIsContactMessageCopied(true);
-      setContactActionStatus('Copied message to clipboard and opened Zalo.');
     } catch {
-      setIsContactMessageCopied(false);
-      setContactActionStatus('Opened Zalo. Clipboard copy was blocked by the browser.');
+      // Clipboard can be blocked by browser permissions; still open Zalo.
     }
     if (zaloWindow) {
       zaloWindow.location.href = 'https://zalo.me/84919999781';
@@ -1374,6 +1373,9 @@ export default function App() {
   const scrollToSection = useCallback((id, behavior = 'smooth') => {
     setIsUnlocked(true);
     setIsMenuOpen(false);
+    if (id === 'connect') {
+      handleContactRouteChange('hr');
+    }
 
     if (id === 'home') {
       const forceTop = () => {
@@ -1401,7 +1403,7 @@ export default function App() {
         servicesPinUpdateRef.current?.();
       }, behavior === 'smooth' ? 450 : 0);
     });
-  }, []);
+  }, [handleContactRouteChange]);
 
   const startJourney = useCallback(() => {
     if (isLoading) return;
@@ -2139,68 +2141,49 @@ export default function App() {
 
                 <div className="p-6 md:p-8 flex flex-col justify-center">
                   <div>
-                    {!isChoosingContactChannel ? (
-                      <button
-                        type="button"
-                        onClick={() => setIsChoosingContactChannel(true)}
-                        className="group w-full min-h-[72px] bg-pink-500 text-black rounded-full flex items-center justify-center gap-3 px-6 text-xs md:text-sm font-black uppercase tracking-[0.2em] hover:bg-white transition-colors"
-                      >
-                        <Send className="w-5 h-5" />
-                        {activeContactRoute.cta}
-                      </button>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <a
-                          href={contactMailtoHref}
-                          onClick={() => setContactActionStatus('Opened email app with prefilled subject and body.')}
-                          className="min-h-[72px] bg-pink-500 text-black rounded-full flex items-center justify-center gap-3 px-5 text-xs font-black uppercase tracking-[0.18em] hover:bg-white transition-colors"
-                        >
-                          <Mail className="w-5 h-5" />
-                          Send email
-                        </a>
-                        <button
-                          type="button"
-                          onClick={handleCopyAndOpenZalo}
-                          className="min-h-[72px] border border-white/15 bg-white/[0.06] text-white rounded-full flex items-center justify-center gap-3 px-5 text-xs font-black uppercase tracking-[0.18em] hover:border-pink-500/60 hover:bg-white/[0.1] transition-colors"
-                        >
-                          {isContactMessageCopied ? <CheckCircle2 className="w-5 h-5 text-pink-500" /> : <Copy className="w-5 h-5 text-pink-500" />}
-                          {isContactMessageCopied ? 'Copied + open Zalo' : 'Copy + open Zalo'}
-                        </button>
-                      </div>
-                    )}
-
-                    {isChoosingContactChannel && (
-                      <div className="mt-4 border border-white/10 bg-black/35 rounded-lg p-4">
-                        <div className="text-[10px] uppercase tracking-widest text-pink-500 font-black">Preview</div>
-                        <div className="mt-3 text-xs text-gray-400 font-mono leading-relaxed">
-                          <div className="text-white">Subject: {activeContactRoute.emailSubject}</div>
-                          <pre className="mt-2 whitespace-pre-wrap font-mono text-gray-400">{contactEmailBody}</pre>
-                        </div>
-                        {contactActionStatus && (
-                          <div className="mt-3 text-[11px] uppercase tracking-widest text-white font-black flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-pink-500" />
-                            {contactActionStatus}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
                     {contactCvHref && (
                       <button
                         type="button"
                         onClick={() => {
                           window.location.href = contactCvHref;
                         }}
-                        className="mt-4 w-full text-left min-h-[56px] border border-white/10 bg-black/30 rounded-lg px-4 py-4 hover:border-pink-500/60 hover:bg-white/[0.06] transition-colors flex items-center justify-between gap-4"
+                        className="group relative mb-3 w-full min-h-[72px] overflow-hidden bg-pink-500 text-black rounded-full flex items-center justify-center gap-3 px-6 text-xs md:text-sm font-black uppercase tracking-[0.18em] hover:bg-white transition-colors shadow-[0_0_34px_rgba(236,72,153,0.28)]"
                       >
-                        <div>
-                          <div className="text-[10px] uppercase tracking-widest text-gray-500 font-black">For HR</div>
-                          <div className="mt-1 text-sm font-bold text-white">Open Profile.PDF</div>
-                        </div>
-                        <Download className="w-5 h-5 text-pink-500 shrink-0" />
+                        <span className="absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/45 to-transparent group-hover:translate-x-[420%] transition-transform duration-700" />
+                        <Download className="relative z-10 w-5 h-5" />
+                        <span className="relative z-10">Download CV / Profile</span>
                       </button>
                     )}
-                  </div>
+
+                    {!isChoosingContactChannel ? (
+                      <button
+                        type="button"
+                        onClick={() => setIsChoosingContactChannel(true)}
+                        className={`group w-full min-h-[72px] rounded-full flex items-center justify-center gap-3 px-6 text-xs md:text-sm font-black uppercase tracking-[0.18em] transition-colors ${contactCvHref ? 'border border-pink-500/60 bg-black/30 text-white hover:bg-white/[0.08] hover:border-pink-500' : 'bg-pink-500 text-black hover:bg-white'}`}
+                      >
+                        <Send className={`w-5 h-5 ${contactCvHref ? 'text-pink-500' : ''}`} />
+                        {activeContactRoute.cta}
+                      </button>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={handleCopyAndOpenZalo}
+                          className="min-h-[72px] border border-pink-500/60 bg-black/30 text-white rounded-full flex items-center justify-center gap-3 px-5 text-xs font-black uppercase tracking-[0.18em] hover:bg-white/[0.08] hover:border-pink-500 transition-colors"
+                        >
+                          <ZaloIcon className="w-5 h-5 border-pink-500 text-pink-500" />
+                          Zalo
+                        </button>
+                        <a
+                          href={contactMailtoHref}
+
+                          className="min-h-[72px] border border-pink-500/60 bg-black/30 text-white rounded-full flex items-center justify-center gap-3 px-5 text-xs font-black uppercase tracking-[0.18em] hover:bg-white/[0.08] hover:border-pink-500 transition-colors"
+                        >
+                          <Mail className="w-5 h-5 text-pink-500" />
+                          Email
+                        </a>
+                      </div>
+                    )}                  </div>
                 </div>
               </div>
             </div>
