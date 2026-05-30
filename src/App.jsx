@@ -24,10 +24,10 @@ import {
 } from 'lucide-react';
 
 const SERVICES = [
-  { title: "Brand Strategy", Icon: Target, desc: "Xây dựng và định vị ADN thương hiệu độc bản, R&D sản phẩm giúp SME nổi bật giữa số đông." },
-  { title: "Performance", Icon: TrendingUp, desc: "Thiết kế và tối ưu phễu chuyển đổi, quy trình từ Sales-Mar-Fin, tăng trưởng doanh thu dài hạn." },
-  { title: "Martech", Icon: Zap, desc: "Triển khai CRM, Automation và AI nâng cao hiệu suất đội ngũ và tối ưu năng suất marketing." },
-  { title: "Omni channel", Icon: ShoppingBag, desc: "Xây dựng chiến lược nội dung và triển khai đa kênh bán hàng, gia tăng nhận diện và chuyển đổi." }
+  { title: "Brand Strategy", Icon: Target, desc: "Xây dựng và tái định vị brand positioning dựa trên marketing research, internal data và customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
+  { title: "Growth & Performance", Icon: TrendingUp, desc: "Thiết kế và tối ưu customer journey: từ demand generation > lead acquisition > conversion > retention. Kết nối Marketing, Sales và Operations thành một hệ thống thống nhất nhằm đo lường và thúc đẩy tăng trưởng bền vững." },
+  { title: "Martech & AI", Icon: Zap, desc: "Triển khai CRM, marketing automation, AI workflow, data-driven nhằm tối ưu hiệu suất đội ngũ, chuẩn hóa quy trình, xây dựng nền tảng vận hành có khả năng scale và giúp SME thích ứng nhanh chóng." },
+  { title: "IMC", Icon: ShoppingBag, desc: "Xây dựng hệ thống Intergrated Marketing Communication: Ads, PR, Digital, Social media, Sales, Promotion, Direct marketing. Đảm bảo mọi touchpoint đều đồng bộ và cùng hướng tới mục tiêu tăng trưởng." }
 ];
 
 const EXPERIENCES = [
@@ -361,7 +361,7 @@ const PROFILE_MARKERS = [
   },
   {
     type: "Community",
-    year: "2025",
+    year: "2024",
     title: "CLB Doanh Nhân Trẻ TP. HCM",
     detail: "Thành viên Ban Đại Sứ",
     Icon: HandHeart,
