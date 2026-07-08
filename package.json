@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "export:cv-image-pdf": "node scripts/export-cv-image-pdf.mjs"
+    "export:cv-image-pdf": "node scripts/export-cv-image-pdf.mjs",
+    "export:cv-print-pdf": "node scripts/export-cv-print-pdf.mjs",
+    "export:cv-pdfs": "npm run export:cv-image-pdf && npm run export:cv-print-pdf"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.1",
