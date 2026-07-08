@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring, useInView, useMotionValue, useTransform } from 'framer-motion';
 import { 
@@ -29,14 +30,14 @@ const ZaloIcon = ({ className = '' }) => (
   </span>
 );
 
-const SERVICES = [
+export const SERVICES = [
   { title: "Brand Strategy", Icon: Target, desc: "Xây dựng và tái định vị brand positioning dựa trên marketing research, internal data và customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
   { title: "Growth & Performance", Icon: TrendingUp, desc: "Thiết kế và tối ưu customer journey: từ demand generation > lead acquisition > conversion > retention. Kết nối Marketing, Sales và Operations thành một hệ thống thống nhất nhằm đo lường và thúc đẩy tăng trưởng bền vững." },
   { title: "Martech & AI", Icon: Zap, desc: "Triển khai CRM, marketing automation, AI workflow, data-driven nhằm tối ưu hiệu suất đội ngũ, chuẩn hóa quy trình, xây dựng nền tảng vận hành có khả năng scale và giúp SME thích ứng nhanh chóng." },
   { title: "IMC", Icon: ShoppingBag, desc: "Xây dựng hệ thống Intergrated Marketing Communication: Ads, PR, Digital, Social media, Sales, Promotion, Direct marketing. Đảm bảo mọi touchpoint đều đồng bộ và cùng hướng tới mục tiêu tăng trưởng." }
 ];
 
-const EXPERIENCES = [
+export const EXPERIENCES = [
   {
     period: "2021 - 2025",
     role: "CEO",
@@ -123,7 +124,7 @@ const EXPERIENCES = [
   }
 ];
 
-const PROJECTS = [
+export const PROJECTS = [
   {
     title: "Đại diện thương hiệu",
     category: "Branding",
@@ -296,14 +297,14 @@ const preloadImage = (src) => {
   PRELOADED_IMAGES.add(src);
 };
 
-const STATS = [
+export const STATS = [
   { value: "5B+ VND", label: "Total Budget" },
   { value: "50+", label: "Project Delivered" },
   { value: "100+", label: "Team members" },
   { value: "10+", label: "Industries" }
 ];
 
-const CONTACT_ROUTES = [
+export const CONTACT_ROUTES = [
   {
     id: 'ceo',
     label: 'CEO / Founder',
@@ -343,7 +344,7 @@ const CONTACT_ROUTES = [
   },
 ];
 
-const PROFILE_MARKERS = [
+export const PROFILE_MARKERS = [
   {
     type: "Education",
     year: "2011",

@@ -6,7 +6,8 @@
     <title>CV_anhtranviet.com</title>
     <style>
       @page {
-        margin: 10mm;
+        size: A4;
+        margin: 8mm;
       }
 
       :root {
@@ -136,10 +137,15 @@
 
       h1 {
         margin: 14px 0 0;
-        font-size: clamp(54px, 10vw, 128px);
+        font-size: clamp(46px, 7.4vw, 92px);
         line-height: 0.82;
-        letter-spacing: -0.04em;
+        letter-spacing: -0.055em;
         text-transform: uppercase;
+      }
+
+      .name-line {
+        display: block;
+        white-space: nowrap;
       }
 
       .outline {
@@ -251,6 +257,87 @@
         font-size: 15px;
       }
 
+
+      .credentials-list {
+        position: relative;
+        display: grid;
+        gap: 12px;
+        margin-top: 8px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .credentials-list::before {
+        content: "";
+        position: absolute;
+        left: 22px;
+        top: 12px;
+        bottom: 12px;
+        width: 1px;
+        background: linear-gradient(to bottom, var(--pink), rgba(255, 255, 255, 0.18), transparent);
+      }
+
+      .credential {
+        position: relative;
+        display: grid;
+        grid-template-columns: 46px minmax(0, 1fr) 78px;
+        gap: 10px;
+        align-items: start;
+        padding: 12px 28px 12px 12px;
+        background: var(--panel);
+        max-width: 100%;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .credential-icon {
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--bg);
+        color: var(--pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        position: relative;
+        z-index: 1;
+      }
+
+      .credential-type {
+        color: var(--pink);
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        font-weight: 900;
+        margin-bottom: 8px;
+      }
+
+      .credential h3 {
+        font-size: clamp(20px, 2.2vw, 30px);
+        overflow-wrap: anywhere;
+      }
+
+      .credential p {
+        margin: 8px 0 0;
+        color: var(--soft);
+        line-height: 1.5;
+      }
+
+      .credential-year {
+        font-size: clamp(24px, 2.8vw, 36px);
+        line-height: 0.9;
+        color: rgba(255, 255, 255, 0.12);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        text-align: right;
+        padding-right: 12px;
+        white-space: nowrap;
+      }
+
       .roles {
         display: grid;
         gap: 16px;
@@ -340,39 +427,51 @@
 
       @media print {
         :root {
-          --bg: #fff;
-          --panel: #fff;
-          --line: #bbb;
-          --text: #111;
-          --muted: #333;
-          --soft: #333;
-          --pink: #111;
-          --purple: #111;
-          color: #111 !important;
-          background: #fff !important;
+          --bg: #050505;
+          --panel: #121214;
+          --line: rgba(255, 255, 255, 0.22);
+          --text: #ffffff;
+          --muted: #c7c7cf;
+          --soft: #ececf0;
+          --pink: #ec4899;
+          --purple: #a855f7;
+          color: var(--text) !important;
+          background: var(--bg) !important;
         }
 
         html,
         body {
-          color: #111 !important;
-          background: #fff !important;
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
+          width: 210mm;
+          min-height: 297mm;
+          color: var(--text) !important;
+          /* Radial gradients print inconsistently across Chrome/Preview/PDF apps. */
+          background: #050505 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
 
-        body *,
+        body::before {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 0.035 !important;
+          background-image:
+            linear-gradient(to right, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.18) 1px, transparent 1px) !important;
+          background-size: 34px 34px !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
         *,
         *::before,
         *::after {
-          color: #111 !important;
-          visibility: visible !important;
-          opacity: 1 !important;
           box-shadow: none !important;
           text-shadow: none !important;
           filter: none !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
 
-        body::before,
         .floating-actions {
           display: none !important;
           content: none !important;
@@ -381,62 +480,149 @@
 
         .wrap {
           display: block !important;
-          width: 100%;
-          padding: 0;
-          color: #111 !important;
-          background: #fff !important;
+          width: 190mm !important;
+          max-width: 190mm !important;
+          margin: 0 auto !important;
+          padding: 0 !important;
+          color: var(--text) !important;
+          background: transparent !important;
+          overflow: visible !important;
         }
 
         h1 {
-          font-size: 56px;
+          font-size: 48px;
         }
 
         h2 {
-          font-size: 34px;
+          font-size: 32px;
           margin-bottom: 10px;
         }
 
         h3 {
-          font-size: 19px;
+          font-size: 17px;
           letter-spacing: -0.02em;
         }
 
         section {
-          margin-top: 20px;
+          margin-top: 18px;
+          break-before: auto;
         }
 
         .hero,
         .card,
         .role,
-        .work {
-          border: 1px solid #bbb !important;
-          background: #fff !important;
-          color: #111 !important;
+        .work,
+        .credential {
+          border: 1px solid var(--line) !important;
+          background: #121214 !important;
+          color: var(--text) !important;
+          overflow: visible !important;
+        }
+
+        .hero,
+        .card,
+        .work,
+        .credential,
+        .role {
+          break-inside: avoid-page;
+          page-break-inside: avoid;
+        }
+
+        .role-top,
+        .tags,
+        li,
+        .company,
+        .credential h3,
+        .credential p {
           break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        p,
+        li {
+          orphans: 3;
+          widows: 3;
         }
 
         .hero {
           min-height: auto;
-          padding: 0 0 18px;
-          gap: 18px;
+          padding: 0 0 16px;
+          gap: 16px;
+          border-width: 0 0 1px 0 !important;
+          background: transparent !important;
         }
 
         .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .works-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 8px;
         }
 
         .card,
         .work,
-        .role {
+        .role,
+        .credential {
           padding: 10px;
         }
 
-        .card {
+        .card,
+        .work {
           min-height: 0;
         }
 
-        .work {
-          min-height: 0;
+        .credentials-list {
+          gap: 8px;
+          width: 100%;
+          max-width: 100%;
+          overflow: visible !important;
+        }
+
+        .credentials-list::before {
+          left: 15px;
+          background: linear-gradient(to bottom, var(--pink), rgba(255, 255, 255, 0.22), transparent) !important;
+        }
+
+        .credential {
+          grid-template-columns: 32px minmax(0, 1fr) 54px;
+          gap: 8px;
+          padding: 9px 16px 9px 8px;
+          max-width: 100%;
+        }
+
+        .credential-icon {
+          width: 30px;
+          height: 30px;
+          background: #050505 !important;
+          color: var(--pink) !important;
+          border-color: var(--line) !important;
+        }
+
+        .credential-type {
+          color: var(--pink) !important;
+          font-size: 8px;
+          margin-bottom: 5px;
+        }
+
+        .credential h3 {
+          font-size: 13px;
+          line-height: 1.05;
+          overflow-wrap: anywhere;
+        }
+
+        .credential p {
+          font-size: 10.5px;
+          line-height: 1.32;
+          color: var(--soft) !important;
+        }
+
+        .credential-year {
+          font-size: 17px;
+          color: rgba(255, 255, 255, 0.28) !important;
+          padding-right: 8px;
         }
 
         .roles {
@@ -444,8 +630,8 @@
         }
 
         .role-top {
-          grid-template-columns: 92px 1fr;
-          gap: 12px;
+          grid-template-columns: 82px minmax(0, 1fr);
+          gap: 11px;
         }
 
         .intro,
@@ -454,12 +640,14 @@
         .work p,
         .role p,
         li {
-          font-size: 11px;
-          line-height: 1.38;
+          font-size: 10.4px;
+          line-height: 1.34;
+          color: var(--soft) !important;
         }
 
         ul {
           margin-top: 7px;
+          padding-left: 15px;
         }
 
         li {
@@ -473,31 +661,29 @@
 
         .tag {
           padding: 3px 6px;
-          font-size: 8px;
+          font-size: 7.5px;
+          color: var(--pink) !important;
+          border-color: rgba(236, 72, 153, 0.48) !important;
+          background: rgba(236, 72, 153, 0.08) !important;
         }
 
         .outline {
-          color: #111;
-          -webkit-text-stroke: 0;
+          color: transparent !important;
+          -webkit-text-stroke: 1px #fff;
         }
 
         .intro,
         .contact,
-        .card p,
-        .work p,
-        .role p,
-        li,
         .company {
-          color: #333;
+          color: var(--muted) !important;
         }
 
         .eyebrow,
         .label,
         .period,
         .work-category,
-        .tag,
         .profile-footer {
-          color: #111;
+          color: var(--pink) !important;
         }
       }
     </style>
@@ -505,7 +691,7 @@
   <body>
     <div class="floating-actions">
       <button class="float-button back-button" type="button" aria-label="Back" onclick="history.length > 1 ? history.back() : window.location.href = '/#contact-demo'">‹</button>
-      <button class="float-button print-button" type="button" aria-label="Print or save PDF" onclick="window.print()">
+      <button class="float-button print-button" type="button" aria-label="Print or save PDF" onclick="window.location.href = '/CV_anhtranviet.com.pdf'">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 8V3h10v5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           <path d="M7 18H5a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -518,7 +704,7 @@
       <header class="hero">
         <div>
           <div class="eyebrow">/ Profile.PDF</div>
-          <h1>Anh <span class="outline">Trần Việt</span></h1>
+          <h1><span class="name-line">Anh</span><span class="name-line outline">Trần Việt</span></h1>
         </div>
         <div>
           <p class="intro">Strategy - Growth - Creative.</p>
@@ -657,6 +843,50 @@
                 <div class="tags"><span class="tag">Social Media</span><span class="tag">Branding</span><span class="tag">Revenue</span><span class="tag">Execution</span></div>
               </div>
             </div>
+          </article>
+        </div>
+      </section>
+
+
+      <section>
+        <div class="label">/ Beyond Work</div>
+        <h2>Credentials</h2>
+        <div class="credentials-list">
+          <article class="credential">
+            <div class="credential-icon">E</div>
+            <div>
+              <div class="credential-type">Education</div>
+              <h3>Đại học HUTECH</h3>
+              <p>Tài chính ngân hàng</p>
+            </div>
+            <div class="credential-year">2011</div>
+          </article>
+          <article class="credential">
+            <div class="credential-icon">E</div>
+            <div>
+              <div class="credential-type">Education</div>
+              <h3>Cao đẳng HUTECH</h3>
+              <p>Quản trị doanh nghiệp SMEs</p>
+            </div>
+            <div class="credential-year">2013</div>
+          </article>
+          <article class="credential">
+            <div class="credential-icon">A</div>
+            <div>
+              <div class="credential-type">Award</div>
+              <h3>Cuộc thi khởi nghiệp HUTECH</h3>
+              <p>Giải thưởng Top 20</p>
+            </div>
+            <div class="credential-year">2015</div>
+          </article>
+          <article class="credential">
+            <div class="credential-icon">C</div>
+            <div>
+              <div class="credential-type">Community</div>
+              <h3>CLB Doanh Nhân Trẻ TP. HCM</h3>
+              <p>Thành viên Ban Đại Sứ</p>
+            </div>
+            <div class="credential-year">2024</div>
           </article>
         </div>
       </section>

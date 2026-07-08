@@ -1,6 +1,70 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #050505;
+      }
+
+      html.preload-lock,
+      body.preload-lock {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        touch-action: none !important;
+      }
+
+      #root {
+        min-height: 100vh;
+        background: #050505;
+      }
+
+      #root:empty::before {
+        content: "ANH.TRANVIET";
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.7);
+        font: 900 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        letter-spacing: 0.42em;
+        text-transform: uppercase;
+        background:
+          radial-gradient(circle at 50% 45%, rgba(236, 72, 153, 0.18), transparent 34%),
+          #050505;
+        animation: initial-pulse 1.2s ease-in-out infinite;
+      }
+
+      @keyframes initial-pulse {
+        0%, 100% { opacity: 0.42; }
+        50% { opacity: 1; }
+      }
+    </style>
+    <script>
+      (function () {
+        var locked = true;
+        var prevent = function (event) {
+          if (!locked) return;
+          event.preventDefault();
+        };
+        document.documentElement.classList.add('preload-lock');
+        window.scrollTo(0, 0);
+        window.addEventListener('touchmove', prevent, { passive: false, capture: true });
+        window.addEventListener('wheel', prevent, { passive: false, capture: true });
+        window.__portfolioUnlockPreload = function () {
+          locked = false;
+          document.documentElement.classList.remove('preload-lock');
+          document.body && document.body.classList.remove('preload-lock');
+          window.removeEventListener('touchmove', prevent, { capture: true });
+          window.removeEventListener('wheel', prevent, { capture: true });
+          window.scrollTo(0, 0);
+        };
+      })();
+    </script>
     <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,7 +76,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="shortcut icon" href="/logo.png" />
-    <meta name="description" content="Portfolio Anh.TranViet - Strategy - Growth - Creative." />
+    <meta name="description" content="Portfolio Anh.TranViet - Strategy, Marketing, Transformation & Growth for SME." />
     <title>Anh Trần Việt | Creative Marketing Strategy & Growth</title>
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Anh Trần Việt | Creative Marketing Strategy & Growth" />
@@ -20,10 +84,11 @@
     <meta property="og:image" content="https://anhtranviet.com/logo.png" />
     <meta property="og:url" content="https://anhtranviet.com" />
     <meta name="twitter:card" content="summary_large_image" />
-    <script type="module" crossorigin src="/assets/index-DdYSqHnE.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BrgWYNl-.css">
+
+    <script type="module" crossorigin src="/assets/index-DzEUG64X.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BLoI3yOI.css">
   </head>
-  <body>
+  <body class="preload-lock">
     <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M4S8X2VG"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>

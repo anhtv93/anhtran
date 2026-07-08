@@ -10,7 +10,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "node server/index.js"
+    "server": "node server/index.js",
+    "export:cv-image-pdf": "node scripts/export-cv-image-pdf.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.2.1",
