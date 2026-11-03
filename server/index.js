@@ -136,7 +136,7 @@ const server = http.createServer(async (req, res) => {
         && Number.isFinite(parsedMeetingDate.getTime())
         && parsedMeetingDate.toISOString().slice(0, 10) === meetingDate;
 
-      if (!role || !isRealDate || !/^(?:0[9]|1[0-8]):(?:00|30)$/.test(meetingTime) || !company || !contactName || !/^\d{9}$/.test(phone) || !message) {
+      if (!role || !isRealDate || !/^(?:0[9]|1[0-8]):(?:00|30)$/.test(meetingTime) || !company || !contactName || !/^\d{10}$/.test(phone) || !message) {
         sendJson(res, 400, { error: 'MISSING_OR_INVALID_FIELDS' });
         return;
       }
@@ -185,7 +185,7 @@ const server = http.createServer(async (req, res) => {
         ['Ngay hen (Asia/Ho_Chi_Minh)', `${meetingDate} ${meetingTime}`],
         ['Cong ty', company],
         ['Nguoi lien he', contactName],
-        ['So dien thoai', `+84 ${phone}`],
+        ['So dien thoai', phone],
         ['Noi dung', message],
         ['Nhan luc', sentAt],
       ];

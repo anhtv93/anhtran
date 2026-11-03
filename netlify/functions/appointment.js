@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import process from 'node:process';
 
 const CONTACT_TO = process.env.CONTACT_TO || '4nhtran@gmail.com';
@@ -88,7 +89,7 @@ export const handler = async (event) => {
     const message = String(body.message || '').trim();
 
     if (!role || !isRealDate(date) || !/^(?:0[9]|1[0-8]):(?:00|30)$/.test(time)
-      || !company || !contactName || !/^\d{9}$/.test(phone) || !message) {
+      || !company || !contactName || !/^\d{10}$/.test(phone) || !message) {
       return json(400, { error: 'MISSING_OR_INVALID_FIELDS' });
     }
     if (company.length > 180 || contactName.length > 180 || message.length > 4000) {
@@ -140,7 +141,7 @@ export const handler = async (event) => {
       ['Ngày hẹn (Asia/Ho_Chi_Minh)', `${date} ${time}`],
       ['Công ty', company],
       ['Người liên hệ', contactName],
-      ['Số điện thoại', `+84 ${phone}`],
+      ['Số điện thoại', phone],
       ['Nội dung', message],
       ['Nhận lúc', sentAt],
     ];

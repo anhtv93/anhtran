@@ -676,37 +676,40 @@ const ExperienceRow = React.memo(({ exp, index, isActive, onOpenDetail }) => {
   );
 });
 
-const MinimalHeroBackground = () => {
+const MinimalHeroBackground = React.memo(function MinimalHeroBackground() {
+  const backgroundRef = useRef(null);
+  const isHeroVisible = useInView(backgroundRef, { once: false, amount: 0.05 });
+
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-[#050505]">
+    <div ref={backgroundRef} className="absolute inset-0 z-0 overflow-hidden bg-[#050505]">
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-pink-500/40 blur-[90px]"
-        animate={{ scale: [1, 1.16, 1], opacity: [0.62, 0.88, 0.62] }}
+        animate={isHeroVisible ? { scale: [1, 1.16, 1], opacity: [0.62, 0.88, 0.62] } : false}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 -right-16 h-80 w-80 rounded-full bg-purple-500/30 blur-[70px]"
-        animate={{ y: [0, 45, 0], x: [0, -35, 0] }}
+        animate={isHeroVisible ? { y: [0, 45, 0], x: [0, -35, 0] } : false}
         transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-cyan-400/20 blur-[80px]"
-        animate={{ y: [0, -35, 0], x: [0, 20, 0] }}
+        animate={isHeroVisible ? { y: [0, -35, 0], x: [0, 20, 0] } : false}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-[74vh] w-[74vh] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30"
-        animate={{ rotate: [0, 360], scale: [0.94, 1.04, 0.94], opacity: [0.32, 0.54, 0.32] }}
+        animate={isHeroVisible ? { rotate: [0, 360], scale: [0.94, 1.04, 0.94], opacity: [0.32, 0.54, 0.32] } : false}
         transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
       />
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-[52vh] w-[52vh] -translate-x-1/2 -translate-y-1/2 rounded-full border border-pink-300/35"
-        animate={{ rotate: [360, 0], scale: [1.02, 0.94, 1.02], opacity: [0.24, 0.5, 0.24] }}
+        animate={isHeroVisible ? { rotate: [360, 0], scale: [1.02, 0.94, 1.02], opacity: [0.24, 0.5, 0.24] } : false}
         transition={{ duration: 11, repeat: Infinity, ease: "linear" }}
       />
       <div 
@@ -719,13 +722,49 @@ const MinimalHeroBackground = () => {
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent"
-        animate={{ x: ['0%', '420%'] }}
+        animate={isHeroVisible ? { x: ['0%', '420%'] } : false}
         transition={{ duration: 5.8, repeat: Infinity, ease: "linear" }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/20 to-[#050505]" />
     </div>
   );
-};
+});
+
+const HeroSection = React.memo(function HeroSection({ onStart }) {
+  return (
+    <section id="home" className="h-screen relative flex items-center justify-center px-6 overflow-hidden">
+      <MinimalHeroBackground />
+      <div className="relative z-10 text-center">
+        <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5, duration: 1 }}>
+          <h1 className="text-[14vw] md:text-[10.5vw] font-black leading-none uppercase mb-5 md:mb-5 tracking-tighter">
+            The <br />
+            <span className="text-outline-white text-transparent">Creative</span><br />
+            Growth
+          </h1>
+          <p className="text-base md:text-[1.4rem] font-light max-w-2xl mx-auto text-gray-300 mb-14 md:mb-14 leading-relaxed">
+            Xây dựng và vận hành hệ thống Marketing <br />
+            Nâng tầm thương hiệu - tăng trưởng doanh thu.
+          </p>
+          <FloatingAction distance={5} duration={3}>
+            <MagneticButton
+              className="px-8 md:px-11 py-3.5 md:py-[18px] bg-white text-black rounded-full hover:bg-pink-500 font-black uppercase tracking-[0.2em] md:tracking-widest hover:scale-105 transition-transform flex items-center gap-2 md:gap-4 mx-auto text-[11px] md:text-[15px]"
+              onClick={onStart}
+            >
+              Bắt đầu hành trình <ArrowDownRight className="w-4 h-4 md:w-6 md:h-6" />
+            </MagneticButton>
+          </FloatingAction>
+        </motion.div>
+      </div>
+      <motion.div
+        animate={{ y: [0, 10, 0], opacity: [0.45, 0.75, 0.45] }}
+        transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
+        className="absolute bottom-8 md:bottom-10 right-6 md:right-16 text-[9px] md:text-xs font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-50 z-20"
+      >
+        Use button to explore
+      </motion.div>
+    </section>
+  );
+});
 
 const SectionTransitionGlow = ({ light = false }) => (
   <div
@@ -1399,8 +1438,8 @@ export default function App() {
       return;
     }
 
-    if (!/^\d{9}$/.test(String(values.get('phone') || ''))) {
-      setAppointmentStatus({ type: 'error', message: 'Số điện thoại cần có đúng 9 chữ số sau mã +84.' });
+    if (!/^\d{10}$/.test(String(values.get('phone') || ''))) {
+      setAppointmentStatus({ type: 'error', message: 'Số điện thoại cần có đúng 10 chữ số.' });
       return;
     }
 
@@ -2042,39 +2081,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* HERO SECTION */}
-      <section id="home" className="h-screen relative flex items-center justify-center px-6 overflow-hidden">
-        <MinimalHeroBackground />
-        
-        <div className="relative z-10 text-center">
-          <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5, duration: 1 }}>
-            <h1 className="text-[14vw] md:text-[10.5vw] font-black leading-none uppercase mb-5 md:mb-5 tracking-tighter">
-              The <br />
-              <span className="text-outline-white text-transparent">Creative</span><br />
-              Growth
-            </h1>
-            <p className="text-base md:text-[1.4rem] font-light max-w-2xl mx-auto text-gray-300 mb-14 md:mb-14 leading-relaxed"> 
-              Xây dựng và vận hành hệ thống Marketing <br />
-              Nâng tầm thương hiệu - tăng trưởng doanh thu.
-            </p>
-            <FloatingAction distance={5} duration={3}>
-              <MagneticButton 
-                className="px-8 md:px-11 py-3.5 md:py-[18px] bg-white text-black rounded-full hover:bg-pink-500 font-black uppercase tracking-[0.2em] md:tracking-widest hover:scale-105 transition-transform flex items-center gap-2 md:gap-4 mx-auto text-[11px] md:text-[15px]"
-                onClick={startJourney}
-              >
-                Bắt đầu hành trình <ArrowDownRight className="w-4 h-4 md:w-6 md:h-6" />
-              </MagneticButton>
-            </FloatingAction>
-          </motion.div>
-        </div>
-        
-      <motion.div 
-          animate={{ y: [0, 10, 0], opacity: [0.45, 0.75, 0.45] }} 
-          transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }} 
-          className="absolute bottom-8 md:bottom-10 right-6 md:right-16 text-[9px] md:text-xs font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-50 z-20"
-        >
-          Use button to explore
-        </motion.div>
-      </section>
+      <HeroSection onStart={startJourney} />
 
       {/* SERVICES SECTION */}
       <section id="services" className="py-0 px-0 relative z-10 overflow-hidden">
@@ -2325,8 +2332,8 @@ export default function App() {
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-white">Đặt lịch hẹn</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label className="grid gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                  <div className="grid min-w-0 gap-2" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 0.9fr)' }}>
+                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       Ngày
                       <input
                         type="date"
@@ -2339,12 +2346,12 @@ export default function App() {
                           setAppointmentDate(date);
                           setAppointmentTime(getFutureAppointmentSlots(date)[0] || '');
                         }}
-                        className="h-12 w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-3 text-sm font-normal normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
+                        className="h-12 w-full min-w-0 max-w-full cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1.5 text-[11px] font-normal normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25 sm:px-2 sm:text-sm"
                       />
                     </label>
-                    <fieldset className="min-w-0">
+                    <fieldset className="min-w-0 max-w-full">
                       <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">Giờ</legend>
-                      <div className="grid h-12 grid-cols-2 gap-1.5">
+                      <div className="grid h-12 min-w-0 grid-cols-2 gap-1">
                         <label className="sr-only" htmlFor="appointment-hour">Giờ</label>
                         <select
                           id="appointment-hour"
@@ -2355,7 +2362,7 @@ export default function App() {
                             const firstSlot = appointmentSlots.find((slot) => slot.startsWith(`${event.target.value}:`));
                             if (firstSlot) setAppointmentTime(firstSlot);
                           }}
-                          className="min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-2 text-sm font-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
                         >
                           {appointmentHours.length
                             ? appointmentHours.map((hour) => <option key={hour} value={hour}>{hour}</option>)
@@ -2368,7 +2375,7 @@ export default function App() {
                           value={appointmentTime.slice(3)}
                           disabled={!appointmentMinutes.length}
                           onChange={(event) => setAppointmentTime(`${appointmentTime.slice(0, 2)}:${event.target.value}`)}
-                          className="min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-2 text-sm font-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
                         >
                           {appointmentMinutes.length
                             ? appointmentMinutes.map((minute) => <option key={minute} value={minute}>{minute}</option>)
@@ -2404,21 +2411,20 @@ export default function App() {
                     <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
                       Số điện thoại
                       <span className="flex h-10 min-w-0 items-center overflow-hidden rounded-md border border-white/20 bg-white/[0.055] transition-colors hover:border-white/35 hover:bg-white/[0.08] focus-within:border-pink-400 focus-within:bg-white/[0.08] focus-within:ring-2 focus-within:ring-pink-500/25">
-                        <span className="flex h-full shrink-0 items-center border-r border-white/10 px-2 text-xs font-semibold text-gray-300">+84</span>
                         <input
                           type="tel"
                           name="phone"
-                          autoComplete="tel-national"
+                          autoComplete="tel"
                           inputMode="numeric"
-                          pattern="[0-9]{9}"
-                          maxLength={9}
+                          pattern="[0-9]{10}"
+                          maxLength={10}
                           onChange={(event) => {
                             event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '').slice(0, 10);
                           }}
-                          placeholder="000-000-000"
+                          placeholder="(000) 000-0000"
                           required
-                          title="Nhập đúng 9 chữ số sau mã +84"
-                          className="h-full w-full min-w-0 bg-transparent px-2 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none"
+                          title="Nhập đúng 10 chữ số"
+                          className="h-full w-full min-w-0 bg-transparent px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none"
                         />
                       </span>
                     </label>
