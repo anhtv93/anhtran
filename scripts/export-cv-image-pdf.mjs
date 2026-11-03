@@ -160,6 +160,10 @@ img { display: block; width: ${width}px; height: ${height}px; }
   console.log(`Created ${outputPath}`);
   console.log(`Captured ${width}x${height}px as one image page.`);
 } finally {
-  chrome.kill('SIGTERM');
+  if (chrome.exitCode === null) {
+    const chromeClosed = new Promise((resolve) => chrome.once('close', resolve));
+    chrome.kill('SIGTERM');
+    await chromeClosed;
+  }
   await rm(tmp, { recursive: true, force: true });
 }

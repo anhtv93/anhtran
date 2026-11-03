@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run dev:full",
     "dev:server": "node --watch server/index.js",
     "dev:full": "node server/index.js & vite",
     "build": "vite build",
@@ -19,7 +19,7 @@
     "@tailwindcss/postcss": "^4.2.1",
     "framer-motion": "^12.34.3",
     "lucide-react": "^0.575.0",
-    "nodemailer": "^7.0.5",
+    "nodemailer": "^10.3.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

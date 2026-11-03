@@ -10,8 +10,9 @@ import {
   BriefcaseBusiness,
   Building2,
   Download,
+  MessageCircle,
+  CalendarCheck,
   ShoppingBag,
-  Send,
   X,
   Mail,
   Mic2,
@@ -30,10 +31,46 @@ const ZaloIcon = ({ className = '' }) => (
   </span>
 );
 
+const getHoChiMinhDateTime = () => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return {
+    date: `${values.year}-${values.month}-${values.day}`,
+    time: `${values.hour}:${values.minute}`,
+    second: Number(values.second),
+  };
+};
+
+const isFutureHoChiMinhSlot = (date, time, now = Date.now()) =>
+  Date.parse(`${date}T${time}:00+07:00`) > now;
+
+const getFutureAppointmentSlots = (date, now = Date.now()) => {
+  if (!date) return [];
+  return Array.from({ length: 20 }, (_, index) => {
+    const hour = String(9 + Math.floor(index / 2)).padStart(2, '0');
+    const minute = index % 2 ? '30' : '00';
+    return `${hour}:${minute}`;
+  }).filter((time) => isFutureHoChiMinhSlot(date, time, now));
+};
+
+const addOneHoChiMinhDay = (date) => {
+  const [year, month, day] = date.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, day + 1)).toISOString().slice(0, 10);
+};
+
+const getNextAvailableAppointmentDate = () => {
+  const today = getHoChiMinhDateTime().date;
+  return getFutureAppointmentSlots(today).length ? today : addOneHoChiMinhDay(today);
+};
+
 export const SERVICES = [
-  { title: "Brand Strategy", Icon: Target, desc: "Xây dựng và tái định vị brand positioning dựa trên marketing research, internal data và customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
-  { title: "Growth & Performance", Icon: TrendingUp, desc: "Thiết kế và tối ưu customer journey: từ demand generation > lead acquisition > conversion > retention. Kết nối Marketing, Sales và Operations thành một hệ thống thống nhất nhằm đo lường và thúc đẩy tăng trưởng bền vững." },
-  { title: "Martech & AI", Icon: Zap, desc: "Triển khai CRM, marketing automation, AI workflow, data-driven nhằm tối ưu hiệu suất đội ngũ, chuẩn hóa quy trình, xây dựng nền tảng vận hành có khả năng scale và giúp SME thích ứng nhanh chóng." },
+  { title: "Brand Strategy", Icon: Target, desc: "Xây dựng và tái định vị Brand positioning dựa trên Marketing research, Internal data và Customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
+  { title: "Growth & Performance", Icon: TrendingUp, desc: "Thiết kế và tối ưu Customer journey: từ Demand generation > Lead acquisition > Conversion > Retention. Kết nối Marketing, Sales và Product thành một hệ thống thống nhất nhằm đo lường và thúc đẩy tăng trưởng bền vững." },
+  { title: "Martech & AI", Icon: Zap, desc: "Triển khai CRM, Marketing automation, AI workflow, Data-driven nhằm tối ưu hiệu suất đội ngũ, chuẩn hóa quy trình, xây dựng nền tảng vận hành có khả năng scale và giúp SME bắt kịp xu hướng." },
   { title: "IMC", Icon: ShoppingBag, desc: "Xây dựng hệ thống Intergrated Marketing Communication: Ads, PR, Digital, Social media, Sales, Promotion, Direct marketing. Đảm bảo mọi touchpoint đều đồng bộ và cùng hướng tới mục tiêu tăng trưởng." }
 ];
 
@@ -43,7 +80,7 @@ export const EXPERIENCES = [
     role: "CEO",
     company: "Dự Án Việt Nam",
     image: "/assets/1.jpeg",
-    desc: "Kiến trúc sư trưởng cho hệ thống TMĐT xây dựng tiên phong duanvietnam.vn. Chịu trách nhiệm toàn diện từ chiến lược sản phẩm, vận hành đến tăng trưởng.",
+    desc: "Hoàn thiện và phát triển phần mềm TMĐT xây dựng duanvietnam.vn. Chịu trách nhiệm toàn diện từ chiến lược sản phẩm, vận hành đến tăng trưởng.",
     details: [
       "Chiến lược Go-to-Market: Thiết lập mô hình kinh doanh B2B2C, định vị duanvietnam.vn là hệ thống TMĐT tiên phong trong lĩnh vực xây dựng.", 
       "Phát triển Core Product: Xây dựng Roadmap trên nền tảng Angular 8.0, tối ưu hoá UX và nâng cấp hệ thống dịch vụ.", 
@@ -308,39 +345,29 @@ export const CONTACT_ROUTES = [
   {
     id: 'ceo',
     label: 'CEO / Founder',
-    eyebrow: 'System Audit',
-    title: 'Find the leak before starting.',
-    intent: 'Dành cho SMEs muốn xây dựng thương hiệu, phễu bán hàng hoặc tìm ra điểm nghẽn ở đâu.',
+    eyebrow: 'Core member',
+    title: 'ĐỒNG HÀNH CÙNG START-UPS',
+    intent: 'SME cần người xây dựng, phụ trách marketing & tăng trưởng.',
     Icon: Building2,
-    bullets: ['Phân tích Marketing Strategy.', 'Gợi ý ưu tiên hành động.', 'Kế hoạch triển khai 14 ngày.'],
-    cta: 'Audit my system',
-    emailSubject: 'Anhtranviet.com | System Audit Request',
-    message: 'Tôi muốn audit hệ thống growth/brand/funnel hiện tại.',
+    bullets: ['Marketing Strategy.', 'Build/ Training.', 'Go-to-market.'],
   },
   {
     id: 'hr',
     label: 'HR / Recruiter',
-    eyebrow: 'Strategic Profile',
-    title: 'GET THE FOLIO-READY SNAPSHOT.',
-    intent: 'Dành cho HR cần đặt lịch hẹn và tải profile ngắn gọn.',
+    eyebrow: 'Tuyển dụng nhân sự',
+    title: 'MARKETING MANAGER PROFILE.',
+    intent: 'HR cần đặt lịch hẹn trao đổi công việc.',
     Icon: BriefcaseBusiness,
-    bullets: ['Summary.', 'Experiences.', 'Key achievements.'],
-    cta: 'Arrange for a meeting',
-    emailSubject: 'Anhtranviet.com | Arrange for a meeting',
-    message: 'Tôi muốn nhận trao đổi về nhu cầu tuyển dụng.',
-    cvHref: '/Tran-Viet-Anh-CMO-Leadership-Profile.html',
+    bullets: ['Strategy Manager.', 'Growth Manager.', 'Performance Manager.'],
   },
   {
     id: 'collab',
     label: 'Collaboration',
-    eyebrow: 'Strategic Conversation',
-    title: 'Foster shared success.',
-    intent: 'Dành cho talk, podcast, partnership hoặc dự án sắp triển khai.',
+    eyebrow: 'Collab marketing',
+    title: 'HỢP TÁC TRUYỀN THÔNG.',
+    intent: 'SME cần collab marketing xây dựng thương hiệu.',
     Icon: Mic2,
-    bullets: ['Start-ups.', 'Transformation / GTM.', 'Podcast / event / advisory.'],
-    cta: 'Start a conversation',
-    emailSubject: 'Anhtranviet.com | Strategic Collaboration',
-    message: 'Tôi muốn trao đổi về nhu cầu hợp tác.',
+    bullets: ['Talkshow.', 'Podcast.', 'Event.'],
   },
 ];
 
@@ -379,6 +406,16 @@ const GLOBAL_STYLES = `
   .text-outline-white { -webkit-text-stroke: 1px white; }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  @keyframes cv-download-wiggle {
+    0%, 72%, 100% { transform: rotate(0) translateX(0); }
+    75% { transform: rotate(-22deg) translateX(-1px); }
+    79% { transform: rotate(24deg) translateX(1px); }
+    83% { transform: rotate(-18deg) translateX(-1px); }
+    87% { transform: rotate(14deg) translateX(1px); }
+    91% { transform: rotate(-8deg); }
+    95% { transform: rotate(0); }
+  }
+  .cv-download-wiggle { animation: cv-download-wiggle 3s ease-in-out infinite; transform-origin: 50% 55%; }
   ::selection { background: white; color: black; }
   html { scroll-behavior: smooth; }
   @media (prefers-reduced-motion: reduce) {
@@ -388,6 +425,7 @@ const GLOBAL_STYLES = `
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+    .cv-download-wiggle { animation: none !important; }
   }
 `;
 
@@ -984,7 +1022,6 @@ const CreditLoader = ({ onComplete }) => {
 };
 
 export default function App() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const [selectedExp, setSelectedExp] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -992,10 +1029,19 @@ export default function App() {
   const [isUnlocked, setIsUnlocked] = useState(false); 
   
   const [activeContactRouteId, setActiveContactRouteId] = useState('hr');
-  const [isChoosingContactChannel, setIsChoosingContactChannel] = useState(false);
+  const [isContactPopoverOpen, setIsContactPopoverOpen] = useState(false);
+  const [isAppointmentSubmitting, setIsAppointmentSubmitting] = useState(false);
+  const [appointmentStatus, setAppointmentStatus] = useState({ type: '', message: '' });
+  const [appointmentDate, setAppointmentDate] = useState(getNextAvailableAppointmentDate);
+  const [appointmentNow, setAppointmentNow] = useState(() => Date.now());
+  const [appointmentTime, setAppointmentTime] = useState(() => {
+    const today = getHoChiMinhDateTime().date;
+    return getFutureAppointmentSlots(today)[0] || '';
+  });
   const [hasExpDetailScrolled, setHasExpDetailScrolled] = useState(false);
 
   const containerRef = useRef(null);
+  const contactPopoverRef = useRef(null);
   const expRefs = useRef([]);
   const activeIdxRef = useRef(0);
   const servicesOuterRef = useRef(null);
@@ -1018,6 +1064,14 @@ export default function App() {
     () => CONTACT_ROUTES.find((route) => route.id === activeContactRouteId) || CONTACT_ROUTES[0],
     [activeContactRouteId]
   );
+  const appointmentSlots = useMemo(
+    () => getFutureAppointmentSlots(appointmentDate, appointmentNow),
+    [appointmentDate, appointmentNow]
+  );
+  const appointmentHours = [...new Set(appointmentSlots.map((slot) => slot.slice(0, 2)))];
+  const appointmentMinutes = appointmentSlots
+    .filter((slot) => slot.startsWith(`${appointmentTime.slice(0, 2)}:`))
+    .map((slot) => slot.slice(3));
   const contactEmailBody = useMemo(
     () =>
       [
@@ -1035,9 +1089,24 @@ export default function App() {
   );
   const contactMailtoHref = `mailto:anh@anhtranviet.com?subject=${encodeURIComponent(activeContactRoute.emailSubject)}&body=${encodeURIComponent(contactEmailBody)}`;
   const contactZaloMessage = `${activeContactRoute.emailSubject}\n\n${contactEmailBody}`;
-  const contactCvHref = activeContactRoute.cvHref
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}${activeContactRoute.cvHref}`
-    : '';
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setAppointmentNow(Date.now()), 30_000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const today = getHoChiMinhDateTime().date;
+    if (!appointmentSlots.length && appointmentDate === today) {
+      const nextDate = addOneHoChiMinhDay(today);
+      setAppointmentDate(nextDate);
+      setAppointmentTime(getFutureAppointmentSlots(nextDate)[0] || '');
+      return;
+    }
+    if (!appointmentSlots.includes(appointmentTime)) {
+      setAppointmentTime(appointmentSlots[0] || '');
+    }
+  }, [appointmentDate, appointmentSlots, appointmentTime]);
 
   const { scrollYProgress: servicesProgress } = useScroll({
     target: servicesOuterRef,
@@ -1278,8 +1347,25 @@ export default function App() {
 
   const handleContactRouteChange = useCallback((id) => {
     setActiveContactRouteId(id);
-    setIsChoosingContactChannel(false);
   }, []);
+
+  useEffect(() => {
+    if (!isContactPopoverOpen) return undefined;
+    const closeOnOutsidePointer = (event) => {
+      if (!contactPopoverRef.current?.contains(event.target)) {
+        setIsContactPopoverOpen(false);
+      }
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setIsContactPopoverOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOnOutsidePointer);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePointer);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [isContactPopoverOpen]);
 
   const handleCopyAndOpenZalo = useCallback(async () => {
     const zaloWindow = window.open('about:blank', '_blank');
@@ -1294,6 +1380,96 @@ export default function App() {
       window.location.href = 'https://zalo.me/84919999781';
     }
   }, [contactZaloMessage]);
+
+  const handleAppointmentSubmit = useCallback(async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const values = new FormData(form);
+    const jdFile = values.get('jd');
+    const maxFileSize = 3 * 1024 * 1024;
+
+    if (!appointmentDate || !appointmentTime || !isFutureHoChiMinhSlot(appointmentDate, appointmentTime)) {
+      setAppointmentStatus({ type: 'error', message: 'Vui lòng chọn thời gian trong tương lai.' });
+      return;
+    }
+
+    const requiredValues = ['company', 'contactName', 'phone', 'message'];
+    if (requiredValues.some((name) => !String(values.get(name) || '').trim())) {
+      setAppointmentStatus({ type: 'error', message: 'Vui lòng điền đầy đủ thông tin bắt buộc.' });
+      return;
+    }
+
+    if (!/^\d{9}$/.test(String(values.get('phone') || ''))) {
+      setAppointmentStatus({ type: 'error', message: 'Số điện thoại cần có đúng 9 chữ số sau mã +84.' });
+      return;
+    }
+
+    if (jdFile instanceof File && jdFile.size > maxFileSize) {
+      setAppointmentStatus({ type: 'error', message: 'JD vượt quá giới hạn 3 MB.' });
+      return;
+    }
+
+    setIsAppointmentSubmitting(true);
+    setAppointmentStatus({ type: '', message: '' });
+
+    try {
+      let attachment = null;
+      if (jdFile instanceof File && jdFile.size > 0) {
+        const extension = jdFile.name.split('.').pop()?.toLowerCase();
+        if (!['pdf', 'doc', 'docx'].includes(extension)) {
+          throw new Error('Chỉ nhận file PDF, DOC hoặc DOCX.');
+        }
+        const dataUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ''));
+          reader.onerror = () => reject(new Error('Không đọc được file JD.'));
+          reader.readAsDataURL(jdFile);
+        });
+        attachment = {
+          name: jdFile.name,
+          type: jdFile.type,
+          contentBase64: dataUrl.split(',')[1] || '',
+        };
+      }
+
+      const response = await fetch('/api/appointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role: activeContactRouteId,
+          date: appointmentDate,
+          time: appointmentTime,
+          company: values.get('company'),
+          contactName: values.get('contactName'),
+          phone: values.get('phone'),
+          message: values.get('message'),
+          attachment,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (result.error === 'APPOINTMENT_IN_PAST') {
+          throw new Error('Thời gian vừa chọn đã qua. Vui lòng chọn lại.');
+        }
+        throw new Error(result.error === 'SMTP_AUTH_MISSING' || result.error === 'SMTP_HOST_MISSING'
+          ? 'Máy chủ email chưa được cấu hình.'
+          : 'Chưa gửi được yêu cầu. Vui lòng thử lại sau.');
+      }
+
+      form.reset();
+      const nextDate = getNextAvailableAppointmentDate();
+      setAppointmentDate(nextDate);
+      setAppointmentTime(getFutureAppointmentSlots(nextDate)[0] || '');
+      setAppointmentStatus({ type: 'success', message: 'Đã gửi yêu cầu đặt lịch.' });
+    } catch (error) {
+      setAppointmentStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Chưa gửi được yêu cầu. Vui lòng thử lại sau.',
+      });
+    } finally {
+      setIsAppointmentSubmitting(false);
+    }
+  }, [activeContactRouteId, appointmentDate, appointmentTime]);
 
   useEffect(() => {
     document.title = "Anh Trần Việt | Creative Marketing Strategy & Growth";
@@ -1373,7 +1549,6 @@ export default function App() {
 
   const scrollToSection = useCallback((id, behavior = 'smooth') => {
     setIsUnlocked(true);
-    setIsMenuOpen(false);
     if (id === 'connect') {
       handleContactRouteChange('hr');
     }
@@ -1519,18 +1694,6 @@ export default function App() {
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, []);
-
-  const navItems = useMemo(
-    () => [
-      { label: 'Home', id: 'home' },
-      { label: 'Services', id: 'services' },
-      { label: 'Experience', id: 'experience' },
-      { label: 'Works', id: 'works' },
-      { label: 'Credentials', id: 'credentials' },
-      { label: 'Connect', id: 'connect' }
-    ],
-    []
-  );
 
   const worksInView = useInView(worksSectionRef, { once: true, margin: '-20% 0px -20% 0px' });
 
@@ -1700,41 +1863,56 @@ export default function App() {
               ANH.TRANVIET
             </span>
           </motion.div>
-          <button onClick={() => setIsMenuOpen(true)} className="flex items-center gap-2 group outline-none">
-            <span className="text-sm font-bold uppercase tracking-widest group-hover:pr-2 transition-all text-white">Menu</span>
-            <div className="w-8 h-[2px] bg-white" />
-          </button>
+          <div ref={contactPopoverRef} className="relative flex items-center gap-1 md:gap-2">
+            <button
+              type="button"
+              onClick={() => setIsContactPopoverOpen((isOpen) => !isOpen)}
+              aria-label="Contact"
+              aria-haspopup="dialog"
+              aria-expanded={isContactPopoverOpen}
+              className="flex h-12 w-14 cursor-pointer items-center justify-center text-white transition-transform duration-200 hover:scale-110 active:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              <MessageCircle className="h-5 w-5 md:h-[22px] md:w-[22px]" strokeWidth={2.2} aria-hidden="true" />
+            </button>
+            <a
+              href="https://anhtranviet.com/tran-viet-anh-cmo-leadership-profile"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Download CV"
+              className="flex h-12 w-14 cursor-pointer items-center justify-center text-white transition-transform duration-200 hover:scale-110 active:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              <Download className="cv-download-wiggle h-5 w-5 md:h-[22px] md:w-[22px]" strokeWidth={2.2} aria-hidden="true" />
+            </a>
+            {isContactPopoverOpen && (
+              <div
+                role="dialog"
+                aria-label="Chọn cách liên hệ"
+                className="absolute right-0 top-full z-[60] mt-3 w-48 rounded-xl border border-white/15 bg-[#080808] p-2 text-white shadow-2xl mix-blend-normal"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsContactPopoverOpen(false);
+                    handleCopyAndOpenZalo();
+                  }}
+                  className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors hover:bg-white/10"
+                >
+                  <ZaloIcon className="h-5 w-5 border-white text-white" />
+                  Zalo
+                </button>
+                <a
+                  href={contactMailtoHref}
+                  onClick={() => setIsContactPopoverOpen(false)}
+                  className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors hover:bg-white/10"
+                >
+                  <Mail className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+                  Email
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
-
-      {/* Menu Modal */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div 
-            initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }}
-            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[100] bg-white text-black p-10 flex flex-col justify-between"
-          >
-            <div className="flex justify-between items-start">
-              <span className="font-mono text-sm uppercase">Navigation</span>
-              <button onClick={() => setIsMenuOpen(false)} className="text-4xl font-light hover:rotate-90 transition-transform">×</button>
-            </div>
-            <div className="flex flex-col gap-4">
-              {navItems.map((item, i) => (
-                <motion.a
-                  key={item.id}
-                  initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 + i * 0.1 }}
-                  className="text-5xl md:text-9xl font-black uppercase hover:italic transition-all cursor-pointer leading-none"
-                  onClick={() => scrollToSection(item.id)}
-                >
-                  {item.label}
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Experience Modal */}
       <AnimatePresence>
@@ -1959,7 +2137,7 @@ export default function App() {
         <SectionTransitionGlow light />
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-70"><div className="absolute right-[-14%] top-16 h-[390px] w-[390px] rounded-full border border-pink-500/18" /><div className="absolute right-[-6%] top-36 h-[250px] w-[250px] rounded-full border border-black/10" /></div>
         <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4 md:pt-6">
-          <SectionTitle title="The Works" subtitle="Gallery" dark={true} subtitleClassName="text-purple-500" />
+          <SectionTitle title="The Works" subtitle="Projects" dark={true} subtitleClassName="text-purple-500" />
 
           <div
             ref={worksOuterRef}
@@ -1985,7 +2163,7 @@ export default function App() {
             <div>
               <SectionTitle title="Impact" subtitle="Data" />
               <p className="text-xl md:text-2xl text-gray-400 font-light leading-relaxed mb-10">
-                Xây dựng hệ thống Marketing bài bản, tối ưu vận hành và tăng trưởng lợi nhuận bền vững.
+                Xây dựng hệ thống Marketing bài bản, tối ưu vận hành và tăng trưởng bền vững cho SME.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 md:gap-4 lg:pt-20">
@@ -2008,7 +2186,7 @@ export default function App() {
             <SectionTitle title="Credentials" subtitle="Beyond Work" />
           </div>
           <p className="-mt-4 md:-mt-12 text-lg md:text-xl text-gray-400 leading-relaxed max-w-md">
-            Nền tảng học vấn, giải thưởng và hoạt động cộng đồng.
+            Học vấn, giải thưởng và hoạt động cộng đồng.
           </p>
 
           <div className="relative mt-12 md:mt-16 max-w-5xl ml-auto">
@@ -2080,7 +2258,7 @@ export default function App() {
           <div className="mb-8 md:mb-12">
             <SectionTitle title="Choose Your Next Move" subtitle="Contact" reserveTwoLines />
             <p className="-mt-4 md:-mt-12 max-w-xl text-gray-300 text-base md:text-xl leading-relaxed">
-              Chọn ngữ cảnh mà bạn muốn bắt đầu cuộc trò chuyện.
+              Hãy đặt lịch hẹn, tôi sẽ liên hệ bạn sớm nhất có thể!
             </p>
           </div>
 
@@ -2140,52 +2318,154 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="p-6 md:p-8 flex flex-col justify-center">
-                  <div>
-                    {contactCvHref && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          window.location.href = contactCvHref;
+                <form onSubmit={handleAppointmentSubmit} className="p-4 md:p-6 space-y-3">
+                  <div className="mb-1 flex items-start gap-2 border-b border-white/10 pb-3">
+                    <CalendarCheck className="mt-0.5 h-4 w-4 shrink-0 text-pink-400" aria-hidden="true" />
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-white">Đặt lịch hẹn</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="grid gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Ngày
+                      <input
+                        type="date"
+                        name="date"
+                        required
+                        min={getHoChiMinhDateTime().date}
+                        value={appointmentDate}
+                        onChange={(event) => {
+                          const date = event.target.value;
+                          setAppointmentDate(date);
+                          setAppointmentTime(getFutureAppointmentSlots(date)[0] || '');
                         }}
-                        className="group relative mb-3 w-full min-h-[72px] overflow-hidden bg-pink-500 text-black rounded-full flex items-center justify-center gap-3 px-6 text-xs md:text-sm font-black uppercase tracking-[0.18em] hover:bg-white transition-colors shadow-[0_0_34px_rgba(236,72,153,0.28)]"
-                      >
-                        <span className="absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/45 to-transparent group-hover:translate-x-[420%] transition-transform duration-700" />
-                        <Download className="relative z-10 w-5 h-5" />
-                        <span className="relative z-10">Download CV / Profile</span>
-                      </button>
-                    )}
-
-                    {!isChoosingContactChannel ? (
-                      <button
-                        type="button"
-                        onClick={() => setIsChoosingContactChannel(true)}
-                        className={`group w-full min-h-[72px] rounded-full flex items-center justify-center gap-3 px-6 text-xs md:text-sm font-black uppercase tracking-[0.18em] transition-colors ${contactCvHref ? 'border border-pink-500/60 bg-black/30 text-white hover:bg-white/[0.08] hover:border-pink-500' : 'bg-pink-500 text-black hover:bg-white'}`}
-                      >
-                        <Send className={`w-5 h-5 ${contactCvHref ? 'text-pink-500' : ''}`} />
-                        {activeContactRoute.cta}
-                      </button>
-                    ) : (
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          type="button"
-                          onClick={handleCopyAndOpenZalo}
-                          className="min-h-[72px] border border-pink-500/60 bg-black/30 text-white rounded-full flex items-center justify-center gap-3 px-5 text-xs font-black uppercase tracking-[0.18em] hover:bg-white/[0.08] hover:border-pink-500 transition-colors"
+                        className="h-12 w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-3 text-sm font-normal normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
+                      />
+                    </label>
+                    <fieldset className="min-w-0">
+                      <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">Giờ</legend>
+                      <div className="grid h-12 grid-cols-2 gap-1.5">
+                        <label className="sr-only" htmlFor="appointment-hour">Giờ</label>
+                        <select
+                          id="appointment-hour"
+                          aria-label="Giờ hẹn"
+                          value={appointmentTime.slice(0, 2)}
+                          disabled={!appointmentHours.length}
+                          onChange={(event) => {
+                            const firstSlot = appointmentSlots.find((slot) => slot.startsWith(`${event.target.value}:`));
+                            if (firstSlot) setAppointmentTime(firstSlot);
+                          }}
+                          className="min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-2 text-sm font-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          <ZaloIcon className="w-5 h-5 border-pink-500 text-pink-500" />
-                          Zalo
-                        </button>
-                        <a
-                          href={contactMailtoHref}
-
-                          className="min-h-[72px] border border-pink-500/60 bg-black/30 text-white rounded-full flex items-center justify-center gap-3 px-5 text-xs font-black uppercase tracking-[0.18em] hover:bg-white/[0.08] hover:border-pink-500 transition-colors"
+                          {appointmentHours.length
+                            ? appointmentHours.map((hour) => <option key={hour} value={hour}>{hour}</option>)
+                            : <option value="">--</option>}
+                        </select>
+                        <label className="sr-only" htmlFor="appointment-minute">Phút</label>
+                        <select
+                          id="appointment-minute"
+                          aria-label="Phút hẹn"
+                          value={appointmentTime.slice(3)}
+                          disabled={!appointmentMinutes.length}
+                          onChange={(event) => setAppointmentTime(`${appointmentTime.slice(0, 2)}:${event.target.value}`)}
+                          className="min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-2 text-sm font-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          <Mail className="w-5 h-5 text-pink-500" />
-                          Email
-                        </a>
+                          {appointmentMinutes.length
+                            ? appointmentMinutes.map((minute) => <option key={minute} value={minute}>{minute}</option>)
+                            : <option value="">--</option>}
+                        </select>
                       </div>
-                    )}                  </div>
-                </div>
+                    </fieldset>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 md:gap-3">
+                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
+                      Công ty
+                      <input
+                        type="text"
+                        name="company"
+                        autoComplete="organization"
+                        placeholder="Tên công ty"
+                        required
+                        className="h-10 min-w-0 rounded-md border border-white/20 bg-white/[0.055] px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
+                      />
+                    </label>
+                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
+                      Người liên hệ
+                      <input
+                        type="text"
+                        name="contactName"
+                        autoComplete="name"
+                        placeholder="Họ và tên"
+                        required
+                        className="h-10 min-w-0 rounded-md border border-white/20 bg-white/[0.055] px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
+                      />
+                    </label>
+                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
+                      Số điện thoại
+                      <span className="flex h-10 min-w-0 items-center overflow-hidden rounded-md border border-white/20 bg-white/[0.055] transition-colors hover:border-white/35 hover:bg-white/[0.08] focus-within:border-pink-400 focus-within:bg-white/[0.08] focus-within:ring-2 focus-within:ring-pink-500/25">
+                        <span className="flex h-full shrink-0 items-center border-r border-white/10 px-2 text-xs font-semibold text-gray-300">+84</span>
+                        <input
+                          type="tel"
+                          name="phone"
+                          autoComplete="tel-national"
+                          inputMode="numeric"
+                          pattern="[0-9]{9}"
+                          maxLength={9}
+                          onChange={(event) => {
+                            event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '').slice(0, 10);
+                          }}
+                          placeholder="000-000-000"
+                          required
+                          title="Nhập đúng 9 chữ số sau mã +84"
+                          className="h-full w-full min-w-0 bg-transparent px-2 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none"
+                        />
+                      </span>
+                    </label>
+                  </div>
+
+                  <label className="grid gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    Nội dung
+                    <textarea
+                      name="message"
+                      rows={3}
+                      wrap="soft"
+                      maxLength={4000}
+                      placeholder="Nội dung cần trao đổi"
+                      required
+                      className="h-24 min-w-0 resize-none overflow-y-auto break-words rounded-md border border-white/20 bg-white/[0.055] px-3 py-2 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
+                      style={{ resize: 'none', width: '100%', maxWidth: '100%', overflowWrap: 'anywhere' }}
+                    />
+                  </label>
+
+                  <div className="flex flex-row items-end gap-2 sm:gap-3">
+                    <label className="grid min-w-0 flex-1 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      JD (không bắt buộc, tối đa 3 MB)
+                      <input
+                        type="file"
+                        name="jd"
+                        accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      className="h-10 min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-2 py-1.5 text-[10px] font-normal normal-case tracking-normal text-gray-300 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 file:mr-1 file:max-w-[65%] file:truncate file:rounded file:border-0 file:bg-white/10 file:px-1.5 file:py-1 file:text-[10px] file:font-medium file:text-white sm:text-xs sm:file:mr-2 sm:file:px-2 sm:file:text-xs"
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      disabled={isAppointmentSubmitting || !appointmentTime}
+                      aria-label="Gửi yêu cầu đặt lịch"
+                      title="Gửi yêu cầu đặt lịch"
+                      className="flex h-10 w-12 shrink-0 items-center justify-center rounded-full border border-pink-500 text-pink-500 transition-all hover:bg-pink-500 hover:text-black active:scale-95 disabled:cursor-wait disabled:opacity-50"
+                    >
+                      {isAppointmentSubmitting
+                        ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                        : <CalendarCheck className="h-5 w-5" aria-hidden="true" />}
+                    </button>
+                  </div>
+                  {appointmentStatus.message && (
+                    <p role={appointmentStatus.type === 'error' ? 'alert' : 'status'} className={`text-xs ${appointmentStatus.type === 'error' ? 'text-red-400' : 'text-green-400'}`}>
+                      {appointmentStatus.message}
+                    </p>
+                  )}
+                </form>
               </div>
             </div>
           </div>

@@ -104,6 +104,10 @@ try {
   cdp.close();
   console.log(`Created ${outputPath}`);
 } finally {
-  chrome.kill('SIGTERM');
+  if (chrome.exitCode === null) {
+    const chromeClosed = new Promise((resolve) => chrome.once('close', resolve));
+    chrome.kill('SIGTERM');
+    await chromeClosed;
+  }
   await rm(tmp, { recursive: true, force: true });
 }
