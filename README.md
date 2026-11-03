@@ -12,3 +12,15 @@
 4. Start frontend: `npm run dev`.
 
 Or run both at once: `npm run dev:full`.
+
+## Appointment form on Vercel
+
+The appointment form uses the Vercel Node Function at `api/appointment.js` and sends mail through Resend. Add these environment variables in **Vercel → Project → Settings → Environment Variables**:
+
+- `RESEND_API_KEY`: API key created in Resend.
+- `RESEND_FROM`: sender in the form `Portfolio <appointments@your-verified-domain.com>`. Verify the sender domain in Resend first.
+- `CONTACT_TO`: destination email (defaults to `4nhtran@gmail.com`).
+
+Enable the variables for **Production** (and Preview if desired), then redeploy. The API validates the role, required fields, Vietnam-local appointment time, phone number, and optional PDF/DOC/DOCX attachment (maximum 3 MB) before sending. Keep the Resend API key only in Vercel environment variables; do not put it in frontend code or commit it.
+
+For local Vite development, `npm run dev` still proxies `/api/appointment` to the existing SMTP backend on port 8787. Vercel environment variables do not automatically configure that local SMTP backend.
