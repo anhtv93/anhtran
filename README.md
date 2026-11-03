@@ -13,14 +13,16 @@
 
 Or run both at once: `npm run dev:full`.
 
-## Appointment form on Vercel
+## Appointment form on Netlify and Vercel
 
-The appointment form uses the Vercel Node Function at `api/appointment.js` and sends mail through Resend. Add these environment variables in **Vercel → Project → Settings → Environment Variables**:
+The appointment form sends mail through Resend. `api/appointment.js` is the Vercel function; `netlify/functions/appointment.js` is the Netlify version. The `/api/appointment` redirect in `netlify.toml` routes requests to the Netlify function when the site is served by Netlify.
+
+Add these environment variables in the hosting provider serving the domain:
 
 - `RESEND_API_KEY`: API key created in Resend.
 - `RESEND_FROM`: sender in the form `Portfolio <appointments@your-verified-domain.com>`. Verify the sender domain in Resend first.
 - `CONTACT_TO`: destination email (defaults to `4nhtran@gmail.com`).
 
-Enable the variables for **Production** (and Preview if desired), then redeploy. The API validates the role, required fields, Vietnam-local appointment time, phone number, and optional PDF/DOC/DOCX attachment (maximum 3 MB) before sending. Keep the Resend API key only in Vercel environment variables; do not put it in frontend code or commit it.
+Enable the variables for **Production** (and Preview if desired), then redeploy. For `anhtranviet.com`, configure them in Netlify because that domain is currently served by Netlify. The API validates the role, required fields, Vietnam-local appointment time, phone number, and optional PDF/DOC/DOCX attachment (maximum 3 MB) before sending. Keep the Resend API key only in hosting environment variables; do not put it in frontend code or commit it.
 
 For local Vite development, `npm run dev` still proxies `/api/appointment` to the existing SMTP backend on port 8787. Vercel environment variables do not automatically configure that local SMTP backend.
