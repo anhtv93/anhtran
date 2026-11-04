@@ -699,8 +699,8 @@ const HeroContent = ({ scale, y, scrollCueOpacity }) => (
 const BRAND_PARTS = [
   { src: '/assets/loader/part-1.png', title: '"A"', description: 'Anh.Trần Việt' },
   { src: '/assets/loader/part-2.png', title: 'Strategy', description: 'La bàn định hướng' },
-  { src: '/assets/loader/part-3.png', title: 'Growth', description: 'Mũi tên tăng trưởng' },
-  { src: '/assets/loader/part-4.png', title: 'Creative', description: '#FFFF00 - Màu sắc sáng tạo' },
+  { src: '/assets/loader/part-3.png', title: 'Growth', description: 'Vector tăng trưởng' },
+  { src: '/assets/loader/part-4.png', title: 'Creative', description: '#FFFF00 - Màu vàng sáng tạo' },
 ];
 
 const BRAND_SLOTS = [
@@ -766,7 +766,7 @@ const IntroJourney = () => {
   const heroScaleProgress = useTransform(scrollYProgress, [0, 0.12], [0, 1]);
   const heroScale = useTransform(heroScaleProgress, [0, 1], [1, isMobile ? 0.62 : 1 / 3]);
   const heroY = useTransform(heroScaleProgress, [0, 1], ['0vh', isMobile ? '-25vh' : '-27vh']);
-  const backdropOpacity = useTransform(scrollYProgress, [0, 0.06, 0.08], [0.9, 0.9, 0]);
+  const backdropOpacity = useTransform(scrollYProgress, [0, 0.06, 0.08], [1, 1, 0]);
   const scrollCueOpacity = useTransform(heroScaleProgress, [0, 0.28, 1], [1, 0, 0]);
   const brandProgress = useTransform(scrollYProgress, [0.12, 1], [0, 1]);
   const coreScale = useTransform(brandProgress, [0, 0.18, 1], [0.35, 1, 1]);
@@ -1700,7 +1700,7 @@ export default function App() {
           style={{ height: `${(1 + servicesScrollScreens) * 100}svh` }}
         >
           <div ref={servicesInnerRef} className="sticky top-0 h-[100svh] overflow-hidden">
-            <div className="h-full flex flex-col justify-center">
+            <div className="h-full flex translate-y-4 flex-col justify-center md:translate-y-0">
               <div className="pt-6 md:pt-8">
                 <SectionTitle title="Expertise" subtitle="Services" />
               </div>
@@ -1912,22 +1912,24 @@ export default function App() {
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-white">Đặt lịch hẹn</p>
                     </div>
                   </div>
-                  <div className="grid min-w-0 grid-cols-3 gap-1" style={{ gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 0.8fr)' }}>
+                  <div className="grid min-w-0 grid-cols-3 gap-1" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 0.875fr) minmax(0, 0.875fr)' }}>
                     <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       Ngày
-                      <input
-                        type="date"
-                        name="date"
-                        required
-                        min={getHoChiMinhDateTime().date}
-                        value={appointmentDate}
-                        onChange={(event) => {
-                          const date = event.target.value;
-                          setAppointmentDate(date);
-                          setAppointmentTime(getFutureAppointmentSlots(date)[0] || '');
-                        }}
-                        className="appointment-date-input flex h-12 w-full min-w-0 max-w-full box-border items-center cursor-pointer overflow-hidden rounded-md border border-white/20 bg-white/[0.055] px-1 text-sm font-normal leading-[3rem] text-left normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25 sm:px-2"
-                      />
+                      <span className="block h-12 w-full min-w-0 overflow-hidden rounded-md">
+                        <input
+                          type="date"
+                          name="date"
+                          required
+                          min={getHoChiMinhDateTime().date}
+                          value={appointmentDate}
+                          onChange={(event) => {
+                            const date = event.target.value;
+                            setAppointmentDate(date);
+                            setAppointmentTime(getFutureAppointmentSlots(date)[0] || '');
+                          }}
+                          className="appointment-date-input flex h-12 w-full min-w-0 max-w-full box-border items-center cursor-pointer overflow-hidden rounded-md border border-white/20 bg-white/[0.055] px-1 text-sm font-normal leading-[3rem] text-left normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25 sm:px-2"
+                        />
+                      </span>
                     </label>
                     <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       Giờ
