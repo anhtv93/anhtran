@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence, useScroll, useSpring, useInView, useMotionValue, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useSpring, useInView, useMotionValue, useTransform, useReducedMotion } from 'framer-motion';
 import { 
   TrendingUp, 
   Target, 
@@ -587,13 +587,13 @@ const SectionTitle = ({ title, subtitle, dark = false, subtitleClassName = '', r
 
 const CountUp = ({ value, duration = 700 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-20% 0px -20% 0px" });
+  const isInView = useInView(ref, { once: false, margin: "-10% 0px -10% 0px" });
   const [display, setDisplay] = useState("0");
 
   useEffect(() => {
     if (!isInView) return;
     const raw = String(value);
-    const match = raw.match(/[0-9]+(?:\\.[0-9]+)?/);
+    const match = raw.match(/[0-9]+(?:\.[0-9]+)?/);
     if (!match) {
       const t = setTimeout(() => setDisplay(raw), 0);
       return () => clearTimeout(t);
@@ -601,7 +601,7 @@ const CountUp = ({ value, duration = 700 }) => {
 
     const num = parseFloat(match[0]);
     const suffix = raw.replace(match[0], "");
-    const hasLeadingZero = /^0\\d+$/.test(match[0]);
+    const hasLeadingZero = /^0\d+$/.test(match[0]);
     const padLen = hasLeadingZero ? match[0].length : 0;
     const start = performance.now();
     const dur = Math.max(300, duration);
@@ -611,7 +611,7 @@ const CountUp = ({ value, duration = 700 }) => {
       const p = Math.min((t - start) / dur, 1);
       const current = Math.round(num * p);
       const str = hasLeadingZero ? String(current).padStart(padLen, "0") : String(current);
-      setDisplay(`${str}${suffix}`);
+      setDisplay(p <= 0.03 ? "0" : `${str}${suffix}`);
       if (p < 1) raf = requestAnimationFrame(step);
     };
 
@@ -676,106 +676,171 @@ const ExperienceRow = React.memo(({ exp, index, isActive, onOpenDetail }) => {
   );
 });
 
-const MinimalHeroBackground = React.memo(function MinimalHeroBackground() {
-  const backgroundRef = useRef(null);
-  const isHeroVisible = useInView(backgroundRef, { once: false, amount: 0.05 });
-
-  return (
-    <div ref={backgroundRef} className="absolute inset-0 z-0 overflow-hidden bg-[#050505]">
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[70vh] w-[70vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-pink-500/40 blur-[90px]"
-        animate={isHeroVisible ? { scale: [1, 1.16, 1], opacity: [0.62, 0.88, 0.62] } : false}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-24 -right-16 h-80 w-80 rounded-full bg-purple-500/30 blur-[70px]"
-        animate={isHeroVisible ? { y: [0, 45, 0], x: [0, -35, 0] } : false}
-        transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-cyan-400/20 blur-[80px]"
-        animate={isHeroVisible ? { y: [0, -35, 0], x: [0, 20, 0] } : false}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[74vh] w-[74vh] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30"
-        animate={isHeroVisible ? { rotate: [0, 360], scale: [0.94, 1.04, 0.94], opacity: [0.32, 0.54, 0.32] } : false}
-        transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
-      />
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[52vh] w-[52vh] -translate-x-1/2 -translate-y-1/2 rounded-full border border-pink-300/35"
-        animate={isHeroVisible ? { rotate: [360, 0], scale: [1.02, 0.94, 1.02], opacity: [0.24, 0.5, 0.24] } : false}
-        transition={{ duration: 11, repeat: Infinity, ease: "linear" }}
-      />
-      <div 
-        className="absolute inset-0 opacity-[0.18]" 
-        style={{ 
-          backgroundImage: 'radial-gradient(circle, #ffffff 1.2px, transparent 1.2px)', 
-          backgroundSize: '34px 34px' 
-        }}
-      />
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent"
-        animate={isHeroVisible ? { x: ['0%', '420%'] } : false}
-        transition={{ duration: 5.8, repeat: Infinity, ease: "linear" }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/20 to-[#050505]" />
+const HeroContent = ({ scale, y, scrollCueOpacity }) => (
+  <motion.div className="absolute inset-0 z-20 flex items-center justify-center px-6 text-center" style={{ scale, y }}>
+    <div>
+      <h1 className="text-[14vw] md:text-[10.5vw] font-black leading-none uppercase mb-5 tracking-tighter">
+        The <br />
+        <span className="text-outline-white text-transparent">Creative</span><br />
+        Growth
+      </h1>
+      <p className="text-base md:text-[1.4rem] font-light max-w-2xl mx-auto text-gray-300 leading-relaxed">
+        Xây dựng và vận hành hệ thống Marketing <br />
+        Nâng tầm thương hiệu - tăng trưởng doanh thu.
+      </p>
     </div>
-  );
-});
+    <motion.div className="absolute bottom-[7svh] left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.32em] text-white/70 md:text-xs" style={{ opacity: scrollCueOpacity }}>
+      <span>Scroll to Explore</span>
+      <span aria-hidden="true" className="h-8 w-px bg-gradient-to-b from-pink-400/80 via-violet-400/60 to-transparent" />
+    </motion.div>
+  </motion.div>
+);
 
-const HeroSection = React.memo(function HeroSection({ onStart }) {
+const BRAND_PARTS = [
+  { src: '/assets/loader/part-1.png', title: '"A"', description: 'Anh.Trần Việt' },
+  { src: '/assets/loader/part-2.png', title: 'Strategy', description: 'La bàn định hướng' },
+  { src: '/assets/loader/part-3.png', title: 'Growth', description: 'Mũi tên tăng trưởng' },
+  { src: '/assets/loader/part-4.png', title: 'Creative', description: '#FFFF00 - Màu sắc sáng tạo' },
+];
+
+const BRAND_SLOTS = [
+  { x: '-20vw', mobileX: '-25vw', y: '-18vh', mobileY: '-14vh', side: 'left' },
+  { x: '20vw', mobileX: '25vw', y: '-10vh', mobileY: '-7vh', side: 'right' },
+  { x: '-20vw', mobileX: '-25vw', y: '10vh', mobileY: '7vh', side: 'left' },
+  { x: '20vw', mobileX: '25vw', y: '18vh', mobileY: '14vh', side: 'right' },
+];
+
+const shuffleBrandSlots = (currentOrder) => {
+  const order = [0, 1, 2, 3];
+  for (let index = order.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [order[index], order[swapIndex]] = [order[swapIndex], order[index]];
+  }
+  if (order.every((slot, index) => slot === currentOrder[index])) {
+    order.push(order.shift());
+  }
+  return order;
+};
+
+const BrandRevealPart = ({ part, slot, index, progress, reducedMotion, isMobile }) => {
+  const start = index === 3 ? 0.99 : (index + 1) * 0.25;
+  const targetX = isMobile ? slot.mobileX : slot.x;
+  const targetY = isMobile ? slot.mobileY : slot.y;
+  const opacity = useTransform(progress, [start - 0.1, start], [0, 1]);
+  const x = useTransform(progress, [start - 0.12, start, 1], ['0vw', targetX, targetX]);
+  const y = useTransform(progress, [start - 0.12, start, 1], ['0vh', targetY, targetY]);
+  const isRight = slot.side === 'right';
+
   return (
-    <section id="home" className="h-screen relative flex items-center justify-center px-6 overflow-hidden">
-      <MinimalHeroBackground />
-      <div className="relative z-10 text-center">
-        <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5, duration: 1 }}>
-          <h1 className="text-[14vw] md:text-[10.5vw] font-black leading-none uppercase mb-5 md:mb-5 tracking-tighter">
-            The <br />
-            <span className="text-outline-white text-transparent">Creative</span><br />
-            Growth
-          </h1>
-          <p className="text-base md:text-[1.4rem] font-light max-w-2xl mx-auto text-gray-300 mb-14 md:mb-14 leading-relaxed">
-            Xây dựng và vận hành hệ thống Marketing <br />
-            Nâng tầm thương hiệu - tăng trưởng doanh thu.
-          </p>
-          <FloatingAction distance={5} duration={3}>
-            <MagneticButton
-              className="px-8 md:px-11 py-3.5 md:py-[18px] bg-white text-black rounded-full hover:bg-pink-500 font-black uppercase tracking-[0.2em] md:tracking-widest hover:scale-105 transition-transform flex items-center gap-2 md:gap-4 mx-auto text-[11px] md:text-[15px]"
-              onClick={onStart}
-            >
-              Bắt đầu hành trình <ArrowDownRight className="w-4 h-4 md:w-6 md:h-6" />
-            </MagneticButton>
-          </FloatingAction>
+    <motion.div
+      className="absolute left-1/2 top-1/2 z-20 w-[min(46vw,300px)] -translate-x-1/2 -translate-y-1/2"
+      style={{ x: reducedMotion ? targetX : x, y: reducedMotion ? targetY : y, opacity: reducedMotion ? 1 : opacity }}
+    >
+      <div className={`flex items-center gap-2 sm:gap-3 ${isRight ? 'flex-row-reverse text-right' : 'text-left'}`}>
+        <img src={part.src} alt="" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14 md:h-16 md:w-16" draggable="false" />
+        <div className="min-w-0">
+          <span className="block text-base font-black uppercase leading-tight tracking-tight text-white sm:text-lg md:text-2xl">{part.title}</span>
+          <span className="mt-1 block text-xs font-medium leading-snug text-white/70 sm:text-sm md:text-base">{part.description}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const IntroJourney = () => {
+  const journeyRef = useRef(null);
+  const reducedMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
+  const [brandSlotOrder, setBrandSlotOrder] = useState([0, 1, 2, 3]);
+  const brandSlotOrderRef = useRef([0, 1, 2, 3]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)');
+    const updateViewport = () => setIsMobile(media.matches);
+    updateViewport();
+    media.addEventListener?.('change', updateViewport);
+    return () => media.removeEventListener?.('change', updateViewport);
+  }, []);
+  const finalProgress = useMotionValue(1);
+  const { scrollYProgress } = useScroll({ target: journeyRef, offset: ['start start', 'end end'] });
+  const heroScaleProgress = useTransform(scrollYProgress, [0, 0.12], [0, 1]);
+  const heroScale = useTransform(heroScaleProgress, [0, 1], [1, isMobile ? 0.62 : 1 / 3]);
+  const heroY = useTransform(heroScaleProgress, [0, 1], ['0vh', isMobile ? '-25vh' : '-27vh']);
+  const backdropOpacity = useTransform(scrollYProgress, [0, 0.06, 0.08], [0.9, 0.9, 0]);
+  const scrollCueOpacity = useTransform(heroScaleProgress, [0, 0.28, 1], [1, 0, 0]);
+  const brandProgress = useTransform(scrollYProgress, [0.12, 1], [0, 1]);
+  const coreScale = useTransform(brandProgress, [0, 0.18, 1], [0.35, 1, 1]);
+  const coreRotate = useTransform(brandProgress, [0, 1], [0, 360]);
+  const coreOpacity = useTransform(brandProgress, [0, 0.04], [0, 1]);
+  const brandOpacity = useTransform(scrollYProgress, [0.08, 0.16], [0, 1]);
+  const progress = reducedMotion ? finalProgress : brandProgress;
+
+  useEffect(() => {
+    let previousProgress = scrollYProgress.get();
+    return scrollYProgress.on('change', (currentProgress) => {
+      if (currentProgress >= 0.12 && previousProgress < 0.12) {
+        const nextOrder = shuffleBrandSlots(brandSlotOrderRef.current);
+        brandSlotOrderRef.current = nextOrder;
+        setBrandSlotOrder(nextOrder);
+      }
+      previousProgress = currentProgress;
+    });
+  }, [scrollYProgress]);
+
+  return (
+    <section
+      id="home"
+      ref={journeyRef}
+      className="relative isolate z-0 bg-[#050505]"
+      style={{ height: reducedMotion ? '100svh' : '450svh' }}
+    >
+      <div className={`${reducedMotion ? 'relative' : 'sticky top-0'} h-[100svh] overflow-hidden bg-[#050505]`}>
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+          style={{ opacity: reducedMotion ? 0 : backdropOpacity }}
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'radial-gradient(ellipse at 16% 30%, rgba(236,72,153,0.22), transparent 35%), radial-gradient(ellipse at 84% 64%, rgba(124,58,237,0.22), transparent 38%), radial-gradient(rgba(255,255,255,0.15) 0.7px, transparent 0.9px)',
+              backgroundSize: 'auto, auto, 22px 22px',
+            }}
+          />
+          <div className="absolute inset-0 opacity-80">
+            <div className="absolute -left-[14%] top-[16%] h-[min(58vw,520px)] w-[min(58vw,520px)] rounded-full border border-white/20" />
+            <div className="absolute -left-[7%] top-[25%] h-[min(42vw,370px)] w-[min(42vw,370px)] rounded-full border border-pink-400/25" />
+            <div className="absolute -right-[18%] -bottom-[22%] h-[min(64vw,560px)] w-[min(64vw,560px)] rounded-full border border-violet-400/25" />
+            <div className="absolute -right-[10%] -bottom-[12%] h-[min(46vw,400px)] w-[min(46vw,400px)] rounded-full border border-white/18" />
+          </div>
+        </motion.div>
+        <HeroContent scale={reducedMotion ? (isMobile ? 0.62 : 1 / 3) : heroScale} y={reducedMotion ? (isMobile ? '-25vh' : '-27vh') : heroY} scrollCueOpacity={reducedMotion ? 1 : scrollCueOpacity} />
+        <motion.div
+          className="absolute inset-x-0 bottom-0 overflow-hidden"
+          style={{ top: isMobile ? '50%' : '33.333333%', opacity: reducedMotion ? 1 : brandOpacity }}
+        >
+          <motion.div
+            className="absolute left-1/2 top-1/2 z-10 h-[min(22vw,160px)] w-[min(22vw,160px)] min-h-[80px] min-w-[80px] max-h-[160px] max-w-[160px] -translate-x-1/2 -translate-y-1/2 md:min-h-[96px] md:min-w-[96px]"
+            style={{
+              scale: reducedMotion ? 1 : coreScale,
+              rotateY: reducedMotion ? 0 : coreRotate,
+              opacity: reducedMotion ? 1 : coreOpacity,
+              transformPerspective: 900,
+              backfaceVisibility: 'visible',
+            }}
+          >
+            <img src="/assets/loader/part-0.png" alt="Logo" className="h-full w-full object-contain" />
+          </motion.div>
+          {BRAND_PARTS.map((part, index) => (
+            <BrandRevealPart key={part.src} part={part} slot={BRAND_SLOTS[brandSlotOrder[index]]} index={index} progress={progress} reducedMotion={reducedMotion} isMobile={isMobile} />
+          ))}
         </motion.div>
       </div>
-      <motion.div
-        animate={{ y: [0, 10, 0], opacity: [0.45, 0.75, 0.45] }}
-        transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
-        className="absolute bottom-8 md:bottom-10 right-6 md:right-16 text-[9px] md:text-xs font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-50 z-20"
-      >
-        Use button to explore
-      </motion.div>
     </section>
   );
-});
+};
 
-const SectionTransitionGlow = ({ light = false }) => (
-  <div
-    aria-hidden="true"
-    className={`pointer-events-none absolute left-0 right-0 top-0 h-24 md:h-28 ${
-      light
-        ? 'bg-gradient-to-b from-black/10 via-black/5 to-transparent'
-        : 'bg-gradient-to-b from-white/10 via-white/5 to-transparent'
-    }`}
-  />
-);
+const MotionSpan = motion.span;
 
 const ScrollMouseHint = ({ axis = 'vertical', dark = false }) => {
   const isVertical = axis === 'vertical';
@@ -812,261 +877,11 @@ const FloatingAction = ({ children, distance = 4, duration = 2.8 }) => (
   </motion.div>
 );
 
-const ORBIT_DEGS = [45, 135, 225, 315];
-const HUD_GLYPHS = ['Δ', 'Σ', '⊗', '⎔'];
-const MotionSpan = motion.span;
-const LOADER_LOGO_PARTS = [
-  { key: "a", title: "(A) - Anh.TranViet", iconSrc: "/assets/loader/part-1.png" },
-  { key: "strategy", title: "Strategy", iconSrc: "/assets/loader/part-2.png" },
-  { key: "creative", title: "Growth", iconSrc: "/assets/loader/part-3.png" },
-  { key: "growth", title: "(#FFFF00) - Creative", iconSrc: "/assets/loader/part-4.png" },
-];
-const LOADER_PART_LAYOUT = [
-  { top: 22, left: 25, side: 'left' },
-  { top: 40, left: 75, side: 'right' },
-  { top: 60, left: 25, side: 'left' },
-  { top: 78, left: 75, side: 'right' },
-];
-
-const CreditLoader = ({ onComplete }) => {
-  const LOADER_DURATION = 2400;
-  const logoParts = LOADER_LOGO_PARTS;
-  const [progress, setProgress] = useState(0);
-  const progressRef = useRef(0);
-  const layout = LOADER_PART_LAYOUT;
-
-  useEffect(() => {
-    let raf = null;
-    const start = performance.now();
-
-    const tick = (t) => {
-      const ratio = Math.min((t - start) / LOADER_DURATION, 1);
-      const next = Math.round(ratio * 100);
-      if (next !== progressRef.current) {
-        progressRef.current = next;
-        setProgress(next);
-      }
-      if (ratio < 1) {
-        raf = requestAnimationFrame(tick);
-      }
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => raf && cancelAnimationFrame(raf);
-  }, [LOADER_DURATION]);
-
-  useEffect(() => {
-    const extra = 250; // keep the intro snappy on mobile
-    const t = setTimeout(onComplete, LOADER_DURATION + extra);
-    return () => clearTimeout(t);
-  }, [onComplete, LOADER_DURATION]);
-  
-  return (
-    <motion.div 
-      initial={false}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[300] bg-black flex flex-col items-center justify-between pt-8 pb-8 md:pt-12 md:pb-12 overflow-hidden"
-    >
-      <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
-        <div className="relative w-full max-w-5xl h-[50vh] min-h-[330px] md:h-[54vh] md:min-h-[440px] px-4 md:px-6">
-          <div className="absolute inset-0 -z-10 opacity-[0.22] [mask-image:radial-gradient(circle_at_center,black,transparent_70%)]" aria-hidden="true">
-            <div
-              className="w-full h-full"
-              style={{
-                backgroundImage:
-                  'radial-gradient(circle at 20% 20%, rgba(236,72,153,0.25), transparent 55%), radial-gradient(circle at 80% 80%, rgba(236,72,153,0.2), transparent 45%), linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)',
-                backgroundSize: '100% 100%, 100% 100%, 28px 28px, 28px 28px',
-              }}
-            />
-          </div>
-          <motion.div
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-400/70 to-transparent"
-            animate={{ y: ['-10%', '110%'] }}
-            transition={{ duration: 3.4, repeat: Infinity, ease: "linear" }}
-          />
-
-          <div className="absolute inset-0 flex items-center justify-center">
-            {ORBIT_DEGS.map((deg, idx) => (
-              <motion.div
-                key={`cone-${deg}`}
-                aria-hidden="true"
-                className="absolute left-1/2 top-1/2 w-[18vw] md:w-[160px] h-[16vw] md:h-[140px] origin-left"
-                style={{
-                  transform: `rotate(${deg}deg)`,
-                  clipPath: 'polygon(0 50%, 100% 0, 100% 100%)',
-                  background: 'linear-gradient(90deg, rgba(236,72,153,0.2) 0%, rgba(236,72,153,0.05) 70%, transparent 100%)',
-                }}
-                animate={{ opacity: [0.15, 0.6, 0.15] }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: idx * 0.2 }}
-              />
-            ))}
-
-            <motion.div
-              aria-hidden="true"
-              className="absolute left-1/2 top-1/2 w-[52%] h-[52%] rounded-full"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
-            >
-              {ORBIT_DEGS.map((deg, idx) => (
-                <motion.span
-                  key={`orbit-${deg}`}
-                  className="absolute left-1/2 top-1/2 h-2 w-2 rounded-full bg-pink-400/80 shadow-[0_0_12px_rgba(236,72,153,0.8)]"
-                  style={{ transform: `rotate(${deg}deg) translateX(48%)` }}
-                  animate={{ scale: [1, 1.4, 1], opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut", delay: idx * 0.2 }}
-                />
-              ))}
-            </motion.div>
-            <motion.div
-              aria-hidden="true"
-              className="absolute w-[62%] h-[62%] rounded-full border border-pink-400/30"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
-            />
-            <motion.div
-              aria-hidden="true"
-              className="absolute w-[46%] h-[46%] rounded-full border border-pink-400/20"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            />
-
-            
-
-            <div className="relative">
-              <div className="absolute -inset-10 rounded-full bg-pink-500/15 blur-[80px]" aria-hidden="true" />
-              <motion.div
-                className="relative w-20 h-20 md:w-28 md:h-28 rounded-2xl border border-pink-500/50 bg-black/60 flex items-center justify-center overflow-hidden"
-                animate={{ boxShadow: ['0 0 0px rgba(236,72,153,0.0)', '0 0 34px rgba(236,72,153,0.5)', '0 0 0px rgba(236,72,153,0.0)'] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <div className="absolute inset-2 rounded-xl border border-pink-500/25" />
-                <div className="absolute inset-4 rounded-lg border border-pink-500/15" />
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[length:16px_16px] opacity-[0.25]" />
-                <motion.div
-                  aria-hidden="true"
-                  className="absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-pink-400/35 to-transparent"
-                  animate={{ x: ['-40%', '140%'] }}
-                  transition={{ duration: 2.2, repeat: Infinity, ease: "linear" }}
-                />
-                <div className="absolute left-1/2 top-0 h-full w-px bg-pink-400/20" />
-                <div className="absolute top-1/2 left-0 h-px w-full bg-pink-400/20" />
-                <img src="/assets/loader/part-0.png" alt="Logo" className="w-12 h-12 md:w-20 md:h-20 object-contain relative z-10" />
-              </motion.div>
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] md:text-[10px] font-mono uppercase tracking-[0.4em] text-gray-500">
-                Core Logo
-              </div>
-            </div>
-          </div>
-
-          {logoParts.map((part, i) => {
-            const reverse = layout[i]?.side === 'left';
-            return (
-              <motion.div
-                key={part.key}
-                initial={{ opacity: 0, scale: 0.96, y: 6 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute w-[40vw] max-w-[220px] md:max-w-[300px] -translate-x-1/2 -translate-y-1/2"
-                style={{
-                  left: `${layout[i]?.left ?? 50}%`,
-                  top: `${layout[i]?.top ?? 50}%`,
-                }}
-              >
-                <div className={`relative flex items-center gap-2.5 md:gap-4 ${reverse ? 'flex-row-reverse text-right' : ''}`}>
-                  <motion.span
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                    className="inline-flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full border border-pink-400/60 bg-black/40 overflow-hidden shadow-[0_0_20px_rgba(236,72,153,0.6)] shrink-0 aspect-square"
-                  >
-                    <img
-                      src={part.iconSrc}
-                      alt=""
-                      className="w-full h-full object-cover object-center rounded-full brightness-110 contrast-110"
-                      loading="lazy"
-                      decoding="async"
-                      draggable={false}
-                    />
-                  </motion.span>
-                  <motion.div
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.6 + i * 0.2, ease: [0.22, 1, 0.36, 1] }}
-                    className={`relative px-1.5 py-0.5 ${reverse ? 'items-end' : 'items-start'}`}
-                  >
-                    <span className="text-[1.15rem] md:text-[1.9rem] font-black uppercase tracking-tighter text-white leading-none">
-                      {part.title}
-                    </span>
-                    <motion.span
-                      aria-hidden="true"
-                      className="absolute inset-0 rounded-md bg-[linear-gradient(90deg,transparent,rgba(236,72,153,0.28),transparent)] opacity-0"
-                      animate={{ x: ['-120%', '120%'], opacity: [0, 0.7, 0] }}
-                      transition={{ duration: 1.6, repeat: Infinity, ease: "linear", delay: i * 0.25 }}
-                    />
-                    <span className="absolute left-0 -bottom-1 h-px w-full bg-pink-400/40" />
-                  </motion.div>
-                </div>
-              </motion.div>
-            );
-          })}
-          {HUD_GLYPHS.map((glyph, i) => (
-            <motion.div
-              key={`glyph-${glyph}`}
-              aria-hidden="true"
-              className="absolute left-1/2 top-1/2 text-pink-300/70 text-xs md:text-sm font-mono"
-              animate={{
-                x: i === 0 ? [-10, -120] : i === 1 ? [10, 120] : i === 2 ? [-10, -120] : [10, 120],
-                y: i < 2 ? [-10, -80] : [10, 80],
-                opacity: [0, 1, 0],
-              }}
-              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
-            >
-              {glyph}
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full max-w-sm md:max-w-xl px-10 flex flex-col items-center gap-6 mt-4 md:mt-8 relative">
-        <div className="flex justify-between w-full items-end gap-4">
-            <div className="flex items-center gap-3">
-                <motion.img 
-                  src="/assets/logoa.png" 
-                  alt="Logo" 
-                  className="w-10 h-10 md:w-14 md:h-14 object-contain filter brightness-100"
-                  decoding="async"
-                  animate={{ rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                />
-                <span className="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-500">Initializing Journey</span>
-            </div>
-            <span className="font-mono text-2xl md:text-4xl font-black text-pink-500">{Math.round(progress)}%</span>
-        </div>
-        
-        <div className="w-full h-[4px] bg-white/10 relative rounded-full overflow-hidden">
-          <motion.div 
-            className="absolute top-0 left-0 h-full bg-pink-500 rounded-full"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
-        <div className="font-mono text-[8px] md:text-[10px] uppercase tracking-[0.5em] text-gray-600 text-center">
-            Anh Tran Viet — Portfolio 2026
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 export default function App() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [selectedExp, setSelectedExp] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false); 
-  
   const [activeContactRouteId, setActiveContactRouteId] = useState('hr');
   const [isContactPopoverOpen, setIsContactPopoverOpen] = useState(false);
   const [isAppointmentSubmitting, setIsAppointmentSubmitting] = useState(false);
@@ -1085,11 +900,10 @@ export default function App() {
   const activeIdxRef = useRef(0);
   const servicesOuterRef = useRef(null);
   const servicesInnerRef = useRef(null);
-  const servicesPinUpdateRef = useRef(null);
-  const pendingJourneyScrollRef = useRef(false);
-  const [servicesItemsPerView, setServicesItemsPerView] = useState(1);
-  const [activeServiceIdx, setActiveServiceIdx] = useState(0);
-  const activeServiceIdxRef = useRef(0);
+  const expLastRef = useRef(null);
+  const impactMetricsRef = useRef(null);
+  const [servicesItemsPerView, setServicesItemsPerView] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches ? 2 : 1);
+  const [serviceViewportWidth, setServiceViewportWidth] = useState(() => typeof window === 'undefined' ? 0 : window.innerWidth - 32);
   const [openWorkIdx, setOpenWorkIdx] = useState(null);
   const openWorkIdxRef = useRef(null);
   const workSwipeRef = useRef({ startX: 0, startY: 0, moved: false });
@@ -1097,8 +911,6 @@ export default function App() {
   const workCardRefs = useRef([]);
   const worksSectionRef = useRef(null);
 
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
   const activeContactRoute = useMemo(
     () => CONTACT_ROUTES.find((route) => route.id === activeContactRouteId) || CONTACT_ROUTES[0],
     [activeContactRouteId]
@@ -1151,11 +963,14 @@ export default function App() {
     target: servicesOuterRef,
     offset: ['start start', 'end end'],
   });
-  const servicesMaxTranslatePct = useMemo(
-    () => Math.max((SERVICES.length / servicesItemsPerView - 1) * 100, 0),
-    [servicesItemsPerView]
-  );
-  const servicesX = useTransform(servicesProgress, [0, 1], ['0%', `-${servicesMaxTranslatePct}%`]);
+  const servicesSlidePitch = servicesItemsPerView === 1 ? serviceViewportWidth : serviceViewportWidth / 2;
+  const servicesTranslateDistance = servicesSlidePitch * Math.max(SERVICES.length - servicesItemsPerView, 0);
+  const servicesScrollScreens = serviceViewportWidth > 0 ? servicesTranslateDistance / serviceViewportWidth : SERVICES.length;
+  const servicesX = useTransform(servicesProgress, [0, 1], ['0px', `-${servicesTranslateDistance}px`]);
+  const { scrollYProgress: worksThemeProgress } = useScroll({ target: expLastRef, offset: ['end start', 'end -30%'] });
+  const worksBg = useTransform(worksThemeProgress, [0, 1], ['#050505', '#ffffff']);
+  const worksContentOpacity = useTransform(worksThemeProgress, [0.995, 1], [0, 1]);
+  const { scrollYProgress: impactThemeProgress } = useScroll({ target: impactMetricsRef, offset: ['start start', 'start -30%'] });
 
 
   useLayoutEffect(() => {
@@ -1188,136 +1003,23 @@ export default function App() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const mq = window.matchMedia('(min-width: 1024px)');
-    const updateView = () => setServicesItemsPerView(mq.matches ? 2 : 1);
+    const updateView = () => {
+      setServicesItemsPerView(mq.matches ? 2 : 1);
+      setServiceViewportWidth(servicesInnerRef.current?.clientWidth || window.innerWidth - 32);
+    };
+    const resizeObserver = new ResizeObserver(updateView);
+    if (servicesInnerRef.current) resizeObserver.observe(servicesInnerRef.current);
     updateView();
     mq.addEventListener('change', updateView);
-    return () => mq.removeEventListener('change', updateView);
+    return () => {
+      mq.removeEventListener('change', updateView);
+      resizeObserver.disconnect();
+    };
   }, []);
 
-  useEffect(() => {
-    let raf = null;
-    const unsubscribe = servicesProgress.on('change', (v) => {
-      if (raf) return;
-      raf = window.requestAnimationFrame(() => {
-        raf = null;
-        const raw = Math.round(v * (SERVICES.length - 1));
-        const idx = Math.max(0, Math.min(SERVICES.length - 1, raw));
-        if (idx !== activeServiceIdxRef.current) {
-          activeServiceIdxRef.current = idx;
-          setActiveServiceIdx(idx);
-        }
-      });
-    });
-
-    return () => {
-      if (raf) window.cancelAnimationFrame(raf);
-      unsubscribe();
-    };
-  }, [servicesProgress]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const outer = servicesOuterRef.current;
-    const inner = servicesInnerRef.current;
-    if (!outer || !inner) return;
-
-    const state = {
-      mode: null,
-      left: null,
-      width: null,
-      insetsLeft: 0,
-      insetsRight: 0,
-    };
-
-    const updateInsets = () => {
-      const styles = window.getComputedStyle(outer);
-      state.insetsLeft = Number.parseFloat(styles.paddingLeft || '0') || 0;
-      state.insetsRight = Number.parseFloat(styles.paddingRight || '0') || 0;
-    };
-
-    const applyPosition = (mode, rect) => {
-      if (mode === 'fixed') {
-        const left = Math.round((rect.left + state.insetsLeft) * 10) / 10;
-        const width = Math.round((rect.width - state.insetsLeft - state.insetsRight) * 10) / 10;
-        if (state.mode === mode && state.left === left && state.width === width) return;
-        state.mode = mode;
-        state.left = left;
-        state.width = width;
-        inner.style.position = 'fixed';
-        inner.style.top = '0';
-        inner.style.bottom = 'auto';
-        inner.style.left = `${left}px`;
-        inner.style.right = 'auto';
-        inner.style.width = `${width}px`;
-        return;
-      }
-
-      if (state.mode === mode) return;
-      state.mode = mode;
-      state.left = null;
-      state.width = null;
-      inner.style.position = 'absolute';
-      inner.style.left = `${state.insetsLeft}px`;
-      inner.style.right = `${state.insetsRight}px`;
-      inner.style.width = 'auto';
-      inner.style.top = mode === 'top' ? '0' : 'auto';
-      inner.style.bottom = mode === 'bottom' ? '0' : 'auto';
-    };
-
-    const updatePin = () => {
-      const rect = outer.getBoundingClientRect();
-      const start = rect.top;
-      const end = rect.bottom - window.innerHeight;
-
-      if (start <= 0 && end >= 0) {
-        applyPosition('fixed', rect);
-      } else if (start > 0) {
-        applyPosition('top', rect);
-      } else {
-        applyPosition('bottom', rect);
-      }
-    };
-
-    let raf = null;
-    const onScroll = () => {
-      const rect = outer.getBoundingClientRect();
-      if (rect.top > 0 || rect.bottom < window.innerHeight) {
-        updatePin();
-        return;
-      }
-      if (raf) return;
-      raf = window.requestAnimationFrame(() => {
-        raf = null;
-        updatePin();
-      });
-    };
-
-    const onResize = () => {
-      updateInsets();
-      onScroll();
-    };
-
-    const refreshPin = () => {
-      updateInsets();
-      updatePin();
-    };
-
-    servicesPinUpdateRef.current = refreshPin;
-    refreshPin();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onResize);
-
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onResize);
-      servicesPinUpdateRef.current = null;
-      if (raf) window.cancelAnimationFrame(raf);
-    };
-  }, []);
 
   useEffect(() => {
     if (!PROJECTS.length || typeof window === 'undefined') return;
-    if (!isUnlocked || isLoading) return;
 
     const run = () => {
       PROJECTS.slice(0, 3).forEach((p) => preloadImage(p.image));
@@ -1330,7 +1032,7 @@ export default function App() {
 
     const t = window.setTimeout(run, 1200);
     return () => window.clearTimeout(t);
-  }, [isLoading, isUnlocked]);
+  }, []);
 
   useEffect(() => {
     if (selectedExp) {
@@ -1340,49 +1042,18 @@ export default function App() {
   }, [selectedExp]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-
-    const shouldLock = isLoading || !isUnlocked || selectedExp;
+    if (typeof window === 'undefined' || !selectedExp) return undefined;
     const body = document.body;
     const root = document.documentElement;
     const previousBodyOverflow = body.style.overflow;
     const previousRootOverflow = root.style.overflow;
-    const previousBodyOverscroll = body.style.overscrollBehavior;
-    const previousRootOverscroll = root.style.overscrollBehavior;
-    const previousTouchAction = body.style.touchAction;
-
-    const preventPageScroll = (event) => {
-      const target = event.target instanceof Element ? event.target : null;
-      if (target?.closest('[data-allow-scroll="true"]')) return;
-      event.preventDefault();
-    };
-
-    if (shouldLock) {
-      body.style.overflow = 'hidden';
-      root.style.overflow = 'hidden';
-      body.style.overscrollBehavior = 'none';
-      root.style.overscrollBehavior = 'none';
-      body.style.touchAction = isLoading || !isUnlocked ? 'none' : previousTouchAction;
-      window.addEventListener('touchmove', preventPageScroll, { passive: false, capture: true });
-      window.addEventListener('wheel', preventPageScroll, { passive: false, capture: true });
-    } else {
-      body.style.overflow = previousBodyOverflow || 'auto';
-      root.style.overflow = previousRootOverflow || '';
-      body.style.overscrollBehavior = previousBodyOverscroll || '';
-      root.style.overscrollBehavior = previousRootOverscroll || '';
-      body.style.touchAction = previousTouchAction || '';
-    }
-
+    body.style.overflow = 'hidden';
+    root.style.overflow = 'hidden';
     return () => {
-      window.removeEventListener('touchmove', preventPageScroll, { capture: true });
-      window.removeEventListener('wheel', preventPageScroll, { capture: true });
       body.style.overflow = previousBodyOverflow || 'auto';
       root.style.overflow = previousRootOverflow || '';
-      body.style.overscrollBehavior = previousBodyOverscroll || '';
-      root.style.overscrollBehavior = previousRootOverscroll || '';
-      body.style.touchAction = previousTouchAction || '';
     };
-  }, [isLoading, isUnlocked, selectedExp]);
+  }, [selectedExp]);
 
   const handleContactRouteChange = useCallback((id) => {
     setActiveContactRouteId(id);
@@ -1535,7 +1206,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!isUnlocked) return;
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return;
 
     const visibleRows = new Map();
@@ -1584,10 +1254,9 @@ export default function App() {
     }
 
     return () => observer.disconnect();
-  }, [activateExperience, isUnlocked]);
+  }, [activateExperience]);
 
   const scrollToSection = useCallback((id, behavior = 'smooth') => {
-    setIsUnlocked(true);
     if (id === 'connect') {
       handleContactRouteChange('hr');
     }
@@ -1599,7 +1268,6 @@ export default function App() {
         root.style.scrollBehavior = 'auto';
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
         root.style.scrollBehavior = previousScrollBehavior;
-        servicesPinUpdateRef.current?.();
       };
 
       forceTop();
@@ -1614,60 +1282,9 @@ export default function App() {
       if (!element) return;
       const top = Math.max(0, element.getBoundingClientRect().top + window.scrollY);
       window.scrollTo({ top, behavior });
-      window.setTimeout(() => {
-        servicesPinUpdateRef.current?.();
-      }, behavior === 'smooth' ? 450 : 0);
     });
   }, [handleContactRouteChange]);
 
-  const startJourney = useCallback(() => {
-    if (isLoading) return;
-
-    pendingJourneyScrollRef.current = true;
-    const root = document.documentElement;
-    const previousScrollBehavior = root.style.scrollBehavior;
-    root.style.scrollBehavior = 'auto';
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    root.style.scrollBehavior = previousScrollBehavior;
-    setIsLoading(true);
-
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        setIsUnlocked(true);
-        const element = document.getElementById('services');
-        if (!element) return;
-        const nextScrollBehavior = root.style.scrollBehavior;
-        root.style.scrollBehavior = 'auto';
-        window.scrollTo({ top: element.offsetTop, left: 0, behavior: 'auto' });
-        root.style.scrollBehavior = nextScrollBehavior;
-
-        window.requestAnimationFrame(() => {
-          servicesPinUpdateRef.current?.();
-        });
-      });
-    });
-  }, [isLoading]);
-
-  const handleLoadingComplete = useCallback(() => {
-    setIsLoading(false);
-  }, []);
-
-  const handleLoaderExitComplete = useCallback(() => {
-    if (!pendingJourneyScrollRef.current) return;
-    pendingJourneyScrollRef.current = false;
-
-    window.requestAnimationFrame(() => {
-      const element = document.getElementById('services');
-      if (element) {
-        const root = document.documentElement;
-        const previousScrollBehavior = root.style.scrollBehavior;
-        root.style.scrollBehavior = 'auto';
-        window.scrollTo({ top: element.offsetTop, left: 0, behavior: 'auto' });
-        root.style.scrollBehavior = previousScrollBehavior;
-      }
-      servicesPinUpdateRef.current?.();
-    });
-  }, []);
 
   useEffect(() => {
     openWorkIdxRef.current = openWorkIdx;
@@ -1746,31 +1363,28 @@ export default function App() {
 
   const serviceCards = useMemo(
     () =>
-      SERVICES.map((s, idx) => (
-        <div key={s.title} className="w-full lg:w-1/2 shrink-0 pr-4 md:pr-6 lg:pr-8">
-          <motion.div
-            initial={{ backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}
-            whileInView={{ backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.2)' }}
-            viewport={{ once: false, amount: 0.55 }}
-            className={`group relative border rounded-3xl p-6 md:p-7 min-h-[200px] h-[42vh] md:h-[46vh] max-h-[340px] md:max-h-[360px] flex flex-col justify-between overflow-hidden transition-colors duration-300 hover:bg-white/[0.06] hover:border-white/20 ${activeServiceIdx === idx ? 'bg-white/[0.06] border-white/20' : 'bg-white/5 border-white/10'}`}
-          >
-            <div
-              className={`absolute inset-0 bg-pink-500/10 opacity-0 transition-opacity duration-300 ${
-                activeServiceIdx === idx ? 'opacity-100' : 'group-hover:opacity-100'
-              }`}
-            />
-            <div className={`absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent transition-opacity ${activeServiceIdx === idx ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
-            <div>
-              <div className="text-pink-500 mb-6 relative z-10">
+      SERVICES.map((s) => (
+        <div key={s.title} className="w-full shrink-0 pr-24 md:pr-32 lg:w-1/2 lg:pr-48">
+          <div className="relative px-3 py-6 md:px-5 md:py-8 min-h-[420px] h-[54vh] md:min-h-[360px] md:h-[46vh] md:max-h-[460px] flex flex-col justify-start gap-7 md:gap-6">
+            <div className="h-32 shrink-0 md:h-auto">
+              <div className="text-pink-500 mb-4 md:mb-6 relative z-10">
                 <s.Icon className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14" />
               </div>
-              <h3 className="text-3xl md:text-4xl lg:text-4xl font-bold mb-4 uppercase tracking-tight leading-tight relative z-10">{s.title}</h3>
+              <h3 className="h-[2em] text-[2.125rem] sm:text-5xl md:text-5xl lg:text-6xl font-black mb-0 md:mb-6 uppercase tracking-[-0.045em] leading-[0.98] relative z-10">
+                {s.title.includes('&') ? (
+                  <><span className="block whitespace-nowrap">{s.title.slice(0, s.title.indexOf('&') + 1)}</span><span className="block whitespace-nowrap">{s.title.slice(s.title.indexOf('&') + 1).trim()}</span></>
+                ) : s.title.includes(' ') ? (
+                  <><span className="block whitespace-nowrap">{s.title.slice(0, s.title.indexOf(' '))}</span><span className="block whitespace-nowrap">{s.title.slice(s.title.indexOf(' ') + 1)}</span></>
+                ) : (
+                  <><span className="block whitespace-nowrap">{s.title}</span><span className="block">&nbsp;</span></>
+                )}
+              </h3>
             </div>
-            <p className="text-gray-300 leading-relaxed text-base md:text-lg max-w-3xl relative z-10">{s.desc}</p>
-          </motion.div>
+            <p className="text-gray-300 text-justify leading-[1.65] text-[1.0625rem] md:text-lg max-w-3xl relative z-10">{s.desc}</p>
+          </div>
         </div>
       )),
-    [activeServiceIdx]
+    []
   );
 
   const workCards = useMemo(
@@ -1850,25 +1464,24 @@ export default function App() {
 
   const statCards = useMemo(
     () =>
-      STATS.map((s) => (
-        <motion.div 
+      STATS.map((s, index) => (
+        <motion.div
           key={s.label}
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0, backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.2)' }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true, amount: 0.3 }}
-          className="group relative overflow-hidden p-4 md:p-6 border border-white/10 rounded-2xl md:rounded-3xl flex flex-col items-center justify-center text-center hover:bg-white/[0.06] hover:border-white/20 transition-colors"
+          className="flex min-w-0 flex-col items-center justify-center px-2 py-5 text-center md:py-8"
         >
-          <motion.div
-            className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-pink-500/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: false, amount: 0.65 }}
-          />
-          <span className="relative z-10 text-3xl md:text-5xl font-black mb-1 md:mb-2">
-            <CountUp value={s.value} duration={650} />
+          <span className="text-[clamp(2rem,7vw,4.75rem)] font-black leading-none tracking-[-0.06em] text-black">
+            {s.value === '5B+ VND' ? (
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                <CountUp value="5" duration={800} />
+                <span className="flex flex-col text-[50%] leading-[0.9] tracking-[-0.04em]"><span>B+</span><span>VND</span></span>
+              </span>
+            ) : <CountUp value={s.value} duration={800} />}
           </span>
-          <span className="relative z-10 text-[9px] md:text-[11px] uppercase font-bold tracking-widest text-pink-500">{s.label}</span>
+          <span className="mt-3 max-w-[18ch] text-[10px] font-bold uppercase leading-relaxed tracking-[0.14em] text-pink-600 sm:text-xs md:text-sm">{s.label}</span>
         </motion.div>
       )),
     []
@@ -1877,13 +1490,8 @@ export default function App() {
   // Gallery Navigation (scroll-driven)
 
   return (
-    <div ref={containerRef} className="bg-[#050505] text-white selection:bg-white selection:text-black overflow-x-hidden min-h-screen">
+    <div ref={containerRef} className="bg-[#050505] text-white selection:bg-white selection:text-black overflow-x-clip min-h-screen">
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_STYLES }} />
-      <motion.div className="fixed top-0 left-0 right-0 h-1 bg-white z-[100] origin-left" style={{ scaleX }} />
-
-      <AnimatePresence onExitComplete={handleLoaderExitComplete}>
-        {isLoading && <CreditLoader onComplete={handleLoadingComplete} />}
-      </AnimatePresence>
 
       <nav className="fixed w-full z-50 mix-blend-difference">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 flex justify-between items-center">
@@ -2080,46 +1688,33 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* HERO SECTION */}
-      <HeroSection onStart={startJourney} />
+      {/* PINNED HERO + BRAND REVEAL */}
+      <IntroJourney />
 
       {/* SERVICES SECTION */}
-      <section id="services" className="py-0 px-0 relative z-10 overflow-hidden">
-        <SectionTransitionGlow />
+      <section id="services" className="py-0 px-0 relative z-10">
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-60"><div className="absolute right-[-14%] top-20 h-[360px] w-[360px] rounded-full border border-pink-500/14" /><div className="absolute right-[-7%] top-40 h-[240px] w-[240px] rounded-full border border-white/10" /></div>
         <div
           ref={servicesOuterRef}
           className="relative max-w-7xl mx-auto px-4 md:px-6"
-          style={{ height: `${(1 + servicesMaxTranslatePct / 100) * 100}vh` }}
+          style={{ height: `${(1 + servicesScrollScreens) * 100}svh` }}
         >
-          <div ref={servicesInnerRef} className="h-screen overflow-hidden">
+          <div ref={servicesInnerRef} className="sticky top-0 h-[100svh] overflow-hidden">
             <div className="h-full flex flex-col justify-center">
               <div className="pt-6 md:pt-8">
-                <SectionTitle key={isLoading ? 'services-loading' : 'services-ready'} title="Expertise" subtitle="Services" />
+                <SectionTitle title="Expertise" subtitle="Services" />
               </div>
-              <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex transform-gpu">
+              <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex w-full transform-gpu">
                 {serviceCards}
               </motion.div>
 
-              <div className="mt-6">
-                <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-                  <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-pink-500 to-purple-500 origin-left"
-                    style={{ scaleX: servicesProgress }}
-                  />
-                </div>
-                <div className="mt-3">
-                  <ScrollMouseHint axis="vertical" />
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* EXPERIENCE SECTION */}
-      <section id="experience" className="py-24 md:py-40 relative z-10 overflow-hidden">
-        <SectionTransitionGlow />
+      <motion.section id="experience" style={{ backgroundColor: worksBg }} className="pt-24 md:pt-40 pb-[30svh] relative z-10 overflow-hidden">
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-60"><div className="absolute left-[-14%] top-28 h-[400px] w-[400px] rounded-full border border-pink-500/14" /><div className="absolute left-[-7%] top-48 h-[250px] w-[250px] rounded-full border border-white/10" /></div>
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <SectionTitle title="Experience" subtitle="Journey" />
@@ -2128,7 +1723,10 @@ export default function App() {
               <div
                 key={`${exp.period}-${exp.company}-${exp.role}`}
                 data-exp-idx={i}
-                ref={el => expRefs.current[i] = el}
+                ref={el => {
+                  expRefs.current[i] = el;
+                  if (i === EXPERIENCES.length - 1) expLastRef.current = el;
+                }}
                 className="scroll-mt-[30vh]"
                 onMouseEnter={() => activateExperience(i)}
               >
@@ -2137,13 +1735,13 @@ export default function App() {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* WORKS SECTION */}
-      <section id="works" ref={worksSectionRef} className="py-24 md:py-40 bg-white text-black relative z-10 overflow-hidden">
-        <SectionTransitionGlow light />
-        <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-70"><div className="absolute right-[-14%] top-16 h-[390px] w-[390px] rounded-full border border-pink-500/18" /><div className="absolute right-[-6%] top-36 h-[250px] w-[250px] rounded-full border border-black/10" /></div>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4 md:pt-6">
+      <motion.section id="works" ref={worksSectionRef} style={{ backgroundColor: worksBg }} className="isolate min-h-[180svh] pt-[30svh] md:pt-[35svh] pb-[130svh] relative z-10 overflow-hidden">
+        <motion.div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 bg-[#050505]" style={{ opacity: impactThemeProgress }} />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 opacity-70"><div className="absolute right-[-14%] top-16 h-[390px] w-[390px] rounded-full border border-pink-500/18" /><div className="absolute right-[-6%] top-36 h-[250px] w-[250px] rounded-full border border-black/10" /></div>
+        <motion.div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 pt-4 md:pt-6" style={{ opacity: worksContentOpacity }}>
           <SectionTitle title="The Works" subtitle="Projects" dark={true} subtitleClassName="text-purple-500" />
 
           <div
@@ -2155,34 +1753,17 @@ export default function App() {
               {workCards}
             </div>
           </div>
-          <div className="mt-0">
-            <ScrollMouseHint axis="horizontal" dark />
-          </div>
-        </div>
-      </section>
-
-      {/* STATS SECTION */}
-      <section className="py-24 md:py-40 bg-[#050505] relative z-10 overflow-hidden">
-        <SectionTransitionGlow />
-        <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-55"><div className="absolute right-[-12%] top-20 h-[360px] w-[360px] rounded-full border border-pink-500/14" /><div className="absolute right-[-5%] top-40 h-[230px] w-[230px] rounded-full border border-white/10" /></div>
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-            <div>
-              <SectionTitle title="Impact" subtitle="Data" />
-              <p className="text-xl md:text-2xl text-gray-400 font-light leading-relaxed mb-10">
-                Xây dựng hệ thống Marketing bài bản, tối ưu vận hành và tăng trưởng bền vững cho SME.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-3 md:gap-4 lg:pt-20">
+          <div className="mt-6 md:mt-8"><ScrollMouseHint axis="horizontal" dark /></div>
+          <div className="mt-10 border-t border-black/10 pt-6 md:mt-16 md:pt-8">
+            <div ref={impactMetricsRef} className="grid grid-cols-2 gap-x-3 gap-y-4 md:grid-cols-4 md:gap-6">
               {statCards}
             </div>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* CREDENTIALS SECTION */}
       <section id="credentials" className="py-24 md:py-40 bg-[#050505] relative z-10 overflow-hidden">
-        <SectionTransitionGlow />
         <div className="absolute inset-0 pointer-events-none opacity-70">
           <div className="absolute right-[-18%] top-8 h-[420px] w-[420px] rounded-full border border-pink-500/20" />
           <div className="absolute right-[-10%] top-28 h-[300px] w-[300px] rounded-full border border-white/10" />
@@ -2259,7 +1840,6 @@ export default function App() {
 
       {/* CONNECT SECTION */}
       <section id="connect" className="relative min-h-[90vh] bg-[#030303] pt-28 md:pt-36 pb-20 overflow-hidden z-10">
-        <SectionTransitionGlow />
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-55"><div className="absolute left-[-14%] top-16 h-[390px] w-[390px] rounded-full border border-pink-500/14" /><div className="absolute left-[-6%] top-36 h-[250px] w-[250px] rounded-full border border-white/10" /></div>
         <div className="relative z-10 max-w-7xl mx-auto w-full px-4 md:px-6">
           <div className="mb-8 md:mb-12">
@@ -2332,7 +1912,7 @@ export default function App() {
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-white">Đặt lịch hẹn</p>
                     </div>
                   </div>
-                  <div className="grid min-w-0 gap-2" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 0.9fr)' }}>
+                  <div className="grid min-w-0 grid-cols-3 gap-1" style={{ gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 0.8fr)' }}>
                     <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       Ngày
                       <input
@@ -2346,43 +1926,42 @@ export default function App() {
                           setAppointmentDate(date);
                           setAppointmentTime(getFutureAppointmentSlots(date)[0] || '');
                         }}
-                        className="h-12 w-full min-w-0 max-w-full cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1.5 text-[11px] font-normal normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25 sm:px-2 sm:text-sm"
+                        className="appointment-date-input flex h-12 w-full min-w-0 max-w-full box-border items-center cursor-pointer overflow-hidden rounded-md border border-white/20 bg-white/[0.055] px-1 text-sm font-normal leading-[3rem] text-left normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25 sm:px-2"
                       />
                     </label>
-                    <fieldset className="min-w-0 max-w-full">
-                      <legend className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">Giờ</legend>
-                      <div className="grid h-12 min-w-0 grid-cols-2 gap-1">
-                        <label className="sr-only" htmlFor="appointment-hour">Giờ</label>
-                        <select
-                          id="appointment-hour"
-                          aria-label="Giờ hẹn"
-                          value={appointmentTime.slice(0, 2)}
-                          disabled={!appointmentHours.length}
-                          onChange={(event) => {
-                            const firstSlot = appointmentSlots.find((slot) => slot.startsWith(`${event.target.value}:`));
-                            if (firstSlot) setAppointmentTime(firstSlot);
-                          }}
-                          className="w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
-                        >
-                          {appointmentHours.length
-                            ? appointmentHours.map((hour) => <option key={hour} value={hour}>{hour}</option>)
-                            : <option value="">--</option>}
-                        </select>
-                        <label className="sr-only" htmlFor="appointment-minute">Phút</label>
-                        <select
-                          id="appointment-minute"
-                          aria-label="Phút hẹn"
-                          value={appointmentTime.slice(3)}
-                          disabled={!appointmentMinutes.length}
-                          onChange={(event) => setAppointmentTime(`${appointmentTime.slice(0, 2)}:${event.target.value}`)}
-                          className="w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
-                        >
-                          {appointmentMinutes.length
-                            ? appointmentMinutes.map((minute) => <option key={minute} value={minute}>{minute}</option>)
-                            : <option value="">--</option>}
-                        </select>
-                      </div>
-                    </fieldset>
+                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Giờ
+                      <select
+                        id="appointment-hour"
+                        aria-label="Giờ hẹn"
+                        value={appointmentTime.slice(0, 2)}
+                        disabled={!appointmentHours.length}
+                        onChange={(event) => {
+                          const firstSlot = appointmentSlots.find((slot) => slot.startsWith(`${event.target.value}:`));
+                          if (firstSlot) setAppointmentTime(firstSlot);
+                        }}
+                        className="h-12 w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
+                      >
+                        {appointmentHours.length
+                          ? appointmentHours.map((hour) => <option key={hour} value={hour}>{hour}</option>)
+                          : <option value="">--</option>}
+                      </select>
+                    </label>
+                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Phút
+                      <select
+                        id="appointment-minute"
+                        aria-label="Phút hẹn"
+                        value={appointmentTime.slice(3)}
+                        disabled={!appointmentMinutes.length}
+                        onChange={(event) => setAppointmentTime(`${appointmentTime.slice(0, 2)}:${event.target.value}`)}
+                        className="h-12 w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
+                      >
+                        {appointmentMinutes.length
+                          ? appointmentMinutes.map((minute) => <option key={minute} value={minute}>{minute}</option>)
+                          : <option value="">--</option>}
+                      </select>
+                    </label>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 md:gap-3">
