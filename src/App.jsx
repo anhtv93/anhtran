@@ -765,7 +765,7 @@ const IntroJourney = () => {
   const { scrollYProgress } = useScroll({ target: journeyRef, offset: ['start start', 'end end'] });
   const heroScaleProgress = useTransform(scrollYProgress, [0, 0.12], [0, 1]);
   const heroScale = useTransform(heroScaleProgress, [0, 1], [1, isMobile ? 0.62 : 1 / 3]);
-  const heroY = useTransform(heroScaleProgress, [0, 1], ['0vh', isMobile ? '-25vh' : '-27vh']);
+  const heroY = useTransform(heroScaleProgress, [0, 1], ['0vh', isMobile ? '-22vh' : '-27vh']);
   const backdropOpacity = useTransform(scrollYProgress, [0, 0.06, 0.08], [1, 1, 0]);
   const scrollCueOpacity = useTransform(heroScaleProgress, [0, 0.28, 1], [1, 0, 0]);
   const brandProgress = useTransform(scrollYProgress, [0.12, 1], [0, 1]);
@@ -814,7 +814,7 @@ const IntroJourney = () => {
             <div className="absolute -right-[10%] -bottom-[12%] h-[min(46vw,400px)] w-[min(46vw,400px)] rounded-full border border-white/18" />
           </div>
         </motion.div>
-        <HeroContent scale={reducedMotion ? (isMobile ? 0.62 : 1 / 3) : heroScale} y={reducedMotion ? (isMobile ? '-25vh' : '-27vh') : heroY} scrollCueOpacity={reducedMotion ? 1 : scrollCueOpacity} />
+        <HeroContent scale={reducedMotion ? (isMobile ? 0.62 : 1 / 3) : heroScale} y={reducedMotion ? (isMobile ? '-22vh' : '-27vh') : heroY} scrollCueOpacity={reducedMotion ? 1 : scrollCueOpacity} />
         <motion.div
           className="absolute inset-x-0 bottom-0 overflow-hidden"
           style={{ top: isMobile ? '50%' : '33.333333%', opacity: reducedMotion ? 1 : brandOpacity }}
@@ -1700,7 +1700,7 @@ export default function App() {
           style={{ height: `${(1 + servicesScrollScreens) * 100}svh` }}
         >
           <div ref={servicesInnerRef} className="sticky top-0 h-[100svh] overflow-hidden">
-            <div className="h-full flex translate-y-4 flex-col justify-center md:translate-y-0">
+            <div className="h-full flex translate-y-10 flex-col justify-center md:translate-y-0">
               <div className="pt-6 md:pt-8">
                 <SectionTitle title="Expertise" subtitle="Services" />
               </div>
@@ -1912,7 +1912,7 @@ export default function App() {
                       <p className="text-xs font-bold uppercase tracking-[0.16em] text-white">Đặt lịch hẹn</p>
                     </div>
                   </div>
-                  <div className="grid min-w-0 grid-cols-3 gap-1" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 0.875fr) minmax(0, 0.875fr)' }}>
+                  <div className="grid min-w-0 grid-cols-3 gap-1" style={{ gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 0.7875fr) minmax(0, 0.7875fr)' }}>
                     <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       Ngày
                       <span className="block h-12 w-full min-w-0 overflow-hidden rounded-md">
