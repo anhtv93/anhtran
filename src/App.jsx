@@ -1768,7 +1768,7 @@ export default function App() {
               <div className="-mb-6 md:-mb-12">
                 <SectionTitle title="Expertise" subtitle="Services" />
               </div>
-              <div className="relative flex h-[50svh] w-full items-center overflow-hidden">
+              <div className="relative flex h-[50svh] w-full items-center">
                 <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex h-full w-max items-center">
                   {serviceCards}
                 </motion.div>
