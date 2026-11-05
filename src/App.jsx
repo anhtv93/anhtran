@@ -68,10 +68,10 @@ const getNextAvailableAppointmentDate = () => {
 };
 
 export const SERVICES = [
-  { title: "Brand Strategy", Icon: Target, desc: "Xây dựng và tái định vị Brand positioning dựa trên Marketing research, Internal data và Customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
-  { title: "Growth & Performance", Icon: TrendingUp, desc: "Thiết kế và tối ưu Customer journey: từ Demand generation > Lead acquisition > Conversion > Retention. Kết nối Marketing, Sales và Product thành một hệ thống thống nhất nhằm đo lường và thúc đẩy tăng trưởng bền vững." },
-  { title: "Martech & AI", Icon: Zap, desc: "Triển khai CRM, Marketing automation, AI workflow, Data-driven nhằm tối ưu hiệu suất đội ngũ, chuẩn hóa quy trình, xây dựng nền tảng vận hành có khả năng scale và giúp SME bắt kịp xu hướng." },
-  { title: "IMC", Icon: ShoppingBag, desc: "Xây dựng hệ thống Intergrated Marketing Communication: Ads, PR, Digital, Social media, Sales, Promotion, Direct marketing. Đảm bảo mọi touchpoint đều đồng bộ và cùng hướng tới mục tiêu tăng trưởng." }
+  { title: "Brand Strategy", meta: "BRAND POSITIONING • BRAND IDENTITY • RESEARCH", Icon: Target, desc: "Xây dựng và tái định vị Brand positioning dựa trên Marketing research, Internal data và Customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
+  { title: "Growth & Performance", meta: "CUSTOMER JOURNEY • DEMAND GEN • CONVERSION", Icon: TrendingUp, desc: "Thiết kế và tối ưu Customer journey: từ Demand generation > Lead acquisition > Conversion > Retention. Kết nối Marketing, Sales và Product thành một hệ thống thống nhất nhằm đo lường và thúc đẩy tăng trưởng bền vững." },
+  { title: "Martech & AI", meta: "CRM • AUTOMATION • AI WORKFLOWS", Icon: Zap, desc: "Triển khai CRM, Marketing automation, AI workflow, Data-driven nhằm tối ưu hiệu suất đội ngũ, chuẩn hóa quy trình, xây dựng nền tảng vận hành có khả năng scale và giúp SME bắt kịp xu hướng." },
+  { title: "IMC", meta: "ADS • PR • DIGITAL • SOCIAL • SALES", Icon: ShoppingBag, desc: "Xây dựng hệ thống Intergrated Marketing Communication: Ads, PR, Digital, Social media, Sales, Promotion, Direct marketing. Đảm bảo mọi touchpoint đều đồng bộ và cùng hướng tới mục tiêu tăng trưởng." }
 ];
 
 export const EXPERIENCES = [
@@ -643,7 +643,8 @@ const ExperienceRow = React.memo(({ exp, index, isActive, onOpenDetail }) => {
           <div className="ml-auto flex items-start md:items-center pr-1 md:pr-2 pt-9 md:pt-0">
             <button 
               onClick={() => onOpenDetail(exp)}
-              className={`w-12 h-12 md:w-14 md:h-14 rounded-full border flex items-center justify-center transition-all duration-500 hover:bg-pink-500 hover:text-black hover:border-pink-500 ${isActive ? 'border-pink-500 text-pink-500 opacity-100 scale-110' : 'border-white/10 text-white/10 opacity-0'}`}
+              aria-label={`Xem chi tiết ${exp.role} — ${exp.company}`}
+              className={`w-12 h-12 md:w-14 md:h-14 rounded-full border border-pink-500 text-pink-400 flex items-center justify-center transition-all duration-300 hover:text-black active:text-black ${isActive ? 'opacity-100 scale-110' : 'opacity-0'}`}
             >
               <ExternalLink className="w-5 h-5 md:w-6 md:h-6" />
             </button>
@@ -695,6 +696,53 @@ const HeroContent = ({ scale, y, scrollCueOpacity }) => (
     </motion.div>
   </motion.div>
 );
+
+const ServiceSlide = ({ service, index, progress, segmentCount, width, gap }) => {
+  const fillStart = Math.max(0, (index - 0.66) / segmentCount);
+  const fillEnd = Math.min(1, (index + 0.66) / segmentCount);
+  const fillProgress = useTransform(progress, [fillStart, fillEnd], [0, 1], { clamp: true });
+  const titleClip = useTransform(fillProgress, (value) => `inset(0 ${100 - value * 100}% 0 0)`);
+  const titleLinesByTitle = {
+    'Brand Strategy': ['Brand', 'Strategy'],
+    'Growth & Performance': ['Growth &', 'Performance'],
+    'Martech & AI': ['Martech &', 'AI'],
+    IMC: ['IMC', '\u00a0'],
+  };
+  const titleLines = titleLinesByTitle[service.title] || [service.title, '\u00a0'];
+  const ServiceIcon = service.Icon;
+  const ordinal = String(index + 1).padStart(2, '0');
+
+  const titleClass = 'text-3xl font-black uppercase leading-[0.98] tracking-[-0.045em] sm:text-4xl md:text-6xl';
+  return (
+    <article className="relative h-[50svh] shrink-0" style={{ width, marginRight: index < segmentCount ? gap : 0 }}>
+      <div className="relative h-full">
+        <div className="absolute left-0 right-0 top-0 flex items-start justify-between gap-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-white/55 sm:text-[10px] md:text-xs">
+          <ServiceIcon className={`${titleClass} h-[1em] w-[1em] shrink-0 text-pink-400`} aria-hidden="true" />
+          <div className="flex max-w-[78%] items-start gap-3 text-right md:gap-5">
+            <span className="leading-relaxed">{service.meta}</span>
+          </div>
+        </div>
+        <div className="absolute left-0 top-[35%] z-10 w-full">
+          <h3 className={`${titleClass} h-[2em] w-[94%] text-transparent md:w-[82%]`} style={{ WebkitTextStroke: '1px rgba(255,255,255,0.76)' }}>
+            {titleLines.map((line, lineIndex) => <span key={`${line}-${lineIndex}`} className="block">{line}</span>)}
+          </h3>
+          <motion.h3 aria-hidden="true" className={`${titleClass} absolute left-0 top-0 h-[2em] w-[94%] text-white md:w-[82%]`} style={{ clipPath: titleClip }}>
+            {titleLines.map((line, lineIndex) => <span key={`${line}-${lineIndex}`} className="block">{line}</span>)}
+          </motion.h3>
+          <p className="mt-3 w-1/2 max-w-[54ch] text-left text-xs leading-relaxed text-white/70 sm:text-sm md:mt-5 md:text-base">
+            {service.desc}
+          </p>
+        </div>
+        <span aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 select-none pb-[0.12em] pr-[0.12em] font-light text-[clamp(6rem,15vw,12rem)] leading-none tracking-[-0.09em] text-transparent" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.2)' }}>
+          {ordinal}
+        </span>
+        <motion.span aria-hidden="true" className="pointer-events-none absolute bottom-0 right-0 select-none pb-[0.12em] pr-[0.12em] font-light text-[clamp(6rem,15vw,12rem)] leading-none tracking-[-0.09em] text-white/55" style={{ clipPath: titleClip }}>
+          {ordinal}
+        </motion.span>
+      </div>
+    </article>
+  );
+};
 
 const BRAND_PARTS = [
   { src: '/assets/loader/part-1.png', title: '"A"', description: 'Anh.Trần Việt' },
@@ -827,6 +875,7 @@ const IntroJourney = () => {
               opacity: reducedMotion ? 1 : coreOpacity,
               transformPerspective: 900,
               backfaceVisibility: 'visible',
+              filter: 'drop-shadow(0 0 18px rgba(250, 204, 21, 0.78)) drop-shadow(0 0 42px rgba(250, 204, 21, 0.52))',
             }}
           >
             <img src="/assets/loader/part-0.png" alt="Logo" className="h-full w-full object-contain" />
@@ -902,8 +951,7 @@ export default function App() {
   const servicesInnerRef = useRef(null);
   const expLastRef = useRef(null);
   const impactMetricsRef = useRef(null);
-  const [servicesItemsPerView, setServicesItemsPerView] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches ? 2 : 1);
-  const [serviceViewportWidth, setServiceViewportWidth] = useState(() => typeof window === 'undefined' ? 0 : window.innerWidth - 32);
+  const [serviceViewportWidth, setServiceViewportWidth] = useState(() => typeof window === 'undefined' ? 0 : window.innerWidth);
   const [openWorkIdx, setOpenWorkIdx] = useState(null);
   const openWorkIdxRef = useRef(null);
   const workSwipeRef = useRef({ startX: 0, startY: 0, moved: false });
@@ -963,10 +1011,22 @@ export default function App() {
     target: servicesOuterRef,
     offset: ['start start', 'end end'],
   });
-  const servicesSlidePitch = servicesItemsPerView === 1 ? serviceViewportWidth : serviceViewportWidth / 2;
-  const servicesTranslateDistance = servicesSlidePitch * Math.max(SERVICES.length - servicesItemsPerView, 0);
+  const { scrollYProgress: servicesEntryProgress } = useScroll({
+    target: servicesOuterRef,
+    offset: ['start 90%', 'end end'],
+  });
+  const serviceFrameWidth = serviceViewportWidth * 0.7;
+  const serviceGap = Math.max(serviceViewportWidth * 0.14, 32);
+  const servicesSlidePitch = serviceFrameWidth + serviceGap;
+  const servicesTranslateDistance = servicesSlidePitch * Math.max(SERVICES.length - 1, 0);
   const servicesScrollScreens = serviceViewportWidth > 0 ? servicesTranslateDistance / serviceViewportWidth : SERVICES.length;
   const servicesX = useTransform(servicesProgress, [0, 1], ['0px', `-${servicesTranslateDistance}px`]);
+  const servicePinStartProgress = 0.9 / (servicesScrollScreens + 0.9);
+  const servicesFillProgress = useTransform(
+    servicesEntryProgress,
+    [0, servicePinStartProgress, 1],
+    [-0.02, 0.015, 1]
+  );
   const { scrollYProgress: worksThemeProgress } = useScroll({ target: expLastRef, offset: ['end start', 'end -30%'] });
   const worksBg = useTransform(worksThemeProgress, [0, 1], ['#050505', '#ffffff']);
   const worksContentOpacity = useTransform(worksThemeProgress, [0.995, 1], [0, 1]);
@@ -1002,17 +1062,19 @@ export default function App() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(min-width: 1024px)');
     const updateView = () => {
-      setServicesItemsPerView(mq.matches ? 2 : 1);
-      setServiceViewportWidth(servicesInnerRef.current?.clientWidth || window.innerWidth - 32);
+      if (!servicesInnerRef.current) {
+        setServiceViewportWidth(window.innerWidth);
+        return;
+      }
+      const styles = window.getComputedStyle(servicesInnerRef.current);
+      const horizontalPadding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+      setServiceViewportWidth(servicesInnerRef.current.clientWidth - horizontalPadding);
     };
     const resizeObserver = new ResizeObserver(updateView);
     if (servicesInnerRef.current) resizeObserver.observe(servicesInnerRef.current);
     updateView();
-    mq.addEventListener('change', updateView);
     return () => {
-      mq.removeEventListener('change', updateView);
       resizeObserver.disconnect();
     };
   }, []);
@@ -1363,28 +1425,18 @@ export default function App() {
 
   const serviceCards = useMemo(
     () =>
-      SERVICES.map((s) => (
-        <div key={s.title} className="w-full shrink-0 pr-24 md:pr-32 lg:w-1/2 lg:pr-48">
-          <div className="relative px-3 py-6 md:px-5 md:py-8 min-h-[420px] h-[54vh] md:min-h-[360px] md:h-[46vh] md:max-h-[460px] flex flex-col justify-start gap-7 md:gap-6">
-            <div className="h-32 shrink-0 md:h-auto">
-              <div className="text-pink-500 mb-4 md:mb-6 relative z-10">
-                <s.Icon className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14" />
-              </div>
-              <h3 className="h-[2em] text-[2.125rem] sm:text-5xl md:text-5xl lg:text-6xl font-black mb-0 md:mb-6 uppercase tracking-[-0.045em] leading-[0.98] relative z-10">
-                {s.title.includes('&') ? (
-                  <><span className="block whitespace-nowrap">{s.title.slice(0, s.title.indexOf('&') + 1)}</span><span className="block whitespace-nowrap">{s.title.slice(s.title.indexOf('&') + 1).trim()}</span></>
-                ) : s.title.includes(' ') ? (
-                  <><span className="block whitespace-nowrap">{s.title.slice(0, s.title.indexOf(' '))}</span><span className="block whitespace-nowrap">{s.title.slice(s.title.indexOf(' ') + 1)}</span></>
-                ) : (
-                  <><span className="block whitespace-nowrap">{s.title}</span><span className="block">&nbsp;</span></>
-                )}
-              </h3>
-            </div>
-            <p className="text-gray-300 text-justify leading-[1.65] text-[1.0625rem] md:text-lg max-w-3xl relative z-10">{s.desc}</p>
-          </div>
-        </div>
+      SERVICES.map((service, index) => (
+          <ServiceSlide
+          key={service.title}
+          service={service}
+          index={index}
+          progress={servicesFillProgress}
+          segmentCount={Math.max(SERVICES.length - 1, 1)}
+          width={serviceFrameWidth}
+          gap={serviceGap}
+        />
       )),
-    []
+    [servicesFillProgress, serviceFrameWidth, serviceGap]
   );
 
   const workCards = useMemo(
@@ -1517,18 +1569,24 @@ export default function App() {
               aria-label="Contact"
               aria-haspopup="dialog"
               aria-expanded={isContactPopoverOpen}
-              className="flex h-12 w-14 cursor-pointer items-center justify-center text-white transition-transform duration-200 hover:scale-110 active:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full text-white transition-transform duration-200 hover:scale-110 active:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              <MessageCircle className="h-5 w-5 md:h-[22px] md:w-[22px]" strokeWidth={2.2} aria-hidden="true" />
+              <span className="nav-icon-sweep h-5 w-5 md:h-[22px] md:w-[22px]">
+                <MessageCircle className="h-full w-full" strokeWidth={2.2} aria-hidden="true" />
+                <MessageCircle className="nav-icon-sweep__overlay h-full w-full" strokeWidth={2.2} aria-hidden="true" />
+              </span>
             </button>
             <a
               href="https://anhtranviet.com/tran-viet-anh-cmo-leadership-profile"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Download CV"
-              className="flex h-12 w-14 cursor-pointer items-center justify-center text-white transition-transform duration-200 hover:scale-110 active:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full text-white transition-transform duration-200 hover:scale-110 active:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              <Download className="cv-download-wiggle h-5 w-5 md:h-[22px] md:w-[22px]" strokeWidth={2.2} aria-hidden="true" />
+              <span className="nav-icon-sweep h-5 w-5 md:h-[22px] md:w-[22px]">
+                <Download className="cv-download-wiggle h-full w-full" strokeWidth={2.2} aria-hidden="true" />
+                <Download className="cv-download-wiggle nav-icon-sweep__overlay h-full w-full" strokeWidth={2.2} aria-hidden="true" />
+              </span>
             </a>
             {isContactPopoverOpen && (
               <div
@@ -1542,17 +1600,23 @@ export default function App() {
                     setIsContactPopoverOpen(false);
                     handleCopyAndOpenZalo();
                   }}
-                  className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors hover:bg-white/10"
+                  className="contact-popover-button flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors"
                 >
-                  <ZaloIcon className="h-5 w-5 border-white text-white" />
+                  <span className="nav-icon-sweep h-5 w-5">
+                    <ZaloIcon className="h-5 w-5 border-white text-white" />
+                    <ZaloIcon className="nav-icon-sweep__overlay h-5 w-5 border-pink-500 text-pink-500" />
+                  </span>
                   Zalo
                 </button>
                 <a
                   href={contactMailtoHref}
                   onClick={() => setIsContactPopoverOpen(false)}
-                  className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors hover:bg-white/10"
+                  className="contact-popover-button flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors"
                 >
-                  <Mail className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+                  <span className="nav-icon-sweep h-5 w-5">
+                    <Mail className="h-full w-full" strokeWidth={2} aria-hidden="true" />
+                    <Mail className="nav-icon-sweep__overlay h-full w-full" strokeWidth={2} aria-hidden="true" />
+                  </span>
                   Email
                 </a>
               </div>
@@ -1622,7 +1686,7 @@ export default function App() {
                      <FloatingAction distance={3} duration={2.6}>
                        <button 
                           onClick={() => window.open(selectedExp.link, '_blank')} 
-                          className="flex-1 md:flex-none flex items-center justify-center gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] bg-pink-500 text-black px-6 md:px-8 py-3 md:py-4 rounded-full hover:bg-white transition-all whitespace-nowrap"
+                          className="flex-1 md:flex-none flex items-center justify-center gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] border border-pink-500 bg-transparent text-pink-400 px-6 md:px-8 py-3 md:py-4 rounded-full hover:text-black transition-all whitespace-nowrap"
                         >
                           Case Study <ArrowDownRight size={14} />
                         </button>
@@ -1630,7 +1694,7 @@ export default function App() {
                      <FloatingAction distance={3} duration={3}>
                        <button 
                           onClick={() => setSelectedExp(null)} 
-                          className="flex-1 md:flex-none flex items-center justify-center gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] border border-white/20 text-white px-6 md:px-8 py-3 md:py-4 rounded-full hover:bg-white hover:text-black transition-all"
+                          className="button-sweep-white flex-1 md:flex-none flex items-center justify-center gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] border border-white bg-transparent text-white px-6 md:px-8 py-3 md:py-4 rounded-full hover:text-black transition-all"
                         >
                           Close
                         </button>
@@ -1692,22 +1756,23 @@ export default function App() {
       <IntroJourney />
 
       {/* SERVICES SECTION */}
-      <section id="services" className="py-0 px-0 relative z-10">
+      <section id="services" className="relative z-10">
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none opacity-60"><div className="absolute right-[-14%] top-20 h-[360px] w-[360px] rounded-full border border-pink-500/14" /><div className="absolute right-[-7%] top-40 h-[240px] w-[240px] rounded-full border border-white/10" /></div>
         <div
           ref={servicesOuterRef}
-          className="relative max-w-7xl mx-auto px-4 md:px-6"
+          className="relative"
           style={{ height: `${(1 + servicesScrollScreens) * 100}svh` }}
         >
-          <div ref={servicesInnerRef} className="sticky top-0 h-[100svh] overflow-hidden">
-            <div className="h-full flex translate-y-10 flex-col justify-center md:translate-y-0">
-              <div className="pt-6 md:pt-8">
+          <div className="sticky top-0 h-[100svh] overflow-hidden">
+            <div ref={servicesInnerRef} className="mx-auto flex h-full max-w-7xl flex-col justify-center px-4 pb-12 pt-28 md:px-6 md:pb-14 md:pt-32">
+              <div className="-mb-6 md:-mb-12">
                 <SectionTitle title="Expertise" subtitle="Services" />
               </div>
-              <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex w-full transform-gpu">
-                {serviceCards}
-              </motion.div>
-
+              <div className="relative flex h-[50svh] w-full items-center overflow-hidden">
+                <motion.div style={{ x: servicesX, willChange: 'transform' }} className="flex h-full w-max items-center">
+                  {serviceCards}
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
@@ -2040,7 +2105,7 @@ export default function App() {
                       disabled={isAppointmentSubmitting || !appointmentTime}
                       aria-label="Gửi yêu cầu đặt lịch"
                       title="Gửi yêu cầu đặt lịch"
-                      className="flex h-10 w-12 shrink-0 items-center justify-center rounded-full border border-pink-500 text-pink-500 transition-all hover:bg-pink-500 hover:text-black active:scale-95 disabled:cursor-wait disabled:opacity-50"
+                      className="flex h-10 w-12 shrink-0 items-center justify-center rounded-full border border-pink-500 bg-transparent text-pink-500 transition-all hover:text-black active:scale-95 disabled:cursor-wait disabled:opacity-50"
                     >
                       {isAppointmentSubmitting
                         ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />

@@ -38,3 +38,91 @@ body {
 button {
   user-select: none;
 }
+
+button:not(nav button):not(#connect button):not(footer button):not(.contact-popover-button) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+button:not(nav button):not(#connect button):not(footer button):not(.contact-popover-button)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--button-sweep-color, rgba(236, 72, 153, 0.92));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+button:not(nav button):not(#connect button):not(footer button):not(.contact-popover-button):hover:not(:disabled)::before,
+button:not(nav button):not(#connect button):not(footer button):not(.contact-popover-button):active:not(:disabled)::before,
+button:not(nav button):not(#connect button):not(footer button):not(.contact-popover-button):focus-visible:not(:disabled)::before {
+  transform: scaleX(1);
+}
+
+button:not(nav button):not(#connect button):not(footer button):not(.contact-popover-button) {
+  border-width: 1px;
+}
+
+.button-sweep-white { --button-sweep-color: rgba(255, 255, 255, 0.96); }
+.contact-popover-button { border: 0; background: transparent; }
+.contact-popover-button:hover,
+.contact-popover-button:active,
+.contact-popover-button:focus-visible { color: #ec4899; }
+.contact-popover-button:hover .nav-icon-sweep__overlay,
+.contact-popover-button:active .nav-icon-sweep__overlay,
+.contact-popover-button:focus-visible .nav-icon-sweep__overlay {
+  clip-path: inset(0 0 0 0);
+}
+
+.nav-icon-sweep {
+  position: relative;
+  display: inline-flex;
+}
+
+.nav-icon-sweep__overlay {
+  position: absolute;
+  inset: 0;
+  color: #ec4899;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+nav button:hover .nav-icon-sweep__overlay,
+nav button:active .nav-icon-sweep__overlay,
+nav button:focus-visible .nav-icon-sweep__overlay,
+nav a[aria-label="Download CV"]:hover .nav-icon-sweep__overlay,
+nav a[aria-label="Download CV"]:active .nav-icon-sweep__overlay,
+nav a[aria-label="Download CV"]:focus-visible .nav-icon-sweep__overlay {
+  clip-path: inset(0 0 0 0);
+}
+
+#connect button[aria-label="Gửi yêu cầu đặt lịch"] {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+#connect button[aria-label="Gửi yêu cầu đặt lịch"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: rgba(236, 72, 153, 0.92);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+#connect button[aria-label="Gửi yêu cầu đặt lịch"]:hover:not(:disabled)::before,
+#connect button[aria-label="Gửi yêu cầu đặt lịch"]:active:not(:disabled)::before,
+#connect button[aria-label="Gửi yêu cầu đặt lịch"]:focus-visible:not(:disabled)::before {
+  transform: scaleX(1);
+}
