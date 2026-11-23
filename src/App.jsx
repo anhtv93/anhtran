@@ -67,6 +67,44 @@ const getNextAvailableAppointmentDate = () => {
   return getFutureAppointmentSlots(today).length ? today : addOneHoChiMinhDay(today);
 };
 
+const PARTNER_CATEGORIES = ['All', 'Construction', 'Materials', 'Education', 'Lifestyle', 'Manufacturing', 'Tech', 'PR', 'Sport', 'F&B'];
+const PARTNERS = [
+  ['Vietbuild','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid02cY1nj2FjuYgfGLD7d5PdFP5vGwiZ31ohUa5275Em1wwLnX2WnPaxQ4yJmFE26HtGl'],
+  ['Datset','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid0Ak4AY6o4XhBsDw7ARr2VbrXPadcyTgs6iT1Z9d8TaxvArVZnaawyWkFtWosPR9Z9l'],
+  ['CIC39','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid0B2SGXGN9wuD66wkpckwse5ucmjnWUsggdexGwLhxgZN1Tv6rWijKfv6vSFmmHF69l'],
+  ['ZenVillasVN','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid026DjPa52FA22XiqoHcUGkcaPv1PRjFxycbCCFP1j8SKiXHEBHyWqCoVjBYoN1j1zdl'],
+  ['WeDecor','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid02asULtdRsPPmnkoLTyvtNAZHFR7Wo9RfptBhcZJyAuZb41iP95uSnZAcokC9NPypkl'],
+  ['Cicon','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid0L8MizxkhgpHxB3UXV9oJhVvJBiKYAaC9BgNrvSRh1ZVNjMbF7a9fRiktpyn4vcMTl'],
+  ['Vietkienminh','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid031qvgTr7rCDP9iFpmPh2yHvDbmeuWCaenXa1QXQNFYAKZhXbEriiqXDjbbBNLMAmhl'],
+  ['VnProperty','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid02i8NJDiBHKkgJK67Fxca7QSh3aySc28q48DvPikoiqxSwCP5sqPRfnNJj5R4d7zMgl'],
+  ['Chuanviet','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid02Q6npgbz6xCHS5WGFojvHjEBPa47AeyeEEnSvkbDcps9HzydLBykFKLTs3245PyWSl'],
+  ['SACA','Materials','https://www.facebook.com/DAVN.vn/posts/pfbid02CpQNvDcYAMKLfe8ZYW1SVyDxqMbVLfxndbnJEvd1CKepw5it4Kb1WMw97fnRe924l'],
+  ['Rainier','Materials','https://www.facebook.com/DAVN.vn/posts/pfbid026ZahT3yTcpf2T7TEZFkz9RuQNFpQwdkv2MCN57XcGiB5LN8RDGmve3PWAiAyShdl'],
+  ['VIA','Education','https://drive.google.com/drive/folders/1TKJ1UxuJWfu_LEqE2ey9hslxnmFzneLZ'],
+  ['LEGO','Education','https://www.behance.net/gallery/106955351/LEGO-Education'],
+  ['HUTECHxd','Education','https://www.facebook.com/DAVN.vn/posts/pfbid02ou6bx85cciWPoxNcq4HN3s65rzbFKj24cGLWHJmXp2k5eKSJHimQQGHDSfpMkhvdl'],
+  ['HUTECHmt','Education','https://www.facebook.com/DAVN.vn/posts/pfbid0J9UBizQtt4MjSNZ4KbBXdPnh4ZChbft7eAaxcBKVCE955zq3PY5vdbs3JbsyrBqPl'],
+  ['FitForce','Lifestyle','https://www.behance.net/gallery/106954181/FitForce-Fitness-Yoga'],
+  ['Anhat','Lifestyle','https://drive.google.com/drive/folders/1iyYP-y57kSFg0S9__yi-WY-VKiIRRHpB?usp=sharing'],
+  ['Mandala','Lifestyle','https://www.facebook.com/DAVN.vn/posts/pfbid02hfcRS4GVscoi51wCUQbzc8q2QRu8zqNQhtoKJQ1vrRBPoE7GwAsRJ4ZkqD9EjzXil'],
+  ['CaptainGen','Lifestyle','https://www.facebook.com/DAVN.vn/posts/pfbid0Q4PXjNHDxg87GGsUDmXwAkhGkLwNRoiBv51BpCf6sjpvpWibxLTr2YwA9pjYs4vjl'],
+  ['Sanna','Manufacturing','https://drive.google.com/drive/folders/1xWq9vmXwFj7mxfCx_Y0uyCwPa0P1uaql'],
+  ['Tupperware','Manufacturing','https://www.facebook.com/DAVN.vn/posts/pfbid0cYZVg2Hg91x43aushoPbHH8YHUjsntqjwu89xjHqXuhsZB3ubJMKQHdhiNASBmGbl'],
+  ['Freshplus','Manufacturing','https://www.facebook.com/DAVN.vn/posts/pfbid0WBedzeS5wpu6A5pByG9WSW42GURZH4vXhq9Xu81V1pHg1Mfb87DTT5isdmnrmExLl'],
+  ['ATA','Manufacturing','https://www.behance.net/gallery/106959687/ATA-Trading'],
+  ['Nguyenvancu','Manufacturing','https://www.behance.net/gallery/106953807/NguyenVanCu-Bookstores'],
+  ['VnResource','Tech','https://www.facebook.com/DAVN.vn/posts/pfbid0EqUgkhb6og2NdeiSZyMz9YWB7xcyfW3CuCoa2BFTfUS1y1thASRLc3eg53gW1Mrvl'],
+  ['ZaloZNS','Tech','https://www.facebook.com/photo/?fbid=538095408426428&set=a.573232738249043'],
+  ['Brandsketer','PR','https://www.facebook.com/DAVN.vn/posts/pfbid0N3yHfKjUKSeC9cdFecEwxx2DoqWTu78qTosrAysmisX8m3NGs8ZghRS6PGX4i5Gel'],
+  ['Giadinh','PR','https://www.facebook.com/DAVN.vn/posts/pfbid0YWk2XM3JLk2cZh76s9JExLEtKv7eyXdQznKPSAFmop7oRJb55CbTFPkvCK1v5Dj9l'],
+  ['YBA','PR','https://www.facebook.com/DAVN.vn/posts/pfbid0FfXjBsfwHfdnicyj4UAmZjeTxJFhLgcLC7XU8uZnimUxJjB9j9fjTofE31iH5FR9l'],
+  ['Haianh','Sport','https://www.facebook.com/photo/?fbid=549293100639992&set=a.573232728249044'],
+  ['TenisLanAnh','Sport','https://www.facebook.com/DAVN.vn/posts/pfbid022kEnrutxUPmE96TU9e8wBkDKK7tEeheaq9T1TKEMEfYmzUdDd6Pzdu2k1Vr8TYQrl'],
+  ['Elamset','Sport','https://www.facebook.com/DAVN.vn/posts/pfbid0p714iCc7Q8H9LBW3ymrvrjSathWYvopYvsEv1ZGv6AZExzT3mbWJnLKmw9CKZ8Val'],
+  ['Annhontra','F&B','https://www.facebook.com/DAVN.vn/posts/pfbid036C6KMooToHSyoGCSKhCuWRi5hinUonnheDzPTSfVzidxzPvwcgecSTkMmduYrXTRl'],
+  ['Camellia','F&B','https://www.behance.net/gallery/106960225/Ambassador-Hotel-Group'],
+].map(([name, category, link]) => ({ name, category, link, logo: `/Logos/${name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '')}.png` }));
+
 export const SERVICES = [
   { title: "Brand Strategy", meta: "BRAND POSITIONING • BRAND IDENTITY • RESEARCH", Icon: Target, desc: "Xây dựng và tái định vị Brand positioning dựa trên Marketing research, Internal data và Customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
   { title: "Growth & Performance", meta: "CUSTOMER JOURNEY • DEMAND GEN • CONVERSION", Icon: TrendingUp, desc: "Thiết kế và tối ưu Customer journey: từ Demand generation > Lead acquisition > Conversion > Retention. Kết nối Marketing, Sales và Product thành một hệ thống thống nhất nhằm đo lường và thúc đẩy tăng trưởng bền vững." },
@@ -338,7 +376,7 @@ export const STATS = [
   { value: "5B+ VND", label: "Total Budget" },
   { value: "50+", label: "Project Delivered" },
   { value: "100+", label: "Team members" },
-  { value: "10+", label: "Industries" }
+  { value: "30+", label: "Brands" }
 ];
 
 export const CONTACT_ROUTES = [
@@ -928,6 +966,7 @@ const FloatingAction = ({ children, distance = 4, duration = 2.8 }) => (
 
 
 export default function App() {
+  const [activePartnerCategory, setActivePartnerCategory] = useState('All');
   const [activeIdx, setActiveIdx] = useState(0);
   const [selectedExp, setSelectedExp] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -958,6 +997,7 @@ export default function App() {
   const worksOuterRef = useRef(null);
   const workCardRefs = useRef([]);
   const worksSectionRef = useRef(null);
+  const visiblePartners = activePartnerCategory === 'All' ? PARTNERS : PARTNERS.filter((partner) => partner.category === activePartnerCategory);
 
   const activeContactRoute = useMemo(
     () => CONTACT_ROUTES.find((route) => route.id === activeContactRouteId) || CONTACT_ROUTES[0],
@@ -1819,6 +1859,21 @@ export default function App() {
             </div>
           </div>
           <div className="mt-6 md:mt-8"><ScrollMouseHint axis="horizontal" dark /></div>
+          <section id="partners" aria-labelledby="partners-heading" className="mt-16 pt-10 md:mt-24 md:pt-14">
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="mb-2 font-mono text-xs uppercase tracking-[0.2em] text-purple-600">/ Trusted by</p>
+                <h2 id="partners-heading" className="text-3xl font-black uppercase tracking-tight text-black md:text-5xl">Partners &amp; Clients</h2>
+              </div>
+              <div className="flex max-w-full gap-2 overflow-x-auto pb-2 scrollbar-hide" aria-label="Filter partners by industry">
+                {PARTNER_CATEGORIES.map((category) => <button key={category} type="button" aria-pressed={activePartnerCategory === category} onClick={() => setActivePartnerCategory(category)} className={`partner-filter-button shrink-0 rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors ${activePartnerCategory === category ? 'border-pink-500 bg-pink-500 text-white' : 'border-black/15 text-black/55 hover:border-pink-500 hover:text-pink-600'}`}>{category}</button>)}
+              </div>
+            </div>
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mt-10 md:grid-cols-4 lg:grid-cols-5">
+              {visiblePartners.map((partner) => <a key={partner.name} href={partner.link} target="_blank" rel="noreferrer" aria-label={`View ${partner.name} project`} title={`${partner.name} · ${partner.category}`} className="partner-logo-card group relative flex h-[100px] items-center justify-center px-3 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 sm:h-[96px]"><span className="flex h-full w-full items-center justify-center"><img src={partner.logo} alt={partner.name} loading="lazy" className="h-full w-full object-contain partner-logo-image transition-all duration-300" /></span></a>)}
+            </div>
+            <p className="mt-5 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">Click any brand to view</p>
+          </section>
           <div className="mt-10 border-t border-black/10 pt-6 md:mt-16 md:pt-8">
             <div ref={impactMetricsRef} className="grid grid-cols-2 gap-x-3 gap-y-4 md:grid-cols-4 md:gap-6">
               {statCards}

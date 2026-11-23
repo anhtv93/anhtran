@@ -64,6 +64,12 @@ button:not(nav button):not(#connect button):not(footer button):not(.contact-popo
   transform: scaleX(1);
 }
 
+.partner-logo-image { filter: grayscale(1); opacity: .68; }
+.partner-logo-card:hover .partner-logo-image,
+.partner-logo-card:focus-visible .partner-logo-image { filter: grayscale(0); opacity: 1; }
+.partner-logo-card:active .partner-logo-image { filter: grayscale(0); opacity: 1; }
+.partner-filter-button::before { display: none; }
+
 button:not(nav button):not(#connect button):not(footer button):not(.contact-popover-button) {
   border-width: 1px;
 }
