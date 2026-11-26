@@ -1,0 +1,16 @@
+# Đặt file này vào  public/_headers  (Vite sẽ copy sang dist/ khi build).
+# Dùng được cho Netlify và Cloudflare Pages. KHÔNG dùng được cho GitHub Pages
+# (GitHub Pages không cho đặt header; xem hướng dẫn trong câu trả lời).
+#
+# CSP đang ở chế độ Report-Only: chỉ BÁO lỗi trong DevTools Console, chưa chặn gì,
+# nên không thể làm hỏng website. Sau khi kiểm tra không còn cảnh báo, đổi tên
+#   Content-Security-Policy-Report-Only  ->  Content-Security-Policy
+# để bắt đầu chặn thật.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; frame-src https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'

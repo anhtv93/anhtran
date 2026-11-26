@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence, useScroll, useSpring, useInView, useMotionValue, useTransform, useReducedMotion } from 'framer-motion';
+import { m as motion, LazyMotion, domAnimation, AnimatePresence, useScroll, useInView, useMotionValue, useTransform, useReducedMotion } from 'framer-motion';
 import { 
   TrendingUp, 
   Target, 
@@ -13,7 +13,6 @@ import {
   MessageCircle,
   CalendarCheck,
   ShoppingBag,
-  X,
   Mail,
   Mic2,
   ArrowUp,
@@ -31,12 +30,15 @@ const ZaloIcon = ({ className = '' }) => (
   </span>
 );
 
+// Intl.DateTimeFormat is expensive to construct, so build it once.
+const HCM_DATE_TIME_FORMAT = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Ho_Chi_Minh',
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+});
+
 const getHoChiMinhDateTime = () => {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Ho_Chi_Minh',
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
-  }).formatToParts(new Date());
+  const parts = HCM_DATE_TIME_FORMAT.formatToParts(new Date());
   const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
   return {
     date: `${values.year}-${values.month}-${values.day}`,
@@ -67,7 +69,7 @@ const getNextAvailableAppointmentDate = () => {
   return getFutureAppointmentSlots(today).length ? today : addOneHoChiMinhDay(today);
 };
 
-const PARTNER_CATEGORIES = ['All', 'Construction', 'Materials', 'Education', 'Lifestyle', 'Manufacturing', 'Tech', 'PR', 'Sport', 'F&B'];
+const PARTNER_CATEGORIES = ['All', 'Construction', 'Materials', 'Tech', 'Education', 'Lifestyle', 'Manufacturing', 'PR', 'Sport', 'F&B'];
 const PARTNERS = [
   ['Vietbuild','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid02cY1nj2FjuYgfGLD7d5PdFP5vGwiZ31ohUa5275Em1wwLnX2WnPaxQ4yJmFE26HtGl'],
   ['Datset','Construction','https://www.facebook.com/DAVN.vn/posts/pfbid0Ak4AY6o4XhBsDw7ARr2VbrXPadcyTgs6iT1Z9d8TaxvArVZnaawyWkFtWosPR9Z9l'],
@@ -109,7 +111,7 @@ export const SERVICES = [
   { title: "Brand Strategy", meta: "BRAND POSITIONING • BRAND IDENTITY • RESEARCH", Icon: Target, desc: "Xây dựng và tái định vị Brand positioning dựa trên Marketing research, Internal data và Customer insight. Chuẩn hoá thương hiệu, tạo lợi thế cạnh tranh rõ ràng và giúp SME được khách hàng lựa chọn thay vì bị so sánh về giá." },
   { title: "Growth & Performance", meta: "CUSTOMER JOURNEY • DEMAND GEN • CONVERSION", Icon: TrendingUp, desc: "Thiết kế và tối ưu Customer journey: từ Demand generation > Lead acquisition > Conversion > Retention. Kết nối Marketing, Sales và Product thành một hệ thống thống nhất nhằm đo lường và thúc đẩy tăng trưởng bền vững." },
   { title: "Martech & AI", meta: "CRM • AUTOMATION • AI WORKFLOWS", Icon: Zap, desc: "Triển khai CRM, Marketing automation, AI workflow, Data-driven nhằm tối ưu hiệu suất đội ngũ, chuẩn hóa quy trình, xây dựng nền tảng vận hành có khả năng scale và giúp SME bắt kịp xu hướng." },
-  { title: "IMC", meta: "ADS • PR • DIGITAL • SOCIAL • SALES", Icon: ShoppingBag, desc: "Xây dựng hệ thống Intergrated Marketing Communication: Ads, PR, Digital, Social media, Sales, Promotion, Direct marketing. Đảm bảo mọi touchpoint đều đồng bộ và cùng hướng tới mục tiêu tăng trưởng." }
+  { title: "IMC", meta: "ADS • PR • DIGITAL • SOCIAL • SALES", Icon: ShoppingBag, desc: "Xây dựng hệ thống Integrated Marketing Communication: Ads, PR, Digital, Social media, Sales, Promotion, Direct marketing. Đảm bảo mọi touchpoint đều đồng bộ và cùng hướng tới mục tiêu tăng trưởng." }
 ];
 
 export const EXPERIENCES = [
@@ -219,14 +221,14 @@ export const PROJECTS = [
     category: "Marketing Strategy",
     image: "/assets/7.jpeg",
     description: "Định vị thương hiệu, xây dựng & chuyển giao lộ trình phát triển nhân sự và chiến lược marketing dài hạn cho hệ thống Onsen Nhật.",
-    link: "https://drive.google.com/drive/folders/18EePklHJB1nS5eMQ5oittod5AsQw58Cl?usp=sharing"
+    link: "https://drive.google.com/drive/folders/1iyYP-y57kSFg0S9__yi-WY-VKiIRRHpB"
   },
   {
     title: "Đào tạo nhân sự",
     category: "Training",
     image: "/assets/8.jpeg",
     description: "Thiết kế bài giảng và tổ chức đào tạo cho sản phẩm chiến lược mới cho chuỗi Trung tâm Tiếng Anh tại khu vực miền Nam.",
-    link: "https://docs.google.com/presentation/d/1jNi_LlrgeViBc2TIu6oEIoAqJzI2XyUd/edit?usp=sharing&ouid=116372570508469460772&rtpof=true&sd=true"
+    link: "https://drive.google.com/drive/folders/1TKJ1UxuJWfu_LEqE2ey9hslxnmFzneLZ"
   },
   {
     title: "Tổ chức sự kiện",
@@ -254,7 +256,7 @@ export const PROJECTS = [
     category: "Transformation",
     image: "/assets/12.jpeg",
     description: "Xây dựng hệ thống TMĐT đa kênh, logistics, data management; hợp tác các nhãn hàng, NXB mới; triển khai kênh social media cho hệ thống.",
-    link: "https://nhasachnguyenvancu.vn/"
+    link: "https://www.behance.net/gallery/106953807/NguyenVanCu-Bookstores"
   },
   {
     title: "Chuyển đổi số Giáo dục",
@@ -282,7 +284,7 @@ export const PROJECTS = [
     category: "Podcast",
     image: "/assets/16.jpeg",
     description: "Chia sẻ câu chuyện khởi nghiệp Dự Án Việt Nam - Personal Branding.",
-    link: "https://drive.google.com/file/d/1ly37dJYfFfn50gHxCLItw37oWYm5Sssc/view?usp=sharing"
+    link: "https://drive.google.com/file/d/1TTCwesNO3Wv7LOd43hmzt6NNoX0oqOvm/view?usp=drivesdk"
   },
   {
     title: "Tài trợ sự kiện",
@@ -358,7 +360,7 @@ export const PROJECTS = [
     title: "Sản xuất Media",
     category: "Branding",
     image: "/assets/27.jpeg",
-    description: "Xây dựng uy tín Dự Án Việt Nam qua những 'Video revew thành phẩm' chất lượng cao được đầu tư quay dựng bài bản, tăng branding & trust.",
+    description: "Xây dựng uy tín Dự Án Việt Nam qua những 'Video review thành phẩm' chất lượng cao được đầu tư quay dựng bài bản, tăng branding & trust.",
     link: "https://www.youtube.com/watch?v=xvJmW73i9DE"
   }
 ];
@@ -454,6 +456,21 @@ const GLOBAL_STYLES = `
     95% { transform: rotate(0); }
   }
   .cv-download-wiggle { animation: cv-download-wiggle 3s ease-in-out infinite; transform-origin: 50% 55%; }
+  @keyframes floating-action {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, var(--float-distance, -4px), 0); }
+  }
+  .floating-action { animation: floating-action var(--float-duration, 2.8s) ease-in-out infinite; }
+  @keyframes scroll-hint-y {
+    0%, 100% { transform: translateY(4px); opacity: 0.4; }
+    50% { transform: translateY(11px); opacity: 1; }
+  }
+  @keyframes scroll-hint-x {
+    0%, 100% { transform: translateX(4px); opacity: 0.4; }
+    50% { transform: translateX(11px); opacity: 1; }
+  }
+  .scroll-hint-dot--y { animation: scroll-hint-y 1.2s ease-in-out infinite; }
+  .scroll-hint-dot--x { animation: scroll-hint-x 1.2s ease-in-out infinite; }
   ::selection { background: white; color: black; }
   html { scroll-behavior: smooth; }
   @media (prefers-reduced-motion: reduce) {
@@ -469,97 +486,10 @@ const GLOBAL_STYLES = `
 
 // --- Components ---
 
-const MagneticElement = ({ children, distance = 0.35 }) => {
-  const ref = useRef(null);
-  const rectRef = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 150, damping: 15 });
-  const springY = useSpring(y, { stiffness: 150, damping: 15 });
-
-  const handleMouseEnter = useCallback(() => {
-    if (!ref.current) return;
-    rectRef.current = ref.current.getBoundingClientRect();
-  }, []);
-
-  const handleMouseMove = useCallback((e) => {
-    const { clientX, clientY } = e;
-    if (!ref.current) return;
-    const rect = rectRef.current || ref.current.getBoundingClientRect();
-    const { left, top, width, height } = rect;
-    const dx = clientX - (left + width / 2);
-    const dy = clientY - (top + height / 2);
-    x.set(dx * distance);
-    y.set(dy * distance);
-  }, [distance, x, y]);
-
-  const handleMouseLeave = useCallback(() => {
-    rectRef.current = null;
-    x.set(0);
-    y.set(0);
-  }, [x, y]);
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ x: springX, y: springY }}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-const MagneticButton = ({ children, className = "", onClick }) => {
-  const ref = useRef(null);
-  const rectRef = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 150, damping: 15 });
-  const springY = useSpring(y, { stiffness: 150, damping: 15 });
-
-  const handleMouseEnter = useCallback(() => {
-    if (!ref.current) return;
-    rectRef.current = ref.current.getBoundingClientRect();
-  }, []);
-
-  const handleMouseMove = useCallback((e) => {
-    const { clientX, clientY } = e;
-    if (!ref.current) return;
-    const rect = rectRef.current || ref.current.getBoundingClientRect();
-    const { left, top, width, height } = rect;
-    const dx = clientX - (left + width / 2);
-    const dy = clientY - (top + height / 2);
-    x.set(dx * 0.3);
-    y.set(dy * 0.3);
-  }, [x, y]);
-
-  const handleMouseLeave = useCallback(() => {
-    rectRef.current = null;
-    x.set(0);
-    y.set(0);
-  }, [x, y]);
-
-  return (
-    <motion.button
-      ref={ref}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ x: springX, y: springY }}
-      className={className}
-      onClick={onClick}
-    >
-      {children}
-    </motion.button>
-  );
-};
+const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+';
 
 const ScrambleText = ({ text, trigger }) => {
   const [displayText, setDisplayText] = useState(text);
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+';
   const intervalRef = useRef(null);
 
   const scramble = useCallback(() => {
@@ -572,7 +502,7 @@ const ScrambleText = ({ text, trigger }) => {
           .map((char, index) => {
             if (index < iteration) return text[index];
             if (char === " ") return " ";
-            return characters[Math.floor(Math.random() * characters.length)];
+            return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
           })
           .join("")
       );
@@ -596,7 +526,7 @@ const ScrambleText = ({ text, trigger }) => {
   );
 };
 
-const SectionTitle = ({ title, subtitle, dark = false, subtitleClassName = '', reserveTwoLines = false }) => {
+const SectionTitle = React.memo(({ title, subtitle, dark = false, subtitleClassName = '', reserveTwoLines = false }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, margin: "-10% 0px -10% 0px" });
 
@@ -621,7 +551,7 @@ const SectionTitle = ({ title, subtitle, dark = false, subtitleClassName = '', r
       </div>
     </div>
   );
-};
+});
 
 const CountUp = ({ value, duration = 700 }) => {
   const ref = useRef(null);
@@ -735,18 +665,19 @@ const HeroContent = ({ scale, y, scrollCueOpacity }) => (
   </motion.div>
 );
 
+const SERVICE_TITLE_LINES = {
+  'Brand Strategy': ['Brand', 'Strategy'],
+  'Growth & Performance': ['Growth &', 'Performance'],
+  'Martech & AI': ['Martech &', 'AI'],
+  IMC: ['IMC', '\u00a0'],
+};
+
 const ServiceSlide = ({ service, index, progress, segmentCount, width, gap }) => {
   const fillStart = Math.max(0, (index - 0.66) / segmentCount);
   const fillEnd = Math.min(1, (index + 0.66) / segmentCount);
   const fillProgress = useTransform(progress, [fillStart, fillEnd], [0, 1], { clamp: true });
   const titleClip = useTransform(fillProgress, (value) => `inset(0 ${100 - value * 100}% 0 0)`);
-  const titleLinesByTitle = {
-    'Brand Strategy': ['Brand', 'Strategy'],
-    'Growth & Performance': ['Growth &', 'Performance'],
-    'Martech & AI': ['Martech &', 'AI'],
-    IMC: ['IMC', '\u00a0'],
-  };
-  const titleLines = titleLinesByTitle[service.title] || [service.title, '\u00a0'];
+  const titleLines = SERVICE_TITLE_LINES[service.title] || [service.title, '\u00a0'];
   const ServiceIcon = service.Icon;
   const ordinal = String(index + 1).padStart(2, '0');
 
@@ -823,7 +754,7 @@ const BrandRevealPart = ({ part, slot, index, progress, reducedMotion, isMobile 
       style={{ x: reducedMotion ? targetX : x, y: reducedMotion ? targetY : y, opacity: reducedMotion ? 1 : opacity }}
     >
       <div className={`flex items-center gap-2 sm:gap-3 ${isRight ? 'flex-row-reverse text-right' : 'text-left'}`}>
-        <img src={part.src} alt="" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14 md:h-16 md:w-16" draggable="false" />
+        <img src={part.src} alt="" decoding="async" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14 md:h-16 md:w-16" draggable="false" />
         <div className="min-w-0">
           <span className="block text-base font-black uppercase leading-tight tracking-tight text-white sm:text-lg md:text-2xl">{part.title}</span>
           <span className="mt-1 block text-xs font-medium leading-snug text-white/70 sm:text-sm md:text-base">{part.description}</span>
@@ -913,10 +844,16 @@ const IntroJourney = () => {
               opacity: reducedMotion ? 1 : coreOpacity,
               transformPerspective: 900,
               backfaceVisibility: 'visible',
-              filter: 'drop-shadow(0 0 18px rgba(250, 204, 21, 0.78)) drop-shadow(0 0 42px rgba(250, 204, 21, 0.52))',
+              willChange: 'transform, opacity',
             }}
           >
-            <img src="/assets/loader/part-0.png" alt="Logo" className="h-full w-full object-contain" />
+            <img
+              src="/assets/loader/part-0.png"
+              alt="Logo"
+              decoding="async"
+              className="h-full w-full object-contain"
+              style={{ filter: 'drop-shadow(0 0 18px rgba(250, 204, 21, 0.78)) drop-shadow(0 0 42px rgba(250, 204, 21, 0.52))' }}
+            />
           </motion.div>
           {BRAND_PARTS.map((part, index) => (
             <BrandRevealPart key={part.src} part={part} slot={BRAND_SLOTS[brandSlotOrder[index]]} index={index} progress={progress} reducedMotion={reducedMotion} isMobile={isMobile} />
@@ -927,7 +864,7 @@ const IntroJourney = () => {
   );
 };
 
-const MotionSpan = motion.span;
+const IntroJourneySection = React.memo(IntroJourney);
 
 const ScrollMouseHint = ({ axis = 'vertical', dark = false }) => {
   const isVertical = axis === 'vertical';
@@ -939,39 +876,27 @@ const ScrollMouseHint = ({ axis = 'vertical', dark = false }) => {
           dark ? 'border-black/35' : 'border-white/35'
         } ${isVertical ? 'h-10 w-6' : 'h-6 w-10'}`}
       >
-        <MotionSpan
+        <span
           className={`absolute rounded-full ${
             dark ? 'bg-black/55' : 'bg-white/70'
-          } ${isVertical ? 'h-2.5 w-1.5 left-1/2 -translate-x-1/2' : 'h-1.5 w-2.5 top-1/2 -translate-y-1/2'}`}
-          animate={
-            isVertical
-              ? { y: [4, 11, 4], opacity: [0.4, 1, 0.4] }
-              : { x: [4, 11, 4], opacity: [0.4, 1, 0.4] }
-          }
-          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+          } ${isVertical ? 'scroll-hint-dot--y h-2.5 w-1.5 left-1/2 -translate-x-1/2' : 'scroll-hint-dot--x h-1.5 w-2.5 top-1/2 -translate-y-1/2'}`}
         />
       </div>
     </div>
   );
 };
 
+// Pure-CSS float loop: runs on the compositor instead of a JS requestAnimationFrame loop.
 const FloatingAction = ({ children, distance = 4, duration = 2.8 }) => (
-  <motion.div
-    animate={{ y: [0, -distance, 0] }}
-    transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
+  <div
+    className="floating-action"
+    style={{ '--float-distance': `${-distance}px`, '--float-duration': `${duration}s` }}
   >
     {children}
-  </motion.div>
+  </div>
 );
 
-
-export default function App() {
-  const [activePartnerCategory, setActivePartnerCategory] = useState('All');
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [selectedExp, setSelectedExp] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [activeContactRouteId, setActiveContactRouteId] = useState('hr');
-  const [isContactPopoverOpen, setIsContactPopoverOpen] = useState(false);
+const AppointmentForm = React.memo(({ activeContactRouteId }) => {
   const [isAppointmentSubmitting, setIsAppointmentSubmitting] = useState(false);
   const [appointmentStatus, setAppointmentStatus] = useState({ type: '', message: '' });
   const [appointmentDate, setAppointmentDate] = useState(getNextAvailableAppointmentDate);
@@ -980,54 +905,23 @@ export default function App() {
     const today = getHoChiMinhDateTime().date;
     return getFutureAppointmentSlots(today)[0] || '';
   });
-  const [hasExpDetailScrolled, setHasExpDetailScrolled] = useState(false);
-
-  const containerRef = useRef(null);
-  const contactPopoverRef = useRef(null);
-  const expRefs = useRef([]);
-  const activeIdxRef = useRef(0);
-  const servicesOuterRef = useRef(null);
-  const servicesInnerRef = useRef(null);
-  const expLastRef = useRef(null);
-  const impactMetricsRef = useRef(null);
-  const [serviceViewportWidth, setServiceViewportWidth] = useState(() => typeof window === 'undefined' ? 0 : window.innerWidth);
-  const [openWorkIdx, setOpenWorkIdx] = useState(null);
-  const openWorkIdxRef = useRef(null);
-  const workSwipeRef = useRef({ startX: 0, startY: 0, moved: false });
-  const worksOuterRef = useRef(null);
-  const workCardRefs = useRef([]);
-  const worksSectionRef = useRef(null);
-  const visiblePartners = activePartnerCategory === 'All' ? PARTNERS : PARTNERS.filter((partner) => partner.category === activePartnerCategory);
-
-  const activeContactRoute = useMemo(
-    () => CONTACT_ROUTES.find((route) => route.id === activeContactRouteId) || CONTACT_ROUTES[0],
-    [activeContactRouteId]
-  );
   const appointmentSlots = useMemo(
     () => getFutureAppointmentSlots(appointmentDate, appointmentNow),
     [appointmentDate, appointmentNow]
   );
-  const appointmentHours = [...new Set(appointmentSlots.map((slot) => slot.slice(0, 2)))];
-  const appointmentMinutes = appointmentSlots
-    .filter((slot) => slot.startsWith(`${appointmentTime.slice(0, 2)}:`))
-    .map((slot) => slot.slice(3));
-  const contactEmailBody = useMemo(
-    () =>
-      [
-        'Xin chào Anh Trần,',
-        '',
-        activeContactRoute.message,
-        '',
-        '- Nội dung trao đổi: ',
-        '- Company / brand: ',
-        '- Expected timeline: ',
-        '',
-        'Trân trọng.',
-      ].join('\n'),
-    [activeContactRoute.message]
+  // Recomputed on the same 30s tick as the slots so the date picker's minimum stays correct.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const minDate = useMemo(() => getHoChiMinhDateTime().date, [appointmentNow]);
+  const appointmentHours = useMemo(
+    () => [...new Set(appointmentSlots.map((slot) => slot.slice(0, 2)))],
+    [appointmentSlots]
   );
-  const contactMailtoHref = `mailto:anh@anhtranviet.com?subject=${encodeURIComponent(activeContactRoute.emailSubject)}&body=${encodeURIComponent(contactEmailBody)}`;
-  const contactZaloMessage = `${activeContactRoute.emailSubject}\n\n${contactEmailBody}`;
+  const appointmentMinutes = useMemo(
+    () => appointmentSlots
+      .filter((slot) => slot.startsWith(`${appointmentTime.slice(0, 2)}:`))
+      .map((slot) => slot.slice(3)),
+    [appointmentSlots, appointmentTime]
+  );
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setAppointmentNow(Date.now()), 30_000);
@@ -1046,152 +940,6 @@ export default function App() {
       setAppointmentTime(appointmentSlots[0] || '');
     }
   }, [appointmentDate, appointmentSlots, appointmentTime]);
-
-  const { scrollYProgress: servicesProgress } = useScroll({
-    target: servicesOuterRef,
-    offset: ['start start', 'end end'],
-  });
-  const { scrollYProgress: servicesEntryProgress } = useScroll({
-    target: servicesOuterRef,
-    offset: ['start 90%', 'end end'],
-  });
-  const serviceFrameWidth = serviceViewportWidth * 0.7;
-  const serviceGap = Math.max(serviceViewportWidth * 0.14, 32);
-  const servicesSlidePitch = serviceFrameWidth + serviceGap;
-  const servicesTranslateDistance = servicesSlidePitch * Math.max(SERVICES.length - 1, 0);
-  const servicesScrollScreens = serviceViewportWidth > 0 ? servicesTranslateDistance / serviceViewportWidth : SERVICES.length;
-  const servicesX = useTransform(servicesProgress, [0, 1], ['0px', `-${servicesTranslateDistance}px`]);
-  const servicePinStartProgress = 0.9 / (servicesScrollScreens + 0.9);
-  const servicesFillProgress = useTransform(
-    servicesEntryProgress,
-    [0, servicePinStartProgress, 1],
-    [-0.02, 0.015, 1]
-  );
-  const { scrollYProgress: worksThemeProgress } = useScroll({ target: expLastRef, offset: ['end start', 'end -30%'] });
-  const worksBg = useTransform(worksThemeProgress, [0, 1], ['#050505', '#ffffff']);
-  const worksContentOpacity = useTransform(worksThemeProgress, [0.995, 1], [0, 1]);
-  const { scrollYProgress: impactThemeProgress } = useScroll({ target: impactMetricsRef, offset: ['start start', 'start -30%'] });
-
-
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return;
-    window.__portfolioUnlockPreload?.();
-    document.documentElement.classList.remove('preload-lock');
-    document.body.classList.remove('preload-lock');
-    const previousRestoration = window.history.scrollRestoration;
-    window.history.scrollRestoration = 'manual';
-
-    const forceHome = () => window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    forceHome();
-    const raf = window.requestAnimationFrame(forceHome);
-    const t1 = window.setTimeout(forceHome, 80);
-    const t2 = window.setTimeout(forceHome, 320);
-
-    const resetScrollBeforeUnload = () => {
-      window.scrollTo(0, 0);
-    };
-    window.addEventListener('beforeunload', resetScrollBeforeUnload);
-    return () => {
-      window.cancelAnimationFrame(raf);
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-      window.removeEventListener('beforeunload', resetScrollBeforeUnload);
-      window.history.scrollRestoration = previousRestoration;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const updateView = () => {
-      if (!servicesInnerRef.current) {
-        setServiceViewportWidth(window.innerWidth);
-        return;
-      }
-      const styles = window.getComputedStyle(servicesInnerRef.current);
-      const horizontalPadding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
-      setServiceViewportWidth(servicesInnerRef.current.clientWidth - horizontalPadding);
-    };
-    const resizeObserver = new ResizeObserver(updateView);
-    if (servicesInnerRef.current) resizeObserver.observe(servicesInnerRef.current);
-    updateView();
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-
-  useEffect(() => {
-    if (!PROJECTS.length || typeof window === 'undefined') return;
-
-    const run = () => {
-      PROJECTS.slice(0, 3).forEach((p) => preloadImage(p.image));
-    };
-
-    if ('requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(run, { timeout: 3000 });
-      return () => window.cancelIdleCallback(id);
-    }
-
-    const t = window.setTimeout(run, 1200);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    if (selectedExp) {
-      const t = setTimeout(() => setHasExpDetailScrolled(false), 0);
-      return () => clearTimeout(t);
-    }
-  }, [selectedExp]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !selectedExp) return undefined;
-    const body = document.body;
-    const root = document.documentElement;
-    const previousBodyOverflow = body.style.overflow;
-    const previousRootOverflow = root.style.overflow;
-    body.style.overflow = 'hidden';
-    root.style.overflow = 'hidden';
-    return () => {
-      body.style.overflow = previousBodyOverflow || 'auto';
-      root.style.overflow = previousRootOverflow || '';
-    };
-  }, [selectedExp]);
-
-  const handleContactRouteChange = useCallback((id) => {
-    setActiveContactRouteId(id);
-  }, []);
-
-  useEffect(() => {
-    if (!isContactPopoverOpen) return undefined;
-    const closeOnOutsidePointer = (event) => {
-      if (!contactPopoverRef.current?.contains(event.target)) {
-        setIsContactPopoverOpen(false);
-      }
-    };
-    const closeOnEscape = (event) => {
-      if (event.key === 'Escape') setIsContactPopoverOpen(false);
-    };
-    document.addEventListener('pointerdown', closeOnOutsidePointer);
-    document.addEventListener('keydown', closeOnEscape);
-    return () => {
-      document.removeEventListener('pointerdown', closeOnOutsidePointer);
-      document.removeEventListener('keydown', closeOnEscape);
-    };
-  }, [isContactPopoverOpen]);
-
-  const handleCopyAndOpenZalo = useCallback(async () => {
-    const zaloWindow = window.open('about:blank', '_blank');
-    try {
-      await navigator.clipboard.writeText(contactZaloMessage);
-    } catch {
-      // Clipboard can be blocked by browser permissions; still open Zalo.
-    }
-    if (zaloWindow) {
-      zaloWindow.location.href = 'https://zalo.me/84919999781';
-    } else {
-      window.location.href = 'https://zalo.me/84919999781';
-    }
-  }, [contactZaloMessage]);
 
   const handleAppointmentSubmit = useCallback(async (event) => {
     event.preventDefault();
@@ -1282,6 +1030,432 @@ export default function App() {
       setIsAppointmentSubmitting(false);
     }
   }, [activeContactRouteId, appointmentDate, appointmentTime]);
+
+  return (
+                <form onSubmit={handleAppointmentSubmit} className="p-4 md:p-6 space-y-3">
+                  <div className="mb-1 flex items-start gap-2 border-b border-white/10 pb-3">
+                    <CalendarCheck className="mt-0.5 h-4 w-4 shrink-0 text-pink-400" aria-hidden="true" />
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-white">Đặt lịch hẹn</p>
+                    </div>
+                  </div>
+                  <div className="grid min-w-0 grid-cols-3 gap-1" style={{ gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 0.7875fr) minmax(0, 0.7875fr)' }}>
+                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Ngày
+                      <span className="block h-12 w-full min-w-0 overflow-hidden rounded-md">
+                        <input
+                          type="date"
+                          name="date"
+                          required
+                          min={minDate}
+                          value={appointmentDate}
+                          onChange={(event) => {
+                            const date = event.target.value;
+                            setAppointmentDate(date);
+                            setAppointmentTime(getFutureAppointmentSlots(date)[0] || '');
+                          }}
+                          className="appointment-date-input flex h-12 w-full min-w-0 max-w-full box-border items-center cursor-pointer overflow-hidden rounded-md border border-white/20 bg-white/[0.055] px-1 text-sm font-normal leading-[3rem] text-left normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25 sm:px-2"
+                        />
+                      </span>
+                    </label>
+                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Giờ
+                      <select
+                        id="appointment-hour"
+                        aria-label="Giờ hẹn"
+                        value={appointmentTime.slice(0, 2)}
+                        disabled={!appointmentHours.length}
+                        onChange={(event) => {
+                          const firstSlot = appointmentSlots.find((slot) => slot.startsWith(`${event.target.value}:`));
+                          if (firstSlot) setAppointmentTime(firstSlot);
+                        }}
+                        className="h-12 w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
+                      >
+                        {appointmentHours.length
+                          ? appointmentHours.map((hour) => <option key={hour} value={hour}>{hour}</option>)
+                          : <option value="">--</option>}
+                      </select>
+                    </label>
+                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      Phút
+                      <select
+                        id="appointment-minute"
+                        aria-label="Phút hẹn"
+                        value={appointmentTime.slice(3)}
+                        disabled={!appointmentMinutes.length}
+                        onChange={(event) => setAppointmentTime(`${appointmentTime.slice(0, 2)}:${event.target.value}`)}
+                        className="h-12 w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
+                      >
+                        {appointmentMinutes.length
+                          ? appointmentMinutes.map((minute) => <option key={minute} value={minute}>{minute}</option>)
+                          : <option value="">--</option>}
+                      </select>
+                    </label>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 md:gap-3">
+                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
+                      Công ty
+                      <input
+                        type="text"
+                        name="company"
+                        autoComplete="organization"
+                        placeholder="Tên công ty"
+                        required
+                        className="h-10 min-w-0 rounded-md border border-white/20 bg-white/[0.055] px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
+                      />
+                    </label>
+                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
+                      Người liên hệ
+                      <input
+                        type="text"
+                        name="contactName"
+                        autoComplete="name"
+                        placeholder="Họ và tên"
+                        required
+                        className="h-10 min-w-0 rounded-md border border-white/20 bg-white/[0.055] px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
+                      />
+                    </label>
+                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
+                      Số điện thoại
+                      <span className="flex h-10 min-w-0 items-center overflow-hidden rounded-md border border-white/20 bg-white/[0.055] transition-colors hover:border-white/35 hover:bg-white/[0.08] focus-within:border-pink-400 focus-within:bg-white/[0.08] focus-within:ring-2 focus-within:ring-pink-500/25">
+                        <input
+                          type="tel"
+                          name="phone"
+                          autoComplete="tel"
+                          inputMode="numeric"
+                          pattern="[0-9]{10}"
+                          maxLength={10}
+                          onChange={(event) => {
+                            event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '').slice(0, 10);
+                          }}
+                          placeholder="(000) 000-0000"
+                          required
+                          title="Nhập đúng 10 chữ số"
+                          className="h-full w-full min-w-0 bg-transparent px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none"
+                        />
+                      </span>
+                    </label>
+                  </div>
+
+                  <label className="grid gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    Nội dung
+                    <textarea
+                      name="message"
+                      rows={3}
+                      wrap="soft"
+                      maxLength={4000}
+                      placeholder="Nội dung cần trao đổi"
+                      required
+                      className="h-24 min-w-0 resize-none overflow-y-auto break-words rounded-md border border-white/20 bg-white/[0.055] px-3 py-2 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
+                      style={{ resize: 'none', width: '100%', maxWidth: '100%', overflowWrap: 'anywhere' }}
+                    />
+                  </label>
+
+                  <div className="flex flex-row items-end gap-2 sm:gap-3">
+                    <label className="grid min-w-0 flex-1 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      JD (không bắt buộc, tối đa 3 MB)
+                      <input
+                        type="file"
+                        name="jd"
+                        accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      className="h-10 min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-2 py-1.5 text-[10px] font-normal normal-case tracking-normal text-gray-300 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 file:mr-1 file:max-w-[65%] file:truncate file:rounded file:border-0 file:bg-white/10 file:px-1.5 file:py-1 file:text-[10px] file:font-medium file:text-white sm:text-xs sm:file:mr-2 sm:file:px-2 sm:file:text-xs"
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      disabled={isAppointmentSubmitting || !appointmentTime}
+                      aria-label="Gửi yêu cầu đặt lịch"
+                      title="Gửi yêu cầu đặt lịch"
+                      className="flex h-10 w-12 shrink-0 items-center justify-center rounded-full border border-pink-500 bg-transparent text-pink-500 transition-all hover:text-black active:scale-95 disabled:cursor-wait disabled:opacity-50"
+                    >
+                      {isAppointmentSubmitting
+                        ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                        : <CalendarCheck className="h-5 w-5" aria-hidden="true" />}
+                    </button>
+                  </div>
+                  {appointmentStatus.message && (
+                    <p role={appointmentStatus.type === 'error' ? 'alert' : 'status'} className={`text-xs ${appointmentStatus.type === 'error' ? 'text-red-400' : 'text-green-400'}`}>
+                      {appointmentStatus.message}
+                    </p>
+                  )}
+                </form>
+  );
+});
+AppointmentForm.displayName = 'AppointmentForm';
+
+const WorkCard = React.memo(({ project: p, idx, isOpen, onToggle, onToggleByKey, onTouchStart, onTouchMove, registerRef }) => {
+  const setCardRef = useCallback((el) => registerRef(idx, el), [registerRef, idx]);
+  return (
+    <article
+      ref={setCardRef}
+      className="group shrink-0 w-[78%] sm:w-[68%] md:w-[52%] lg:w-[46%] xl:w-[44%] snap-center lg:snap-start"
+    >
+      <div className="rounded-[22px] md:rounded-[24px] overflow-visible bg-transparent h-auto flex flex-col transition-[transform] duration-300">
+        <div
+          className={`relative w-full transition-[aspect-ratio,transform] duration-300 ${
+            isOpen ? 'aspect-[1/1]' : 'aspect-[1/1.2]'
+          } group-hover:aspect-[1/1]`}
+          onClick={() => onToggle(idx)}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onToggleByKey(idx);
+            }
+          }}
+        >
+          <div className="relative w-full h-full rounded-[18px] md:rounded-[20px] overflow-hidden">
+            <img
+              src={p.image}
+              alt={p.title}
+              className="w-full h-full max-w-full max-h-full object-cover"
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+            />
+            <span className="absolute top-4 left-4 text-[10px] uppercase tracking-widest bg-white/85 text-purple-500 px-3 py-1 rounded-full">
+              {p.category}
+            </span>
+          </div>
+        </div>
+
+        <div className="px-5 md:px-7 py-3 md:py-4 flex flex-col">
+          <h3
+            className="text-2xl md:text-3xl font-black leading-tight text-black normal-case min-h-0 md:min-h-[3.4em]"
+            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+          >
+            {p.title}
+          </h3>
+          <div className={`mt-1.5 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100`}>
+            <p
+              className="text-sm md:text-base text-gray-600 leading-relaxed min-h-0 md:min-h-[5.5em]"
+              style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+            >
+              {p.description}
+            </p>
+          </div>
+          <div className={`mt-3 md:mt-auto pt-2 transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} group-hover:opacity-100 group-hover:pointer-events-auto`}>
+            <button
+              onClick={() => window.open(p.link, '_blank', 'noopener,noreferrer')}
+              className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border border-pink-500 text-pink-500 px-5 py-2 rounded-full hover:bg-pink-500 hover:text-white active:bg-pink-500 active:text-white transition-all"
+            >
+              View Project <ArrowDownRight size={14} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+});
+WorkCard.displayName = 'WorkCard';
+
+function PortfolioApp() {
+  const [activePartnerCategory, setActivePartnerCategory] = useState('All');
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [selectedExp, setSelectedExp] = useState(null);
+  const [activeContactRouteId, setActiveContactRouteId] = useState('hr');
+  const [isContactPopoverOpen, setIsContactPopoverOpen] = useState(false);
+  const [hasExpDetailScrolled, setHasExpDetailScrolled] = useState(false);
+
+  const containerRef = useRef(null);
+  const contactPopoverRef = useRef(null);
+  const expRefs = useRef([]);
+  const activeIdxRef = useRef(0);
+  const servicesOuterRef = useRef(null);
+  const servicesInnerRef = useRef(null);
+  const expLastRef = useRef(null);
+  const impactMetricsRef = useRef(null);
+  const [serviceViewportWidth, setServiceViewportWidth] = useState(() => typeof window === 'undefined' ? 0 : window.innerWidth);
+  const [openWorkIdx, setOpenWorkIdx] = useState(null);
+  const openWorkIdxRef = useRef(null);
+  const workSwipeRef = useRef({ startX: 0, startY: 0, moved: false });
+  const worksOuterRef = useRef(null);
+  const workCardRefs = useRef([]);
+  const worksSectionRef = useRef(null);
+  const visiblePartners = useMemo(
+    () => (activePartnerCategory === 'All' ? PARTNERS : PARTNERS.filter((partner) => partner.category === activePartnerCategory)),
+    [activePartnerCategory]
+  );
+
+  const activeContactRoute = useMemo(
+    () => CONTACT_ROUTES.find((route) => route.id === activeContactRouteId) || CONTACT_ROUTES[0],
+    [activeContactRouteId]
+  );
+  const contactEmailBody = useMemo(
+    () =>
+      [
+        'Xin chào Anh Trần,',
+        '',
+        activeContactRoute.message,
+        '',
+        '- Nội dung trao đổi: ',
+        '- Company / brand: ',
+        '- Expected timeline: ',
+        '',
+        'Trân trọng.',
+      ].join('\n'),
+    [activeContactRoute.message]
+  );
+  const contactMailtoHref = `mailto:anh@anhtranviet.com?subject=${encodeURIComponent(activeContactRoute.emailSubject)}&body=${encodeURIComponent(contactEmailBody)}`;
+  const contactZaloMessage = `${activeContactRoute.emailSubject}\n\n${contactEmailBody}`;
+
+
+  const { scrollYProgress: servicesProgress } = useScroll({
+    target: servicesOuterRef,
+    offset: ['start start', 'end end'],
+  });
+  const { scrollYProgress: servicesEntryProgress } = useScroll({
+    target: servicesOuterRef,
+    offset: ['start 90%', 'end end'],
+  });
+  const serviceFrameWidth = serviceViewportWidth * 0.7;
+  const serviceGap = Math.max(serviceViewportWidth * 0.14, 32);
+  const servicesSlidePitch = serviceFrameWidth + serviceGap;
+  const servicesTranslateDistance = servicesSlidePitch * Math.max(SERVICES.length - 1, 0);
+  const servicesScrollScreens = serviceViewportWidth > 0 ? servicesTranslateDistance / serviceViewportWidth : SERVICES.length;
+  const servicesX = useTransform(servicesProgress, [0, 1], ['0px', `-${servicesTranslateDistance}px`]);
+  const servicePinStartProgress = 0.9 / (servicesScrollScreens + 0.9);
+  const servicesFillProgress = useTransform(
+    servicesEntryProgress,
+    [0, servicePinStartProgress, 1],
+    [-0.02, 0.015, 1]
+  );
+  const { scrollYProgress: worksThemeProgress } = useScroll({ target: expLastRef, offset: ['end start', 'end -30%'] });
+  const worksBg = useTransform(worksThemeProgress, [0, 1], ['#050505', '#ffffff']);
+  const worksContentOpacity = useTransform(worksThemeProgress, [0.995, 1], [0, 1]);
+  const { scrollYProgress: impactThemeProgress } = useScroll({ target: impactMetricsRef, offset: ['start start', 'start -30%'] });
+
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.__portfolioUnlockPreload?.();
+    document.documentElement.classList.remove('preload-lock');
+    document.body.classList.remove('preload-lock');
+    const previousRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+
+    const forceHome = () => window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    forceHome();
+    const raf = window.requestAnimationFrame(forceHome);
+    const t1 = window.setTimeout(forceHome, 80);
+    const t2 = window.setTimeout(forceHome, 320);
+
+    const resetScrollBeforeUnload = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('beforeunload', resetScrollBeforeUnload);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.removeEventListener('beforeunload', resetScrollBeforeUnload);
+      window.history.scrollRestoration = previousRestoration;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const updateView = () => {
+      if (!servicesInnerRef.current) {
+        setServiceViewportWidth(window.innerWidth);
+        return;
+      }
+      const styles = window.getComputedStyle(servicesInnerRef.current);
+      const horizontalPadding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+      setServiceViewportWidth(servicesInnerRef.current.clientWidth - horizontalPadding);
+    };
+    const resizeObserver = new ResizeObserver(updateView);
+    if (servicesInnerRef.current) resizeObserver.observe(servicesInnerRef.current);
+    updateView();
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+
+  // Warm the first project images only when the Works section is about to come into view,
+  // so they don't compete with hero assets during the initial load.
+  useEffect(() => {
+    const section = worksSectionRef.current;
+    if (!section || typeof window === 'undefined') return undefined;
+    const preload = () => PROJECTS.slice(0, 3).forEach((p) => preloadImage(p.image));
+
+    if (!('IntersectionObserver' in window)) {
+      const t = window.setTimeout(preload, 4000);
+      return () => window.clearTimeout(t);
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        preload();
+        observer.disconnect();
+      }
+    }, { rootMargin: '1500px 0px' });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (selectedExp) {
+      const t = setTimeout(() => setHasExpDetailScrolled(false), 0);
+      return () => clearTimeout(t);
+    }
+  }, [selectedExp]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !selectedExp) return undefined;
+    const body = document.body;
+    const root = document.documentElement;
+    const previousBodyOverflow = body.style.overflow;
+    const previousRootOverflow = root.style.overflow;
+    body.style.overflow = 'hidden';
+    root.style.overflow = 'hidden';
+    return () => {
+      body.style.overflow = previousBodyOverflow || 'auto';
+      root.style.overflow = previousRootOverflow || '';
+    };
+  }, [selectedExp]);
+
+  const handleContactRouteChange = useCallback((id) => {
+    setActiveContactRouteId(id);
+  }, []);
+
+  useEffect(() => {
+    if (!isContactPopoverOpen) return undefined;
+    const closeOnOutsidePointer = (event) => {
+      if (!contactPopoverRef.current?.contains(event.target)) {
+        setIsContactPopoverOpen(false);
+      }
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setIsContactPopoverOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOnOutsidePointer);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePointer);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [isContactPopoverOpen]);
+
+  const handleCopyAndOpenZalo = useCallback(async () => {
+    const zaloWindow = window.open('about:blank', '_blank');
+    try {
+      await navigator.clipboard.writeText(contactZaloMessage);
+    } catch {
+      // Clipboard can be blocked by browser permissions; still open Zalo.
+    }
+    if (zaloWindow) {
+      zaloWindow.location.href = 'https://zalo.me/84919999781';
+    } else {
+      window.location.href = 'https://zalo.me/84919999781';
+    }
+  }, [contactZaloMessage]);
+
 
   useEffect(() => {
     document.title = "Anh Trần Việt | Creative Marketing Strategy & Growth";
@@ -1479,80 +1653,28 @@ export default function App() {
     [servicesFillProgress, serviceFrameWidth, serviceGap]
   );
 
-  const workCards = useMemo(
-    () =>
-      PROJECTS.map((p, idx) => {
-        const isOpen = openWorkIdx === idx;
-        return (
-          <article
-            key={p.title}
-            ref={(el) => {
-              workCardRefs.current[idx] = el;
-            }}
-            className="group shrink-0 w-[78%] sm:w-[68%] md:w-[52%] lg:w-[46%] xl:w-[44%] snap-center lg:snap-start will-change-transform"
-          >
-            <div className="rounded-[22px] md:rounded-[24px] overflow-visible bg-transparent h-auto flex flex-col transition-[transform] duration-300">
-              <div
-                className={`relative w-full transition-[aspect-ratio,transform] duration-300 ${
-                  isOpen ? 'aspect-[1/1]' : 'aspect-[1/1.2]'
-                } group-hover:aspect-[1/1]`}
-                onClick={() => toggleWorkCard(idx)}
-                onTouchStart={handleWorkTouchStart}
-                onTouchMove={handleWorkTouchMove}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setOpenWorkIdx((prev) => (prev === idx ? null : idx));
-                  }
-                }}
-              >
-                <div className="relative w-full h-full rounded-[18px] md:rounded-[20px] overflow-hidden">
-                  <img
-                    src={p.image}
-                    alt={p.title}
-                    className="w-full h-full max-w-full max-h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                    draggable={false}
-                  />
-                  <span className="absolute top-4 left-4 text-[10px] uppercase tracking-widest bg-white/85 text-purple-500 px-3 py-1 rounded-full">
-                    {p.category}
-                  </span>
-                </div>
-              </div>
+  const registerWorkCard = useCallback((idx, el) => {
+    workCardRefs.current[idx] = el;
+  }, []);
 
-              <div className="px-5 md:px-7 py-3 md:py-4 flex flex-col">
-                <h3
-                  className="text-2xl md:text-3xl font-black leading-tight text-black normal-case min-h-0 md:min-h-[3.4em]"
-                  style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-                >
-                  {p.title}
-                </h3>
-                <div className={`mt-1.5 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100`}>
-                  <p
-                    className="text-sm md:text-base text-gray-600 leading-relaxed min-h-0 md:min-h-[5.5em]"
-                    style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-                  >
-                    {p.description}
-                  </p>
-                </div>
-                <div className={`mt-3 md:mt-auto pt-2 transition-all duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} group-hover:opacity-100 group-hover:pointer-events-auto`}>
-                  <button
-                    onClick={() => window.open(p.link, '_blank')}
-                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest border border-pink-500 text-pink-500 px-5 py-2 rounded-full hover:bg-pink-500 hover:text-white active:bg-pink-500 active:text-white transition-all"
-                  >
-                    View Project <ArrowDownRight size={14} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
-        );
-      }),
-    [handleWorkTouchMove, handleWorkTouchStart, openWorkIdx, toggleWorkCard]
-  );
+  const toggleWorkCardByKey = useCallback((idx) => {
+    setOpenWorkIdx((prev) => (prev === idx ? null : idx));
+  }, []);
+
+  // Keyed by image: several projects share the same title, which made the old keys collide.
+  const workCards = PROJECTS.map((p, idx) => (
+    <WorkCard
+      key={p.image}
+      project={p}
+      idx={idx}
+      isOpen={openWorkIdx === idx}
+      onToggle={toggleWorkCard}
+      onToggleByKey={toggleWorkCardByKey}
+      onTouchStart={handleWorkTouchStart}
+      onTouchMove={handleWorkTouchMove}
+      registerRef={registerWorkCard}
+    />
+  ));
 
   const statCards = useMemo(
     () =>
@@ -1593,7 +1715,7 @@ export default function App() {
           >
             <div className="relative w-8 h-8 md:w-10 md:h-10 overflow-hidden flex items-center justify-center">
               <img 
-                src="/assets/logoa.png" 
+                src="/assets/logoa.png" width="40" height="40" decoding="async" 
                 alt="Logo" 
                 className="w-full h-full object-contain filter brightness-100 contrast-125"
               />
@@ -1725,7 +1847,7 @@ export default function App() {
                    <div className="flex gap-3 md:gap-4">
                      <FloatingAction distance={3} duration={2.6}>
                        <button 
-                          onClick={() => window.open(selectedExp.link, '_blank')} 
+                          onClick={() => window.open(selectedExp.link, '_blank', 'noopener,noreferrer')} 
                           className="flex-1 md:flex-none flex items-center justify-center gap-3 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] border border-pink-500 bg-transparent text-pink-400 px-6 md:px-8 py-3 md:py-4 rounded-full hover:text-black transition-all whitespace-nowrap"
                         >
                           Case Study <ArrowDownRight size={14} />
@@ -1747,53 +1869,8 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Projects (Works) Details Modal */}
-      <AnimatePresence>
-        {selectedProject && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/95 flex flex-col items-center justify-center p-4 md:p-10 overflow-y-auto"
-            onClick={() => setSelectedProject(null)}
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-              className="max-w-5xl w-full grid md:grid-cols-2 gap-8 md:gap-10 items-center bg-white/5 p-6 md:p-8 rounded-[2rem] border border-white/10"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="rounded-2xl overflow-hidden aspect-[4/5] bg-white/5">
-                <img src={selectedProject.image} alt={selectedProject.title} className="w-full h-full max-w-full max-h-full object-cover" loading="lazy" decoding="async" />
-              </div>
-              <div className="flex flex-col h-full justify-center text-left">
-                <span className="text-pink-500 font-mono text-[10px] md:text-sm uppercase tracking-widest mb-2 block">{selectedProject.category}</span>
-                <h2 className="text-4xl md:text-6xl font-black uppercase mb-4 leading-tight tracking-tighter">{selectedProject.title}</h2>
-                <p className="text-lg md:text-xl text-gray-400 mb-8 leading-relaxed italic">"{selectedProject.description}"</p>
-                
-                <div className="flex gap-4">
-                  <FloatingAction distance={3} duration={2.7}>
-                    <button 
-                      onClick={() => window.open(selectedProject.link, '_blank')} 
-                      className="flex-1 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] bg-white text-black px-8 py-4 rounded-full hover:bg-pink-500 transition-all"
-                    >
-                      View <ExternalLink size={14} />
-                    </button>
-                  </FloatingAction>
-                  <FloatingAction distance={3} duration={3.1}>
-                    <button 
-                      onClick={() => setSelectedProject(null)} 
-                      className="w-14 h-14 flex items-center justify-center border border-white/20 text-white rounded-full hover:bg-white hover:text-black transition-all"
-                    >
-                      <X size={20} />
-                    </button>
-                  </FloatingAction>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* PINNED HERO + BRAND REVEAL */}
-      <IntroJourney />
+      <IntroJourneySection />
 
       {/* SERVICES SECTION */}
       <section id="services" className="relative z-10">
@@ -1870,7 +1947,7 @@ export default function App() {
               </div>
             </div>
             <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mt-10 md:grid-cols-4 lg:grid-cols-5">
-              {visiblePartners.map((partner) => <a key={partner.name} href={partner.link} target="_blank" rel="noreferrer" aria-label={`View ${partner.name} project`} title={`${partner.name} · ${partner.category}`} className="partner-logo-card group relative flex h-[100px] items-center justify-center px-3 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 sm:h-[96px]"><span className="flex h-full w-full items-center justify-center"><img src={partner.logo} alt={partner.name} loading="lazy" className="h-full w-full object-contain partner-logo-image transition-all duration-300" /></span></a>)}
+              {visiblePartners.map((partner) => <a key={partner.name} href={partner.link} target="_blank" rel="noreferrer" aria-label={`View ${partner.name} project`} title={`${partner.name} · ${partner.category}`} className="partner-logo-card group relative flex h-[100px] items-center justify-center px-3 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-500 sm:h-[96px]"><span className="flex h-full w-full items-center justify-center"><img src={partner.logo} alt={partner.name} loading="lazy" decoding="async" className="h-full w-full object-contain partner-logo-image transition-all duration-300" /></span></a>)}
             </div>
             <p className="mt-5 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">Click any brand to view</p>
           </section>
@@ -2025,154 +2102,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <form onSubmit={handleAppointmentSubmit} className="p-4 md:p-6 space-y-3">
-                  <div className="mb-1 flex items-start gap-2 border-b border-white/10 pb-3">
-                    <CalendarCheck className="mt-0.5 h-4 w-4 shrink-0 text-pink-400" aria-hidden="true" />
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.16em] text-white">Đặt lịch hẹn</p>
-                    </div>
-                  </div>
-                  <div className="grid min-w-0 grid-cols-3 gap-1" style={{ gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 0.7875fr) minmax(0, 0.7875fr)' }}>
-                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      Ngày
-                      <span className="block h-12 w-full min-w-0 overflow-hidden rounded-md">
-                        <input
-                          type="date"
-                          name="date"
-                          required
-                          min={getHoChiMinhDateTime().date}
-                          value={appointmentDate}
-                          onChange={(event) => {
-                            const date = event.target.value;
-                            setAppointmentDate(date);
-                            setAppointmentTime(getFutureAppointmentSlots(date)[0] || '');
-                          }}
-                          className="appointment-date-input flex h-12 w-full min-w-0 max-w-full box-border items-center cursor-pointer overflow-hidden rounded-md border border-white/20 bg-white/[0.055] px-1 text-sm font-normal leading-[3rem] text-left normal-case tracking-normal text-white outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25 sm:px-2"
-                        />
-                      </span>
-                    </label>
-                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      Giờ
-                      <select
-                        id="appointment-hour"
-                        aria-label="Giờ hẹn"
-                        value={appointmentTime.slice(0, 2)}
-                        disabled={!appointmentHours.length}
-                        onChange={(event) => {
-                          const firstSlot = appointmentSlots.find((slot) => slot.startsWith(`${event.target.value}:`));
-                          if (firstSlot) setAppointmentTime(firstSlot);
-                        }}
-                        className="h-12 w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
-                      >
-                        {appointmentHours.length
-                          ? appointmentHours.map((hour) => <option key={hour} value={hour}>{hour}</option>)
-                          : <option value="">--</option>}
-                      </select>
-                    </label>
-                    <label className="grid min-w-0 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      Phút
-                      <select
-                        id="appointment-minute"
-                        aria-label="Phút hẹn"
-                        value={appointmentTime.slice(3)}
-                        disabled={!appointmentMinutes.length}
-                        onChange={(event) => setAppointmentTime(`${appointmentTime.slice(0, 2)}:${event.target.value}`)}
-                        className="h-12 w-full min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-1 text-xs font-normal text-white outline-none transition-colors hover:border-white/35 focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 disabled:cursor-not-allowed disabled:opacity-50 sm:px-2 sm:text-sm"
-                      >
-                        {appointmentMinutes.length
-                          ? appointmentMinutes.map((minute) => <option key={minute} value={minute}>{minute}</option>)
-                          : <option value="">--</option>}
-                      </select>
-                    </label>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 md:gap-3">
-                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
-                      Công ty
-                      <input
-                        type="text"
-                        name="company"
-                        autoComplete="organization"
-                        placeholder="Tên công ty"
-                        required
-                        className="h-10 min-w-0 rounded-md border border-white/20 bg-white/[0.055] px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
-                      />
-                    </label>
-                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
-                      Người liên hệ
-                      <input
-                        type="text"
-                        name="contactName"
-                        autoComplete="name"
-                        placeholder="Họ và tên"
-                        required
-                        className="h-10 min-w-0 rounded-md border border-white/20 bg-white/[0.055] px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
-                      />
-                    </label>
-                    <label className="grid min-w-0 gap-1.5 text-[9px] md:text-[10px] font-bold uppercase tracking-normal text-gray-400">
-                      Số điện thoại
-                      <span className="flex h-10 min-w-0 items-center overflow-hidden rounded-md border border-white/20 bg-white/[0.055] transition-colors hover:border-white/35 hover:bg-white/[0.08] focus-within:border-pink-400 focus-within:bg-white/[0.08] focus-within:ring-2 focus-within:ring-pink-500/25">
-                        <input
-                          type="tel"
-                          name="phone"
-                          autoComplete="tel"
-                          inputMode="numeric"
-                          pattern="[0-9]{10}"
-                          maxLength={10}
-                          onChange={(event) => {
-                            event.currentTarget.value = event.currentTarget.value.replace(/\D/g, '').slice(0, 10);
-                          }}
-                          placeholder="(000) 000-0000"
-                          required
-                          title="Nhập đúng 10 chữ số"
-                          className="h-full w-full min-w-0 bg-transparent px-3 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none"
-                        />
-                      </span>
-                    </label>
-                  </div>
-
-                  <label className="grid gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                    Nội dung
-                    <textarea
-                      name="message"
-                      rows={3}
-                      wrap="soft"
-                      maxLength={4000}
-                      placeholder="Nội dung cần trao đổi"
-                      required
-                      className="h-24 min-w-0 resize-none overflow-y-auto break-words rounded-md border border-white/20 bg-white/[0.055] px-3 py-2 text-sm font-normal normal-case tracking-normal text-white placeholder:text-gray-500 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:bg-white/[0.08] focus:ring-2 focus:ring-pink-500/25"
-                      style={{ resize: 'none', width: '100%', maxWidth: '100%', overflowWrap: 'anywhere' }}
-                    />
-                  </label>
-
-                  <div className="flex flex-row items-end gap-2 sm:gap-3">
-                    <label className="grid min-w-0 flex-1 gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      JD (không bắt buộc, tối đa 3 MB)
-                      <input
-                        type="file"
-                        name="jd"
-                        accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                      className="h-10 min-w-0 cursor-pointer rounded-md border border-white/20 bg-white/[0.055] px-2 py-1.5 text-[10px] font-normal normal-case tracking-normal text-gray-300 outline-none transition-colors hover:border-white/35 hover:bg-white/[0.08] focus:border-pink-400 focus:ring-2 focus:ring-pink-500/25 file:mr-1 file:max-w-[65%] file:truncate file:rounded file:border-0 file:bg-white/10 file:px-1.5 file:py-1 file:text-[10px] file:font-medium file:text-white sm:text-xs sm:file:mr-2 sm:file:px-2 sm:file:text-xs"
-                      />
-                    </label>
-                    <button
-                      type="submit"
-                      disabled={isAppointmentSubmitting || !appointmentTime}
-                      aria-label="Gửi yêu cầu đặt lịch"
-                      title="Gửi yêu cầu đặt lịch"
-                      className="flex h-10 w-12 shrink-0 items-center justify-center rounded-full border border-pink-500 bg-transparent text-pink-500 transition-all hover:text-black active:scale-95 disabled:cursor-wait disabled:opacity-50"
-                    >
-                      {isAppointmentSubmitting
-                        ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
-                        : <CalendarCheck className="h-5 w-5" aria-hidden="true" />}
-                    </button>
-                  </div>
-                  {appointmentStatus.message && (
-                    <p role={appointmentStatus.type === 'error' ? 'alert' : 'status'} className={`text-xs ${appointmentStatus.type === 'error' ? 'text-red-400' : 'text-green-400'}`}>
-                      {appointmentStatus.message}
-                    </p>
-                  )}
-                </form>
+<AppointmentForm activeContactRouteId={activeContactRouteId} />
               </div>
             </div>
           </div>
@@ -2197,5 +2127,13 @@ export default function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LazyMotion features={domAnimation}>
+      <PortfolioApp />
+    </LazyMotion>
   );
 }
