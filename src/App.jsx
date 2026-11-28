@@ -50,6 +50,25 @@ const getHoChiMinhDateTime = () => {
 const isFutureHoChiMinhSlot = (date, time, now = Date.now()) =>
   Date.parse(`${date}T${time}:00+07:00`) > now;
 
+const SECTION_PATH_BY_ID = {
+  home: '/',
+  services: '/services',
+  experience: '/experience',
+  works: '/projects',
+  partners: '/clients',
+  impact: '/impact',
+  credentials: '/credentials',
+  connect: '/contact',
+};
+const SECTION_ID_BY_PATH = Object.fromEntries(
+  Object.entries(SECTION_PATH_BY_ID).flatMap(([id, route]) => [[route, id], [route === '/' ? '/' : `${route}/`, id]])
+);
+SECTION_ID_BY_PATH['/works'] = 'works';
+SECTION_ID_BY_PATH['/partners'] = 'partners';
+SECTION_ID_BY_PATH['/impact'] = 'impact';
+SECTION_ID_BY_PATH['/connect'] = 'connect';
+const getSectionIdFromPath = (pathname) => SECTION_ID_BY_PATH[pathname.toLowerCase()] || 'home';
+
 const getFutureAppointmentSlots = (date, now = Date.now()) => {
   if (!date) return [];
   return Array.from({ length: 20 }, (_, index) => {
@@ -1262,6 +1281,7 @@ function PortfolioApp() {
   const [hasExpDetailScrolled, setHasExpDetailScrolled] = useState(false);
 
   const containerRef = useRef(null);
+  const hasResolvedInitialRouteRef = useRef(false);
   const contactPopoverRef = useRef(null);
   const expRefs = useRef([]);
   const activeIdxRef = useRef(0);
@@ -1338,11 +1358,20 @@ function PortfolioApp() {
     const previousRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = 'manual';
 
-    const forceHome = () => window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    forceHome();
-    const raf = window.requestAnimationFrame(forceHome);
-    const t1 = window.setTimeout(forceHome, 80);
-    const t2 = window.setTimeout(forceHome, 320);
+    const initialSection = getSectionIdFromPath(window.location.pathname);
+    const scrollToInitialSection = () => {
+      const section = document.getElementById(initialSection);
+      if (!section || initialSection === 'home') {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        return;
+      }
+      window.scrollTo({ top: Math.max(0, section.getBoundingClientRect().top + window.scrollY), left: 0, behavior: 'auto' });
+    };
+    scrollToInitialSection();
+    const raf = window.requestAnimationFrame(scrollToInitialSection);
+    const t1 = window.setTimeout(scrollToInitialSection, 80);
+    const t2 = window.setTimeout(scrollToInitialSection, 360);
+    const t3 = window.setTimeout(() => { hasResolvedInitialRouteRef.current = true; }, 460);
 
     const resetScrollBeforeUnload = () => {
       window.scrollTo(0, 0);
@@ -1352,6 +1381,7 @@ function PortfolioApp() {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(t1);
       window.clearTimeout(t2);
+      window.clearTimeout(t3);
       window.removeEventListener('beforeunload', resetScrollBeforeUnload);
       window.history.scrollRestoration = previousRestoration;
     };
@@ -1532,7 +1562,12 @@ function PortfolioApp() {
     return () => observer.disconnect();
   }, [activateExperience]);
 
-  const scrollToSection = useCallback((id, behavior = 'smooth') => {
+  const scrollToSection = useCallback((id, behavior = 'smooth', updateUrl = true) => {
+    const route = SECTION_PATH_BY_ID[id];
+    if (updateUrl && route && window.location.pathname !== route) {
+      window.history.pushState({}, '', route);
+    }
+
     if (id === 'connect') {
       handleContactRouteChange('hr');
     }
@@ -1560,6 +1595,44 @@ function PortfolioApp() {
       window.scrollTo({ top, behavior });
     });
   }, [handleContactRouteChange]);
+
+  useEffect(() => {
+    const handlePopState = () => scrollToSection(getSectionIdFromPath(window.location.pathname), 'auto', false);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [scrollToSection]);
+
+  useEffect(() => {
+    let frame = 0;
+    const syncRouteToScrollPosition = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        if (!hasResolvedInitialRouteRef.current) return;
+
+        const readingLine = window.innerHeight * 0.4;
+        let activeSectionId = 'home';
+        Object.keys(SECTION_PATH_BY_ID).forEach((sectionId) => {
+          const section = document.getElementById(sectionId);
+          if (section && section.getBoundingClientRect().top <= readingLine) {
+            activeSectionId = sectionId;
+          }
+        });
+
+        const activeRoute = SECTION_PATH_BY_ID[activeSectionId];
+        if (activeRoute && window.location.pathname !== activeRoute) {
+          window.history.replaceState(window.history.state, '', activeRoute);
+        }
+      });
+    };
+
+    window.addEventListener('scroll', syncRouteToScrollPosition, { passive: true });
+    syncRouteToScrollPosition();
+    return () => {
+      window.removeEventListener('scroll', syncRouteToScrollPosition);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
 
   useEffect(() => {
@@ -1952,7 +2025,7 @@ function PortfolioApp() {
             <p className="mt-5 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">Click any brand to view</p>
           </section>
           <div className="mt-10 border-t border-black/10 pt-6 md:mt-16 md:pt-8">
-            <div ref={impactMetricsRef} className="grid grid-cols-2 gap-x-3 gap-y-4 md:grid-cols-4 md:gap-6">
+            <div id="impact" ref={impactMetricsRef} className="grid grid-cols-2 gap-x-3 gap-y-4 md:grid-cols-4 md:gap-6">
               {statCards}
             </div>
           </div>
